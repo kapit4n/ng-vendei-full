@@ -56,7 +56,7 @@ import { IProductsService } from './services/inv/i-products.service';
 const appRoutes: Routes = [
   { path: "mock", component: MainScreenshotComponent },
   {
-    path: "main",
+    path: "",
     component: ShoppingCartComponent,
     data: { title: "Shopping Cart" }
   },
@@ -112,7 +112,7 @@ const appRoutes: Routes = [
   },
   {
     path: "",
-    redirectTo: "/main",
+    redirectTo: "/",
     pathMatch: "full"
   },
   { path: "**", component: PageNotFoundComponent }
