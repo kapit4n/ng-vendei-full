@@ -59,7 +59,7 @@ export class ShoppingCartComponent implements OnInit {
     popupWinindow = window.open(
       "",
       "_blank",
-      "width=600,height=700,scrollbars=no,menubar=no,toolbar=no,location=no,status=no,titlebar=no"
+      "width=600,height=400,scrollbars=no,menubar=no,toolbar=no,location=no,status=no,titlebar=no"
     );
     popupWinindow.document.open();
     popupWinindow.document.write(
@@ -72,6 +72,14 @@ export class ShoppingCartComponent implements OnInit {
     button {
         display: none !important;
     }
+   @media print {  
+  @page {
+    size: 85mm 100mm; /* landscape */
+    /* you can also specify margins here: */
+    margin: 25mm;
+    margin-right: 45mm; /* for compatibility with both A4 and Letter */
+  }
+}
     </style>
     ` +
         innerContents +
