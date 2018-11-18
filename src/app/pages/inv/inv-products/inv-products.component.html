@@ -1,0 +1,16 @@
+<table class="table">
+  <tr>
+    <th>Product</th>
+    <th>Inventory</th>
+    <th>Total Cost</th>
+    <th></th>
+  </tr>
+  <tr *ngFor="let product of products">
+    <td>{{product.name}}</td>
+    <td>{{product.stock}}</td>
+    <td>{{product.stock * product.cost}}</td>
+    <td>
+      <button class="btn" (click)="openInventory(product.id)">Inv</button> &nbsp;
+    </td>
+  </tr>
+</table>

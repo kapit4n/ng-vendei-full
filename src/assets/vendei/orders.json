@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "date": "09/12/2012",
+    "totalCost": 120,
+    "status": "sold",
+    "obs": "Cochabamba, 16 de Julio"
+  },
+  {
+    "id": 2,
+    "date": "10/12/2012",
+    "totalCost": 2500,
+    "status": "sold",
+    "obs": "Cochabamba, 16 de Julio"
+  },
+  {
+    "id": 3,
+    "date": "11/12/2012",
+    "totalCost": 100,
+    "status": "sold",
+    "obs": "Cochabamba, 16 de Julio"
+  }
+]

@@ -1,0 +1,32 @@
+<div class="shopping-cart-container">
+  <button mat-raised-button (click)="submitOrder()">Submit</button>
+
+  <div class="selected-list" #toPrint id="toPrint">
+    <app-selected-list [selectedProducts]="selectedProducts" [removeProduct]="removeProduct.bind(this)"></app-selected-list>
+    <span>
+      Total: {{total}}
+    </span>
+    <span *ngIf="(totalPayed - totalReturn) != total">
+      Payed: {{totalPayed}}
+    </span>
+    
+    <span *ngIf="total > 0 && (totalPayed - totalReturn) == total">
+      (PAID OUT)
+    </span>
+
+    <span *ngIf="toReturn > 0">
+      to return: {{toReturn}}
+    </span>
+    <span *ngIf="totalDiscount > 0">
+      Discount: {{totalDiscount}}
+    </span>
+
+  </div>
+  <app-cal-table class="cal-table" [selectCustomer]="selectCustomer.bind(this)" [selectedCustomer]="selectedCustomer"
+    [payedItems]="payedItems" [discountItems]="discountItems" [returnItems]="returnItems" 
+    [(totalPayed)]="totalPayed" [totalDiscount]="totalDiscount" [totalReturn]="totalReturn"
+    [calTotals]="calTotals.bind(this)"></app-cal-table>
+</div>
+<div class="product-list">
+  <app-product-list [selectedProducts]="selectedProducts" [recalTotal]="recalTotal.bind(this)"></app-product-list>
+</div>

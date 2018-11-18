@@ -1,0 +1,8 @@
+<input type="text" (keyup.enter)="loadCustomers()" class="form-control" id="search" 
+ placeholder="Search" value="Data" required [(ngModel)]="searchText" [ngModelOptions]="{standalone: true}">
+    
+<mat-list>
+  <mat-list-item *ngFor="let customer of customers" (click)="selectCustomer(customer)">
+    {{customer.name}}: {{customer.ci}}
+  </mat-list-item>
+</mat-list>

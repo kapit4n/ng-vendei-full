@@ -1,0 +1,78 @@
+<div class="container">
+  <h2>Register Product</h2>
+  <div class="row">
+    <div class="col-3">
+        <img *ngIf="invInfo.img; else placeImg" [src]="invInfo.img" width="90%" alt="">
+      <ng-template #placeImg>
+        <img src="https://ilsto.websites.co.in/obaju-pink/img/product-placeholder.png" width="90%" alt="">
+      </ng-template>
+    </div>
+    <div class="col-7">
+      <div class="panel panel-default">
+          <div class="panel-heading">Inventory - {{invInfo.name}}</div>
+        <div class="panel-body">
+          <label for="code" i18n>Code: </label>
+          <label id="name" i18n>{{invInfo.code}}</label>
+        </div>
+        
+        <div class="panel-body">
+          <label for="cost" i18n>Cost: </label>
+          <label id="cost" i18n>{{invInfo.cost}}</label>
+        </div>
+        <div class="panel-body">
+          <label for="stock" i18n>Inventory: </label>
+          <label id="stock" i18n>{{invInfo.stock}}</label>
+        </div>
+      </div>
+      <button class="btn" (click)="open(content)">+</button>
+      <table class="table">
+        <tr>
+          <th>Cost</th>
+          <th>Quantity</th>
+          <th>Total Price</th>
+          <th></th>
+        </tr>
+        <tr *ngFor="let invItem of productInvs">
+          <td>{{invItem.price}}</td>
+          <td>{{invItem.quantity}}</td>
+          <td>{{invItem.totalPrice}}</td>
+          <td>
+            <button class="btn" (click)="delInvItem(invItem)">Del</button> &nbsp;
+          </td>
+        </tr>
+      </table>
+
+    </div>
+  </div>
+</div>
+
+
+<ng-template #content let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 i18n class="modal-title">Add Inventory</h4>
+    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+    <div class="modal-body">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <label for="quantity" i18n>Quantity</label>
+              <input type="text" class="form-control" id="quantity" i18n-placeholder placeholder="Quantity" value="Data"
+                required [(ngModel)]="invItemInfo.quantity" [ngModelOptions]="{standalone: true}">
+            </div>
+            <div class="form-group">
+              <label for="price" i18n>price</label>
+              <input type="text" class="form-control" id="price" i18n-placeholder placeholder="price" value="Data"
+                required [(ngModel)]="invItemInfo.price" [ngModelOptions]="{standalone: true}">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button i18n type="submit" class="btn btn-primary" (click)="saveInvItem(); c('Close click');">Save</button>
+  </div>
+</ng-template>

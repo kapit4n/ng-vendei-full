@@ -1,0 +1,29 @@
+<div class="category-container">
+    <mat-icon>home</mat-icon>
+    <div class="category-item" *ngFor="let cat of categories">
+        <button mat-button style="width: 100%;" (click)="filterByCategory(cat)">
+            {{cat.name}}
+        </button>
+    </div>
+    <mat-form-field class="search-form">
+        <input matInput type="text" placeholder="Search by Name" (keyup)="filterByName($event)">
+    </mat-form-field>
+    
+    <mat-form-field class="search-form">
+        <input matInput type="text" placeholder="Code" (keyup.enter)="addByCode($event)" [(ngModel)]="productCode" [ngModelOptions]="{standalone: true}">
+    </mat-form-field>
+
+</div>
+<div class="items-container">
+    <div class="product-list-item-t" *ngFor="let product of products" 
+        [style.background]="'url(' + product.img + ')'" [style.background-size]="'cover'"
+        (click)="addProduct(product)">
+        <span style="position:relative; top: 3px; float: right; background: white;">
+            Bs {{product.price}}
+        </span>
+        <span style="position:relative; top: 70px;  display: inline-block; float: left; background: white;">
+            {{product.name}}
+        </span>
+
+    </div>
+</div>

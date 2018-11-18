@@ -1,0 +1,7 @@
+<div mat-dialog-content>
+  <p>Select a customer</p>
+<app-customer-list [selectCustomer]="data.selectedCustomer.bind(this)"></app-customer-list>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Close</button>
+</div>
