@@ -1,6 +1,7 @@
 import { Component, OnInit, ElementRef, ViewChild } from "@angular/core";
 import { VOrdersService } from '../../../services/vendei/v-orders.service'
 import { VInventoryService } from "../../../services/vendei/v-inventory.service";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-shopping-cart",
@@ -9,11 +10,12 @@ import { VInventoryService } from "../../../services/vendei/v-inventory.service"
 })
 export class ShoppingCartComponent implements OnInit {
   total: number;
-  emptyCustomer = { id: 1, name: "Anonimous", ci: 1234567 };
+  emptyCustomer = { id: 1, name: "Anonymous", ci: 1234567 };
 
   constructor(
     private ordersSvc: VOrdersService,
-    private inventorySvc: VInventoryService
+    private inventorySvc: VInventoryService,
+    private router: Router
   ) {
     this.total = 0;
     this.selectedCustomer = Object.assign({}, this.emptyCustomer);
@@ -52,11 +54,16 @@ export class ShoppingCartComponent implements OnInit {
   submitOrder() {
     console.log(this.myDiv.nativeElement.innerHtml);
 
-    let popupWinindow
+    let popupWinindow;
     let innerContents = document.getElementById("toPrint").innerHTML;
-    popupWinindow = window.open('', '_blank', 'width=600,height=700,scrollbars=no,menubar=no,toolbar=no,location=no,status=no,titlebar=no');
+    popupWinindow = window.open(
+      "",
+      "_blank",
+      "width=600,height=400,scrollbars=no,menubar=no,toolbar=no,location=no,status=no,titlebar=no"
+    );
     popupWinindow.document.open();
-    popupWinindow.document.write(`<html><head><link rel="stylesheet" type="text/css" href="style.css" />
+    popupWinindow.document.write(
+      `<html><head><link rel="stylesheet" type="text/css" href="style.css" />
     </head><body onload="window.print()">
     <style>
     img {
@@ -65,12 +72,22 @@ export class ShoppingCartComponent implements OnInit {
     button {
         display: none !important;
     }
+   @media print {  
+  @page {
+    size: 85mm 100mm; /* landscape */
+    /* you can also specify margins here: */
+    margin: 25mm;
+    margin-right: 45mm; /* for compatibility with both A4 and Letter */
+  }
+}
     </style>
-    ` + innerContents + "</html>");
+    ` +
+        innerContents +
+        "</html>"
+    );
     popupWinindow.document.close();
 
     let order = {} as any;
-    console.log(this.selectedCustomer);
     order.customerId = this.selectedCustomer.id;
     order.createdDate = new Date();
     order.total = this.total;
@@ -137,4 +154,6 @@ export class ShoppingCartComponent implements OnInit {
       .reduce((a, b) => a + b, 0);
     this.toReturn = this.totalPayed - this.total - this.totalReturn;
   }
+
+  
 }

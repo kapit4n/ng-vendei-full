@@ -1,5 +1,5 @@
 <div class="shopping-cart-container">
-  <button mat-raised-button (click)="submitOrder()">Submit</button>
+  <button mat-raised-button (click)="submitOrder()"><mat-icon>save</mat-icon></button>
 
   <div class="selected-list" #toPrint id="toPrint">
     <app-selected-list [selectedProducts]="selectedProducts" [removeProduct]="removeProduct.bind(this)"></app-selected-list>
