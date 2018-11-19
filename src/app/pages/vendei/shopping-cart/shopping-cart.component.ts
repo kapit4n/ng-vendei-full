@@ -32,12 +32,16 @@ export class ShoppingCartComponent implements OnInit {
   totalDiscount = 0;
   totalReturn = 0;
   toReturn = 0;
+  printOrderCount = 0;
 
   @ViewChild("toPrint") myDiv: ElementRef;
 
   ngOnInit() {}
 
   public removeProduct(product: any) {
+    if (this.printOrderCount) {
+      return;
+    }
     this.selectedProducts = this.selectedProducts.filter(
       p => p.id != product.id
     );
@@ -45,15 +49,17 @@ export class ShoppingCartComponent implements OnInit {
   }
 
   recalTotal() {
+    if (this.printOrderCount) {
+      return;
+    }
     this.total = 0;
     this.selectedProducts.forEach(val => {
       this.total += val.price * val.quantity;
     });
   }
 
-  submitOrder() {
-    console.log(this.myDiv.nativeElement.innerHtml);
-
+ 
+  printOrder() {
     let popupWinindow;
     let innerContents = document.getElementById("toPrint").innerHTML;
     popupWinindow = window.open(
@@ -85,7 +91,24 @@ export class ShoppingCartComponent implements OnInit {
         innerContents +
         "</html>"
     );
+
+    var selfx = this;
+    
+
+    popupWinindow.onbeforeunload = function() {
+      console.log("Are you ready");
+      selfx.printOrder()
+    };
     popupWinindow.document.close();
+  }
+
+  submitOrder() {
+    if (!this.printOrderCount) {
+      this.printOrderCount = 1;
+      this.printOrder();
+      return;
+    }
+    this.printOrder();
 
     let order = {} as any;
     order.customerId = this.selectedCustomer.id;
@@ -134,25 +157,32 @@ export class ShoppingCartComponent implements OnInit {
     this.totalDiscount = 0;
     this.totalReturn = 0;
     this.toReturn = 0;
+    this.printOrderCount = 0;
   }
 
   public selectCustomer(customer: any) {
+    if (this.printOrderCount) {
+      return;
+    }
     this.selectedCustomer = customer;
   }
 
   public calTotals() {
-    this.totalPayed = this.payedItems
-      .map(x => x.value)
-      .reduce((a, b) => a + b, 0);
-
-    this.totalReturn = this.returnItems
-      .map(x => x.value)
-      .reduce((a, b) => a + b, 0);
-
-    this.totalDiscount = this.discountItems
-      .map(x => x.value)
-      .reduce((a, b) => a + b, 0);
-    this.toReturn = this.totalPayed - this.total - this.totalReturn;
+    if (this.printOrderCount) {
+      return;
+    }
+      this.totalPayed = this.payedItems
+        .map(x => x.value)
+        .reduce((a, b) => a + b, 0);
+  
+      this.totalReturn = this.returnItems
+        .map(x => x.value)
+        .reduce((a, b) => a + b, 0);
+  
+      this.totalDiscount = this.discountItems
+        .map(x => x.value)
+        .reduce((a, b) => a + b, 0);
+      this.toReturn = this.totalPayed - this.total - this.totalReturn;
   }
 
   
