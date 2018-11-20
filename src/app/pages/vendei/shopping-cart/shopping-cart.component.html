@@ -1,5 +1,6 @@
 <div class="shopping-cart-container">
-  <button mat-raised-button (click)="submitOrder()"><mat-icon>save</mat-icon></button>
+  <button mat-raised-button (click)="submitOrder()" *ngIf="total > 0 && (totalPayed - totalReturn) == total&& printOrderCount == 0"><mat-icon>save</mat-icon></button>
+  <button mat-raised-button (click)="submitOrder()" *ngIf="total > 0 && (totalPayed - totalReturn) == total && printOrderCount == 1"><mat-icon>print</mat-icon></button>
 
   <div class="selected-list" #toPrint id="toPrint">
     <app-selected-list [selectedProducts]="selectedProducts" [removeProduct]="removeProduct.bind(this)"></app-selected-list>
