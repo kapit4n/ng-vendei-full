@@ -2,17 +2,17 @@
   <div style="width: 100%;">
     <div *ngIf="payedItems.length > 0">
       Payment: 
-      <span *ngFor="let payI of payedItems"><img [src]="payI.img" height="20" alt=""></span>
+      <span *ngFor="let payI of payedItems" (click)="removeItem(payI)"><img [src]="payI.img" height="20" alt=""></span>
     </div>
     
     <div *ngIf="returnItems.length > 0">
       Return:
-      <span *ngFor="let payI of returnItems"><img [src]="payI.img" height="20" alt=""></span>
+      <span *ngFor="let payI of returnItems" (click)="removeItem(payI)"><img [src]="payI.img" height="20" alt=""></span>
     </div>
     
     <div *ngIf="discountItems.length > 0">
       Discount:
-      <span *ngFor="let payI of discountItems">{{payI.name}};</span>
+      <span *ngFor="let payI of discountItems" (click)="removeItem(payI)">{{payI.name}};</span>
     </div>
 
     <div>
@@ -24,7 +24,10 @@
 </div>
 <div style="width: 70%; height: 150px; display: inline-block;">
 
-      <span>{{payTypeLabel}}</span>
+      <span *ngIf="payTypeLabel == 'PAYMENT'">Payment:</span>
+      <span *ngIf="payTypeLabel == 'DISCOUNT'">Discount:</span>
+      <span *ngIf="payTypeLabel == 'RETURN'">Return:</span>
+
       <div class="payment-item" *ngFor="let payItem of payItems">
         <button mat-raised-button (click)="payIt(payItem)">{{payItem.name}}
           <span *ngIf="displayCurrentType">{{currentType}}</span>
