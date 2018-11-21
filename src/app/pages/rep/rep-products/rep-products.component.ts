@@ -24,4 +24,13 @@ export class RepProductsComponent implements OnInit {
   openProductRep(pId: string) {
     this.router.navigate(["/rep/products/" + pId]);
   }
+
+  openSells() {
+    this.router.navigate(["/rep/sells"]);
+  }
+
+  openCart() {
+    this.router.navigate([""]);
+  }
+
 }

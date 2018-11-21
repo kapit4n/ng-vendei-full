@@ -24,4 +24,13 @@ export class RepSellsComponent implements OnInit {
   openSellRep(sellId: string) {
     this.router.navigate(["/inv/sells/" + sellId]);
   }
+
+  openProducts() {
+    this.router.navigate(["/rep/products"]);
+  }
+
+  openCart() {
+    this.router.navigate([""]);
+  }
+
 }
