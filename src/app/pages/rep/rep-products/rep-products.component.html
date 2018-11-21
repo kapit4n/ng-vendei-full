@@ -1,0 +1,20 @@
+<div class="container">
+  <button class="btn" (click)="openSells()"><i class="fa fa-cart-arrow-down fa-lg"></i></button>
+  <button class="btn" (click)="openCart()"><i class="fa fa-shopping-cart fa-lg"></i></button>
+  <table class="table">
+    <tr>
+      <th>Product</th>
+      <th>Quantity Selled</th>
+      <th>Total Selled</th>
+      <th></th>
+    </tr>
+    <tr *ngFor="let product of products">
+      <td>{{product.name}}</td>
+      <td>{{product.quantitySelled}}</td>
+      <td>{{product.totalSelled}}</td>
+      <td>
+        <button class="btn" (click)="openProductRep(product.id)" *ngIf="false"><i class="fa fa-folder"></i></button> &nbsp;
+      </td>
+    </tr>
+  </table>
+</div>

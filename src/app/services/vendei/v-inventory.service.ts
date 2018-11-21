@@ -19,4 +19,17 @@ export class VInventoryService {
       `${this.modelUrl}/reduceInventory?id=${productId}&amount=${amount}`
     );
   }
+
+  updateTotalSelled(productId: string, amount: number): Observable<any> {
+    return this.http.get(
+      `${this.modelUrl}/updateTotalSelled?id=${productId}&amount=${amount}`
+    );
+  }
+
+  updateQuantitySelled(productId: string, amount: number): Observable<any> {
+    return this.http.get(
+      `${this.modelUrl}/updateQuantitySelled?id=${productId}&amount=${amount}`
+    );
+  }
+
 }

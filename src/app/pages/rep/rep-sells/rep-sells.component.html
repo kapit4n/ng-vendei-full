@@ -1,0 +1,24 @@
+<div class="container">
+  <button class="btn" (click)="openProducts()"><i class="fa fa-info fa-lg"></i></button>
+  <button class="btn" (click)="openCart()"><i class="fa fa-shopping-cart fa-lg"></i></button>
+  <table class="table">
+    <tr>
+      <th>Product</th>
+      <th>Quantity</th>
+      <th>Price</th>
+      <th>Total Price</th>
+      <th>Date</th>
+      <th></th>
+    </tr>
+    <tr *ngFor="let sell of sells">
+      <td>{{sell.product.name}}</td>
+      <td>{{sell.quantity}}</td>
+      <td>{{sell.price}}</td>
+      <td>{{sell.totalPrice}}</td>
+      <td>{{sell.createdDate | date:'medium'}}</td>
+      <td>
+        <button class="btn" (click)="openSellRep(sell.id)" *ngIf="false"><i class="fa fa-folder"></i></button> &nbsp;
+      </td>
+    </tr>
+  </table>
+</div>

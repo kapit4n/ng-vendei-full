@@ -3,15 +3,15 @@
   <button mat-raised-button (click)="submitOrder()" *ngIf="total > 0 && (totalPayed - totalReturn) == total && printOrderCount == 1"><mat-icon>print</mat-icon></button>
 
   <div class="selected-list" #toPrint id="toPrint">
-    <app-selected-list [selectedProducts]="selectedProducts" [removeProduct]="removeProduct.bind(this)"></app-selected-list>
-    <span>
+    <app-selected-list [selectedProducts]="selectedProducts"[removeProduct]="removeProduct.bind(this)" [recalTotal]="recalTotal.bind(this)"></app-selected-list>
+    <span style="display: block;">
       Total: {{total}}
     </span>
     <span *ngIf="(totalPayed - totalReturn) != total">
       Payed: {{totalPayed}}
     </span>
     
-    <span *ngIf="total > 0 && (totalPayed - totalReturn) == total">
+    <span *ngIf="total > 0 && (totalPayed - totalReturn) == total" class="noPrint">
       (PAID OUT)
     </span>
 
