@@ -77,6 +77,9 @@ export class ShoppingCartComponent implements OnInit {
     button {
         display: none !important;
     }
+    .noPrint {
+      display: none;
+    }
    @media print {  
   @page {
     size: 85mm 100mm; /* landscape */
