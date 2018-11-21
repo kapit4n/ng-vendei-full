@@ -83,6 +83,7 @@ export class ProductListComponent implements OnInit {
         this.productCode = "";
       }
     }
+    this.recalTotal();
   }
   openReports() {
     this.router.navigate(["/rep/products"]);
