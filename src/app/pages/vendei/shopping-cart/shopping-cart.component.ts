@@ -156,12 +156,27 @@ export class ShoppingCartComponent implements OnInit {
       this.ordersSvc.save(order).subscribe(o => {
         details.forEach(d => {
           d.orderId = order.id;
+          d.createdDate = o.createdDate;
           this.ordersSvc.saveDetail(d).subscribe(ds => {
+
             this.inventorySvc
               .reduceInventory(ds.productId, ds.quantity)
               .subscribe(dat => {
                 console.log(dat);
               });
+            
+            this.inventorySvc
+              .updateTotalSelled(ds.productId, ds.totalPrice)
+              .subscribe(dat => {
+                console.log(dat);
+              });
+            
+            this.inventorySvc
+              .updateQuantitySelled(ds.productId, ds.quantity)
+              .subscribe(dat => {
+                console.log(dat);
+              });
+            
           });
         });
       });

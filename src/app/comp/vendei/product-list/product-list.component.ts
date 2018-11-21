@@ -84,8 +84,11 @@ export class ProductListComponent implements OnInit {
       }
     }
   }
-
-  openProducts() {
+  openReports() {
+    this.router.navigate(["/rep/products"]);
+  }
+  openRegister() {
     this.router.navigate(["/reg/products"]);
   }
+
 }

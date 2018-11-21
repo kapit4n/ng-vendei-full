@@ -1,6 +1,7 @@
 <div class="category-container">
     <mat-icon>
-        <button mat-raised-button (click)="openProducts()"><mat-icon>home</mat-icon></button>
+        <button mat-raised-button (click)="openReports()"><mat-icon>info</mat-icon></button>
+        <button mat-raised-button (click)="openRegister()"><mat-icon>build</mat-icon></button>
     </mat-icon>
     <div *ngIf="displayCat">
         <div class="category-item" *ngFor="let cat of categories">

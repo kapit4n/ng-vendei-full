@@ -34,6 +34,13 @@ import { RegCustomerListComponent } from "./pages/reg/reg-customer-list/reg-cust
 // inv pages
 import { InvProductsComponent } from "./pages/inv/inv-products/inv-products.component";
 import { InvProductsInvComponent } from "./pages/inv/inv-products-inv/inv-products-inv.component";
+// rep pages
+import { RepProductsComponent } from "./pages/rep/rep-products/rep-products.component";
+import { RepSellsComponent } from "./pages/rep/rep-sells/rep-sells.component";
+import { RepSellsByOrderComponent } from "./pages/rep/rep-sells-by-order/rep-sells-by-order.component";
+import { RepSellsByProductComponent } from "./pages/rep/rep-sells-by-product/rep-sells-by-product.component";
+import { RepOrdersComponent } from "./pages/rep/rep-orders/rep-orders.component";
+
 
 import { ProductListComponent } from './comp/vendei/product-list/product-list.component';
 import { CalTableComponent } from './comp/vendei/cal-table/cal-table.component';
@@ -52,6 +59,11 @@ import { RConfigService } from "./services/reg/r-config.service";
 // inv services
 import { IConfigService } from './services/inv/i-config.service';
 import { IProductsService } from './services/inv/i-products.service';
+// rep services
+import { RepConfigService } from "./services/rep/rep-config.service";
+import { RepProductsService } from "./services/rep/rep-products.service";
+import { RepSellsService } from "./services/rep/rep-sells.service";
+
 
 const appRoutes: Routes = [
   { path: "mock", component: MainScreenshotComponent },
@@ -111,6 +123,16 @@ const appRoutes: Routes = [
     data: { breadcrumb: "Inv Products" }
   },
   {
+    path: "rep/products",
+    component: RepProductsComponent,
+    data: { breadcrumb: "Rep Products" }
+  },
+  {
+    path: "rep/sells",
+    component: RepSellsComponent,
+    data: { breadcrumb: "Rep Sells" }
+  },
+  {
     path: "",
     redirectTo: "/",
     pathMatch: "full"
@@ -138,7 +160,12 @@ const appRoutes: Routes = [
     RegCustomerComponent,
     RegCustomerListComponent,
     InvProductsComponent,
-    InvProductsInvComponent
+    InvProductsInvComponent,
+    RepProductsComponent,
+    RepSellsComponent,
+    RepOrdersComponent,
+    RepSellsByOrderComponent,
+    RepSellsByProductComponent
   ],
   imports: [
     RouterModule.forRoot(appRoutes, { enableTracing: true }),
@@ -167,7 +194,10 @@ const appRoutes: Routes = [
     RConfigService,
     RCustomerService,
     IConfigService,
-    IProductsService
+    IProductsService,
+    RepConfigService, 
+    RepProductsService, 
+    RepSellsService
   ],
   bootstrap: [AppComponent],
   entryComponents: [SelectedProductEditDialog, CustomersDialogComponent]
