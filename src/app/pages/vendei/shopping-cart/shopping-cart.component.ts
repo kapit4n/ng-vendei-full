@@ -3,6 +3,12 @@ import { VOrdersService } from '../../../services/vendei/v-orders.service'
 import { VInventoryService } from "../../../services/vendei/v-inventory.service";
 import { Router } from "@angular/router";
 
+enum PaymentType {
+  PAYMONEY = 1,
+  PAYRETURN = 2,
+  DISCOUNT = 3
+}
+
 @Component({
   selector: "app-shopping-cart",
   templateUrl: "./shopping-cart.component.html",
@@ -27,6 +33,10 @@ export class ShoppingCartComponent implements OnInit {
   payedItems = [];
   discountItems = [];
   returnItems = [];
+
+  paymentItemIds = 1;
+  discountItemIds = 1;
+  returnItemIds = 1;
 
   totalPayed = 0;
   totalDiscount = 0;
@@ -212,7 +222,9 @@ export class ShoppingCartComponent implements OnInit {
   }
 
   public calTotals() {
+    console.log("cal totals");
     if (this.printOrderCount) {
+      console.log("return");
       return;
     }
       this.totalPayed = this.payedItems
@@ -226,7 +238,53 @@ export class ShoppingCartComponent implements OnInit {
       this.totalDiscount = this.discountItems
         .map(x => x.value)
         .reduce((a, b) => a + b, 0);
+      
+    console.log(this.totalPayed);
+    console.log(this.totalReturn);
+    console.log(this.totalDiscount);
       this.toReturn = this.totalPayed - this.total - this.totalReturn;
+  }
+
+  removeItem(payItem: any) {
+    switch (payItem.payType) {
+      case PaymentType.PAYMONEY:
+        this.payedItems = this.payedItems.filter(p => p.id != payItem.id);
+        break;
+      case PaymentType.DISCOUNT:
+        this.discountItems = this.discountItems.filter(p => p.id != payItem.id);
+        break;
+      case PaymentType.PAYRETURN:
+        this.returnItems = this.returnItems.filter(p => p.id != payItem.id);
+        break;
+      default:
+        break;
+    }
+    this.calTotals();
+  }
+
+  payIt(payItem: any, payType: any) {
+    let payItemAux = Object.assign({}, payItem);
+    switch (payType) {
+      case PaymentType.PAYMONEY:
+        payItemAux.id = this.paymentItemIds++;
+        payItemAux.payType = PaymentType.PAYMONEY;
+        this.payedItems.push(payItemAux);
+        break;
+      case PaymentType.DISCOUNT:
+        payItemAux.id = this.discountItemIds++;
+        payItemAux.payType = PaymentType.DISCOUNT;
+        this.discountItems.push(payItemAux);
+        break;
+      case PaymentType.PAYRETURN:
+        payItemAux.id = this.returnItemIds++;
+        payItemAux.payType = PaymentType.PAYRETURN;
+        this.returnItems.push(payItemAux);
+        break;
+      default:
+        break;
+    }
+
+    this.calTotals();
   }
 
   

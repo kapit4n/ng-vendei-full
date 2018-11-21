@@ -29,12 +29,12 @@
       <span *ngIf="payTypeLabel == 'RETURN'">Return:</span>
 
       <div class="payment-item" *ngFor="let payItem of payItems">
-        <button mat-raised-button (click)="payIt(payItem)">{{payItem.name}}
+        <button mat-raised-button (click)="payIt(payItem, payType)">{{payItem.name}}
           <span *ngIf="displayCurrentType">{{currentType}}</span>
         </button>
       </div>
       <br />
-      <div class="payment-action"><button mat-raised-button (click)="discount()">Disc</button></div>
+      <div class="payment-action"><button mat-raised-button (click)="discount()" *ngIf="false">Disc</button></div>
       <div class="payment-action"><button mat-raised-button (click)="returnMoney()">Return</button></div>
       <div class="payment-action"><button mat-raised-button (click)="payMoney()">Payment</button></div>
 </div>

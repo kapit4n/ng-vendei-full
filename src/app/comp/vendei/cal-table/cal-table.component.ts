@@ -19,13 +19,14 @@ export class CalTableComponent implements OnInit {
 
   @Input()
   calTotals: Function;
+  @Input()
+  payIt: Function;
+
+  @Input()
+  removeItem: Function;
 
   @Input()
   selectedCustomer: any;
-
-  paymentItemIds = 1;
-  discountItemIds = 1;
-  returnItemIds = 1;
 
   bills = [
     { name: "0.1", value: 0.1, img: "" },
@@ -164,48 +165,5 @@ export class CalTableComponent implements OnInit {
     this.displayCurrentType = true;
     this.payType = PaymentType.PAYRETURN;
     this.payTypeLabel = "RETURN";
-  }
-
-  removeItem(payItem: any) {
-    let payItemAux = Object.assign({}, payItem);
-    switch (this.payType) {
-      case PaymentType.PAYMONEY:
-        this.payedItems = this.payedItems.filter(p => p.id != payItemAux.id);
-        break;
-        case PaymentType.DISCOUNT:
-        this.discountItems = this.discountItems.filter(p => p.id != payItemAux.id);
-        break;
-        case PaymentType.PAYRETURN:
-        this.returnItems = this.returnItems.filter(p => p.id != payItemAux.id);
-        break;
-      default:
-        break;
-    }
-    this.calTotals();
-  }
-
-  payIt(payItem: any) {
-    let payItemAux = Object.assign({}, payItem);
-    switch (this.payType) {
-      case PaymentType.PAYMONEY:
-        payItemAux.id = this.paymentItemIds++;
-        payItemAux.payType = PaymentType.PAYMONEY;
-        this.payedItems.push(payItemAux);
-        break;
-      case PaymentType.DISCOUNT:
-        payItemAux.id = this.discountItemIds++;
-        payItemAux.payType = PaymentType.DISCOUNT;
-        this.discountItems.push(payItemAux);
-        break;
-      case PaymentType.PAYRETURN:
-        payItemAux.id = this.returnItemIds++;
-        payItemAux.payType = PaymentType.PAYRETURN;
-        this.returnItems.push(payItemAux);
-        break;
-      default:
-        break;
-    }
-
-    this.calTotals();
   }
 }
