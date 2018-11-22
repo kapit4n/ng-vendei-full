@@ -11,11 +11,11 @@
         </div>
     </div>
     <mat-form-field class="search-form">
-        <input matInput type="text" placeholder="Search by Name" (keyup)="filterByName($event)">
+        <input matInput type="text" placeholder="Buscar por nombre" (keyup)="filterByName($event)">
     </mat-form-field>
     
     <mat-form-field class="search-form">
-        <input matInput type="text" placeholder="Code" (keyup.enter)="addByCode($event)" [(ngModel)]="productCode" [ngModelOptions]="{standalone: true}">
+        <input matInput type="text" placeholder="Codigo" (keyup.enter)="addByCode($event)" [(ngModel)]="productCode" [ngModelOptions]="{standalone: true}">
     </mat-form-field>
 
 </div>

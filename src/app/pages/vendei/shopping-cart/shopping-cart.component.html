@@ -5,21 +5,21 @@
   <div class="selected-list" #toPrint id="toPrint">
     <app-selected-list [selectedProducts]="selectedProducts"[removeProduct]="removeProduct.bind(this)" [recalTotal]="recalTotal.bind(this)"></app-selected-list>
     <span style="display: block;">
-      Total: {{total}}
+      A Pagar: {{total}}
     </span>
     <span *ngIf="(totalPayed - totalReturn) != total" i18n>
-      Payed: {{totalPayed}}
+      Pagado: {{totalPayed}}
     </span>
     
     <span *ngIf="total > 0 && (totalPayed - totalReturn) == total" class="noPrint" i18n>
-      (PAID OUT)
+      (Completado)
     </span>
 
     <span *ngIf="toReturn > 0">
-      to return: {{toReturn}} i18n
+      devolver: {{toReturn}}
     </span>
     <span *ngIf="totalDiscount > 0">
-      Discount: {{totalDiscount}}
+      Descuento: {{totalDiscount}}
     </span>
 
   </div>
