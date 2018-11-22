@@ -7,16 +7,16 @@
     <span style="display: block;">
       Total: {{total}}
     </span>
-    <span *ngIf="(totalPayed - totalReturn) != total">
+    <span *ngIf="(totalPayed - totalReturn) != total" i18n>
       Payed: {{totalPayed}}
     </span>
     
-    <span *ngIf="total > 0 && (totalPayed - totalReturn) == total" class="noPrint">
+    <span *ngIf="total > 0 && (totalPayed - totalReturn) == total" class="noPrint" i18n>
       (PAID OUT)
     </span>
 
     <span *ngIf="toReturn > 0">
-      to return: {{toReturn}}
+      to return: {{toReturn}} i18n
     </span>
     <span *ngIf="totalDiscount > 0">
       Discount: {{totalDiscount}}

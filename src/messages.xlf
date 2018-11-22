@@ -228,6 +228,52 @@
           <context context-type="linenumber">66</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="b71fabac84d462c1c19a8a14ba1bd3bcdb0324d5" datatype="html">
+        <source>
+      Recivido: <x id="INTERPOLATION" equiv-text="{{totalPayed}}"/>
+    </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/pages/vendei/shopping-cart/shopping-cart.component.html</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="e962be23e53dd0d6ab3c1fcce1ab2c17930775cf" datatype="html">
+        <source>
+      (PAGADO)
+    </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/pages/vendei/shopping-cart/shopping-cart.component.html</context>
+          <context context-type="linenumber">14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="fb3545e97e371069768103e01599f35e789d556c" datatype="html">
+        <source>Pagar:</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/comp/vendei/cal-table/cal-table.component.html</context>
+          <context context-type="linenumber">4</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="9e0710a885629954725c1b6fcf8242adf630d80b" datatype="html">
+        <source>Retornar:</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/comp/vendei/cal-table/cal-table.component.html</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4d1d4f8c3875d65fd8c775d6ee617c1b2f41f6df" datatype="html">
+        <source>Retornar</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/comp/vendei/cal-table/cal-table.component.html</context>
+          <context context-type="linenumber">38</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="82ac8ec728fb6d36f85eb9f59d343bc6ea01ab38" datatype="html">
+        <source>Payment</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/comp/vendei/cal-table/cal-table.component.html</context>
+          <context context-type="linenumber">39</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="5787fcac03eda5b96436527a54e60cfbb7c30d95" datatype="html">
         <source>Product Name</source>
         <context-group purpose="location">
