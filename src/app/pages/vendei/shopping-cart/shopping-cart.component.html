@@ -7,16 +7,16 @@
     <span style="display: block;">
       Total: {{total}}
     </span>
-    <span *ngIf="(totalPayed - totalReturn) != total">
+    <span *ngIf="(totalPayed - totalReturn) != total" i18n>
       Payed: {{totalPayed}}
     </span>
     
-    <span *ngIf="total > 0 && (totalPayed - totalReturn) == total" class="noPrint">
+    <span *ngIf="total > 0 && (totalPayed - totalReturn) == total" class="noPrint" i18n>
       (PAID OUT)
     </span>
 
     <span *ngIf="toReturn > 0">
-      to return: {{toReturn}}
+      to return: {{toReturn}} i18n
     </span>
     <span *ngIf="totalDiscount > 0">
       Discount: {{totalDiscount}}
@@ -24,9 +24,9 @@
 
   </div>
   <app-cal-table class="cal-table" [selectCustomer]="selectCustomer.bind(this)" [selectedCustomer]="selectedCustomer"
-    [payedItems]="payedItems" [discountItems]="discountItems" [returnItems]="returnItems" 
-    [(totalPayed)]="totalPayed" [totalDiscount]="totalDiscount" [totalReturn]="totalReturn"
-    [calTotals]="calTotals.bind(this)"></app-cal-table>
+    [(payedItems)]="payedItems" [(discountItems)]="discountItems" [(returnItems)]="returnItems" 
+    [(totalPayed)]="totalPayed" [(totalDiscount)]="totalDiscount" [(totalReturn)]="totalReturn"
+    [calTotals]="calTotals.bind(this)" [payIt]="payIt.bind(this)" [removeItem]="removeItem.bind(this)"></app-cal-table>
 </div>
 <div class="product-list">
   <app-product-list [selectedProducts]="selectedProducts" [recalTotal]="recalTotal.bind(this)"></app-product-list>

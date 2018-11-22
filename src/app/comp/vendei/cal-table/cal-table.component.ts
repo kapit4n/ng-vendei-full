@@ -19,66 +19,60 @@ export class CalTableComponent implements OnInit {
 
   @Input()
   calTotals: Function;
+  @Input()
+  payIt: Function;
+
+  @Input()
+  removeItem: Function;
 
   @Input()
   selectedCustomer: any;
 
-  paymentItemIds = 1;
-  discountItemIds = 1;
-  returnItemIds = 1;
-
   bills = [
-    { name: "0.1", value: 0.1, img: "" },
-    { name: "0.2", value: 0.2, img: "" },
     {
       name: "0.5",
       value: 0.5,
-      img: "https://en.numista.com/catalogue/photos/bolivie/g397.jpg"
+      img: "0-50.jpg"
     },
     {
       name: "1",
       value: 1,
-      img:
-        "https://i.ucoin.net/coin/15/048/15048242-1/bolivia-1-boliviano-2012.jpg"
+      img: "/assets/vendei/money/1-Boliviano.jpg"
     },
     {
       name: "2",
       value: 2,
-      img: "https://i.colnect.net/f/4353/166/2-Bolivianos-Large-Type.jpg"
+      img: "/assets/vendei/money/2-Bolivianos.jpg"
     },
     {
       name: "5",
       value: 5,
-      img: "https://i.colnect.net/f/2815/611/5-Bolivianos.jpg"
+      img: "/assets/vendei/money/5-Bolivianos.jpg"
     },
     {
       name: "10",
       value: 10,
-      img:
-        "http://www.lostiempos.com/sites/default/files/styles/noticia_detalle/public/media_imagen/2018/4/4/sin_titulo-1_0.jpg?itok=xuBQscCf"
+      img: "/assets/vendei/money/10-Bolivianos.jpg"
     },
     {
       name: "20",
       value: 20,
-      img: "https://media2.allnumis.com/1189_572233078c3986fL.jpg"
+      img: "/assets/vendei/money/20-Bolivianos.jpg"
     },
     {
       name: "50",
       value: 50,
-      img:
-        "https://img.ma-shops.com/aurich/pic/14169_bolivien_50_bolivianos_28.11.1986_bn_.jpg"
+      img: "/assets/vendei/money/50-Bolivianos.jpg"
     },
     {
       name: "100",
       value: 100,
-      img:
-        "https://www.paginasiete.bo/u/fotografias/m/2017/9/27/f800x450-180473_231919_0.jpg"
+      img: "/assets/vendei/money/100-Bolivianos.jpeg"
     },
     {
       name: "200",
       value: 200,
-      img:
-        "https://www.eldeber.com.bo/__export/1481083317747/sites/eldeber/img/2015/07/02/5595aa693d5f4.jpeg_1775534641.jpeg"
+      img: "/assets/vendei/money/200-Bolivianos.jpeg"
     }
   ];
 
@@ -164,48 +158,5 @@ export class CalTableComponent implements OnInit {
     this.displayCurrentType = true;
     this.payType = PaymentType.PAYRETURN;
     this.payTypeLabel = "RETURN";
-  }
-
-  removeItem(payItem: any) {
-    let payItemAux = Object.assign({}, payItem);
-    switch (this.payType) {
-      case PaymentType.PAYMONEY:
-        this.payedItems = this.payedItems.filter(p => p.id != payItemAux.id);
-        break;
-        case PaymentType.DISCOUNT:
-        this.discountItems = this.discountItems.filter(p => p.id != payItemAux.id);
-        break;
-        case PaymentType.PAYRETURN:
-        this.returnItems = this.returnItems.filter(p => p.id != payItemAux.id);
-        break;
-      default:
-        break;
-    }
-    this.calTotals();
-  }
-
-  payIt(payItem: any) {
-    let payItemAux = Object.assign({}, payItem);
-    switch (this.payType) {
-      case PaymentType.PAYMONEY:
-        payItemAux.id = this.paymentItemIds++;
-        payItemAux.payType = PaymentType.PAYMONEY;
-        this.payedItems.push(payItemAux);
-        break;
-      case PaymentType.DISCOUNT:
-        payItemAux.id = this.discountItemIds++;
-        payItemAux.payType = PaymentType.DISCOUNT;
-        this.discountItems.push(payItemAux);
-        break;
-      case PaymentType.PAYRETURN:
-        payItemAux.id = this.returnItemIds++;
-        payItemAux.payType = PaymentType.PAYRETURN;
-        this.returnItems.push(payItemAux);
-        break;
-      default:
-        break;
-    }
-
-    this.calTotals();
   }
 }
