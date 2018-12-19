@@ -16,6 +16,8 @@ enum PaymentType {
 export class CalTableComponent implements OnInit {
   @Input()
   selectCustomer: Function;
+  @Input()
+  printOrderCount: number;
 
   @Input()
   calTotals: Function;
@@ -123,6 +125,7 @@ export class CalTableComponent implements OnInit {
   }
 
   openDialog(): void {
+    if (this.printOrderCount) return;
     const dialogRef = this.dialog.open(CustomersDialogComponent, {
       width: "350px",
       height: "350px",
@@ -140,6 +143,7 @@ export class CalTableComponent implements OnInit {
   ngOnInit() {}
 
   payMoney() {
+    if (this.printOrderCount) return;
     this.displayCurrentType = true;
     this.payItems = this.bills;
     this.payType = PaymentType.PAYMONEY;
@@ -147,6 +151,7 @@ export class CalTableComponent implements OnInit {
   }
 
   discount() {
+    if (this.printOrderCount) return;
     this.displayCurrentType = false;
     this.payItems = this.numbers;
     this.payType = PaymentType.DISCOUNT;
@@ -154,6 +159,7 @@ export class CalTableComponent implements OnInit {
   }
 
   returnMoney() {
+    if (this.printOrderCount) return;
     this.payItems = this.bills;
     this.displayCurrentType = true;
     this.payType = PaymentType.PAYRETURN;

@@ -1,6 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { VProductsService } from '../../../services/vendei/v-products.service'
-import { VCategoriesService } from '../../../services/vendei/v-categories.service';
+import { Component, OnInit, Input } from "@angular/core";
+import { VProductsService } from "../../../services/vendei/v-products.service";
+import { VCategoriesService } from "../../../services/vendei/v-categories.service";
 import { Router } from "@angular/router";
 
 @Component({
@@ -12,6 +12,7 @@ export class ProductListComponent implements OnInit {
   @Input()
   selectedProducts: any[];
   @Input() recalTotal: Function;
+  @Input() printOrderCount: number;
 
   products = [];
   productCode = "";
@@ -42,6 +43,10 @@ export class ProductListComponent implements OnInit {
   }
 
   addProduct(product: any) {
+    if (this.printOrderCount) {
+      return;
+    }
+
     if (this.selectedProducts.some(p => p.id == product.id)) {
       this.selectedProducts.filter(p => p.id == product.id)[0].quantity += 1;
     } else {
@@ -72,6 +77,10 @@ export class ProductListComponent implements OnInit {
   }
 
   addByCode(event) {
+    if (this.printOrderCount) {
+      return;
+    }
+
     let searchCode = event.target.value;
 
     if (searchCode) {
@@ -91,5 +100,7 @@ export class ProductListComponent implements OnInit {
   openRegister() {
     this.router.navigate(["/reg/products"]);
   }
-
+  openMain() {
+    this.router.navigate(["/main"]);
+  }
 }
