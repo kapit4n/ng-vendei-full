@@ -23,6 +23,8 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { PageNotFoundComponent } from './pages/vendei/page-not-found/page-not-found.component';
 import { MainScreenshotComponent } from './pages/vendei/main-screenshot/main-screenshot.component';
 import { ShoppingCartComponent } from './pages/vendei/shopping-cart/shopping-cart.component';
+import { MainComponent } from "./pages/main/main.component";
+
 //reg pages
 import { RCustomerService } from "./services/reg/r-customer.service";
 import { RegProductComponent } from "./pages/reg/reg-product/reg-product.component";
@@ -71,6 +73,11 @@ const appRoutes: Routes = [
     path: "",
     component: ShoppingCartComponent,
     data: { title: "Shopping Cart" }
+  },
+  {
+    path: "main",
+    component: MainComponent,
+    data: { title: "Main" }
   },
   {
     path: "customers",
@@ -165,7 +172,8 @@ const appRoutes: Routes = [
     RepSellsComponent,
     RepOrdersComponent,
     RepSellsByOrderComponent,
-    RepSellsByProductComponent
+    RepSellsByProductComponent,
+    MainComponent
   ],
   imports: [
     RouterModule.forRoot(appRoutes, { enableTracing: true }),
