@@ -94,8 +94,8 @@ export class ShoppingCartComponent implements OnInit {
   @page {
     size: 85mm 100mm; /* landscape */
     /* you can also specify margins here: */
-    margin: 25mm;
-    margin-right: 45mm; /* for compatibility with both A4 and Letter */
+    margin: 18mm;
+    margin-right: 30mm; /* for compatibility with both A4 and Letter */
   }
 }
     </style>

@@ -5,7 +5,7 @@
   <div class="selected-list" #toPrint id="toPrint">
     <app-selected-list [selectedProducts]="selectedProducts"[removeProduct]="removeProduct.bind(this)" [recalTotal]="recalTotal.bind(this)"></app-selected-list>
     <span style="display: block;">
-      A Pagar: {{total}}
+      Total: {{total}}
     </span>
     <span *ngIf="(totalPayed - totalReturn) != total" i18n>
       Pagado: {{totalPayed}}
