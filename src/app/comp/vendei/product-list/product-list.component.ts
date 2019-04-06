@@ -73,10 +73,10 @@ export class ProductListComponent implements OnInit {
 
   addByCode(event) {
     let searchCode = event.target.value;
-
+    console.log(searchCode);
     if (searchCode) {
       let cProduct = this.originalP.find(
-        p => p.code.toLowerCase() == searchCode
+        p => p.code.toLowerCase() == searchCode.toLowerCase()
       );
       if (cProduct) {
         this.addProduct(cProduct);
