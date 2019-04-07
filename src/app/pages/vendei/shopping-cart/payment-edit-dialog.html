@@ -1,0 +1,11 @@
+<h1 mat-dialog-title>Pay</h1>
+<div mat-dialog-content>
+  <mat-form-field>
+    <input matInput #input max="10" placeholder="Enter Pay" [(ngModel)]="data.pay">
+  </mat-form-field>
+  <span>Return: {{data.pay - data.total}}</span>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Cancel</button>
+  <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Save</button>
+</div>

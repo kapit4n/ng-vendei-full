@@ -6,6 +6,7 @@ export interface DialogData {
   name: string;
   img: string;
   quantity: number;
+  price: number;
 }
 
 @Component({
@@ -32,15 +33,19 @@ export class SelectedListComponent implements OnInit {
         id: product.id,
         name: product.name,
         img: product.img,
-        quantity: product.quantity
+        quantity: product.quantity,
+        price: product.price
       }
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.selectedProducts.filter(
+        let product = this.selectedProducts.filter(
           p => p.id == result.id
-        )[0].quantity = Number(result.quantity);
+        )[0];
+
+        product.quantity = Number(result.quantity);
+        product.price = Number(result.price);
         this.recalTotal();
       }
     });
