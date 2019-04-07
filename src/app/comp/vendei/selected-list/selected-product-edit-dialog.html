@@ -4,6 +4,11 @@
     <input matInput #input max="10" placeholder="Enter quantity" [(ngModel)]="data.quantity">
     <mat-hint align="end">{{input.value || 0}}/10</mat-hint>
   </mat-form-field>
+  
+  <mat-form-field>
+    <input matInput #input max="10" placeholder="Enter Price" [(ngModel)]="data.price">
+  </mat-form-field>
+
 </div>
 <div mat-dialog-actions>
   <button mat-button (click)="onNoClick()">Cancel</button>

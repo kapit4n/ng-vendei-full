@@ -78,10 +78,31 @@ export class ShoppingCartComponent implements OnInit {
       day: "numeric"
     };
 
+    let headerInfo = `
+    Codigo Casero: <br CLEAR=”left” />
+      Software development company offers you web page development,
+      Billing software, Accounting, and customisable software.
+    `;
+
+    let addressInfo = `
+    <p style="font-size: 13px;">
+      Address. Cochabamba Bolivia, Times St 1414
+    </p>
+    `;
+
+    let footerInfo = `
+    <p style="font-size: 13px;">
+    Quality software developed by experienced developers.
+    </p>
+    `;
+
     let innerContents = `<div style='padding-left: 20px;'>
     <div>
-    <img stye="display: block;" src="http://themarketingbirds.com/wp-content/uploads/2018/08/656455-4-1-650-a542d8629a-1482214208.jpg" alt="Smiley face" height="42" width="42">
-    </div>
+    <p style="font-size: 13px;">
+      <img style="float: left;" ALIGN=”left” HSPACE=”50” VSPACE=”50” src="http://localhost:4200/assets/vendei/print-logo.png" alt="Smiley face" height="120" width="120">
+      ${headerInfo}
+    </p>
+    ${addressInfo}
     <div>Date: ${todayTime.toLocaleDateString("es-ES", options)} </div>
     </div>`;
     innerContents += "<table style='padding-left: 20px;'>";
@@ -101,6 +122,7 @@ export class ShoppingCartComponent implements OnInit {
       innerContents += "</tr>";
     }
     innerContents += "</table>";
+    innerContents += footerInfo;
     popupWinindow = window.open(
       "",
       "_blank",
