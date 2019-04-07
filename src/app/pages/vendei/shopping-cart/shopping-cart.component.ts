@@ -71,17 +71,62 @@ export class ShoppingCartComponent implements OnInit {
  
   printOrder() {
     let popupWinindow;
-    let innerContents = document.getElementById("toPrint").innerHTML;
+    var todayTime = new Date();
+    var options = {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric"
+    };
+
+    let innerContents = `<div style='padding-left: 20px;'>
+    <div>
+    <p style="font-size: 13px;">
+      <img style="float: left;" ALIGN=”left” HSPACE=”50” VSPACE=”50” src="http://localhost/assets/vendei/o-star-logo.png" alt="Smiley face" height="120" width="120">
+      TE OFRECEMOS UNA AMPLIA LINEA EN: <br CLEAR=”left” />
+      Pijama de short, Pantalon largo, Manga Corta Pantunflas, Pijamas infantiles, Batas de bano, Salidas de cama, Toallas de Juegos de Toallas, 
+      Antifases de Gel, Y todo en general para el buen descanzo.
+    </p>
+    <p style="font-size: 13px;">
+      Dir. Calle Juan Francisco Velarde #1682 entre calle Cliza y Tapacari(final mercado La Paz)
+    </p>
+    </div>
+    <div>Fecha: ${todayTime.toLocaleDateString("es-ES", options)} </div>
+    </div>`;
+    innerContents += "<table style='padding-left: 20px;'>";
+    innerContents += "<tr>";
+    innerContents += `<th>Cant</th>`;
+    innerContents += `<th>Detalle</th>`;
+    innerContents += `<th>Precio</th>`;
+    innerContents += `<th>Sub</th>`;
+    innerContents += "</tr>";
+    for (let i = 0; i < this.selectedProducts.length; i++) {
+      innerContents += "<tr>";
+      innerContents += `<td>${this.selectedProducts[i].quantity}</td>`;
+      innerContents += `<td>${this.selectedProducts[i].code}</td>`;
+      innerContents += `<td>${this.selectedProducts[i].price}</td>`;
+      innerContents += `<td>${this.selectedProducts[i].price *
+        this.selectedProducts[i].quantity}</td>`;
+      innerContents += "</tr>";
+    }
+    innerContents += "</table>";
+    innerContents += "Total: " + this.total;
+    innerContents += `
+    <p style="font-size: 12px;">100% Algodon, es materia prima que proviene de Peru, en donde se cosecha el mejor
+    algodon del mundo.
+    La fibra de este producto es de altisima nobleza y convierte a esta prenda en una pieza perdurable y de calidad superior.
+    </p>
+    `;
     popupWinindow = window.open(
       "",
       "_blank",
       "width=600,height=400,scrollbars=no,menubar=no,toolbar=no,location=no,status=no,titlebar=no"
     );
     popupWinindow.document.open();
-    popupWinindow.document.write(`<html><head><link rel="stylesheet" type="text/css" href="style.css" />
+    popupWinindow.document.write(
+      `<html><head><link rel="stylesheet" type="text/css" href="style.css" />
     </head><body onload="window.print()">
     <style>
-    img {
+    img2 {
         display: none !important;
     }
     button {
@@ -90,27 +135,28 @@ export class ShoppingCartComponent implements OnInit {
     .noPrint {
       display: none;
     }
+    th, td {
+      padding: 8px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
    @media print {  
   @page {
     size: 85mm 100mm; /* landscape */
     /* you can also specify margins here: */
-    margin: 18mm;
-    margin-right: 30mm; /* for compatibility with both A4 and Letter */
+    margin: 25mm;
+    margin-right: 45mm; /* for compatibility with both A4 and Letter */
   }
 }
     </style>
-
     <script>
     (function() {
-
     var beforePrint = function() {
         console.log('Functionality to run before printing.');
     };
-
     var afterPrint = function() {
         console.log('Functionality to run after printing');
     };
-
     if (window.matchMedia) {
         var mediaQueryList = window.matchMedia('print');
         mediaQueryList.addListener(function(mql) {
@@ -121,15 +167,14 @@ export class ShoppingCartComponent implements OnInit {
             }
         });
     }
-
     window.onbeforeprint = beforePrint;
     window.onafterprint = afterPrint;
-
 }());
     </script>
-
-    ` + innerContents + "</html>");
-
+    ` +
+        innerContents +
+        "</html>"
+    );
     var selfx = this;
     
     popupWinindow.document.close();
