@@ -23,13 +23,16 @@
     ></app-selected-list>
     <span style="display: block;"> Total: 
       <span *ngIf="totalPayed - totalReturn == total">{{total}}</span>
-      <button *ngIf="totalPayed - totalReturn != total" mat-raised-button>Pay({{ total - totalPayed }})<mat-icon>edit</mat-icon></button> 
+      <button *ngIf="totalPayed - totalReturn < total" mat-raised-button (click)="openPaymentDialog()">
+        Pay({{ total - totalPayed }})<mat-icon>edit</mat-icon>
+      </button>
+      <button *ngIf="totalPayed - totalReturn > total" mat-raised-button (click)="openPaymentDialog()">
+        Return({{ total - totalPayed }})<mat-icon>edit</mat-icon>
+      </button>
     </span>
     <span *ngIf="totalPayed - totalReturn != total" i18n>
       Payed: {{ totalPayed }}
     </span>
-    
-
     <span
       *ngIf="total > 0 && totalPayed - totalReturn == total"
       class="noPrint"

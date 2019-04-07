@@ -22,7 +22,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 
 import { PageNotFoundComponent } from './pages/vendei/page-not-found/page-not-found.component';
 import { MainScreenshotComponent } from './pages/vendei/main-screenshot/main-screenshot.component';
-import { ShoppingCartComponent } from './pages/vendei/shopping-cart/shopping-cart.component';
+import { ShoppingCartComponent, PaymentEditDialog } from './pages/vendei/shopping-cart/shopping-cart.component';
 import { MainComponent } from "./pages/main/main.component";
 
 //reg pages
@@ -155,6 +155,7 @@ const appRoutes: Routes = [
     MainScreenshotComponent,
     PageNotFoundComponent,
     ShoppingCartComponent,
+    PaymentEditDialog,
     CalTableComponent,
     SelectedListComponent,
     SelectedProductEditDialog,
@@ -208,6 +209,6 @@ const appRoutes: Routes = [
     RepSellsService
   ],
   bootstrap: [AppComponent],
-  entryComponents: [SelectedProductEditDialog, CustomersDialogComponent]
+  entryComponents: [PaymentEditDialog, SelectedProductEditDialog, CustomersDialogComponent]
 })
 export class AppModule {}

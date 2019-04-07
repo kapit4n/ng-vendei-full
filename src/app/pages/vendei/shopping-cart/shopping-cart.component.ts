@@ -1,4 +1,5 @@
-import { Component, OnInit, ElementRef, ViewChild } from "@angular/core";
+import { Component, OnInit, ElementRef, ViewChild, Inject } from "@angular/core";
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
 import { VOrdersService } from "../../../services/vendei/v-orders.service";
 import { VInventoryService } from "../../../services/vendei/v-inventory.service";
 import { Router } from "@angular/router";
@@ -9,6 +10,13 @@ enum PaymentType {
   DISCOUNT = 3
 }
 
+export interface PaymentDialogData {
+  total: number;
+  pay: number;
+}
+
+
+
 @Component({
   selector: "app-shopping-cart",
   templateUrl: "./shopping-cart.component.html",
@@ -17,15 +25,6 @@ enum PaymentType {
 export class ShoppingCartComponent implements OnInit {
   total: number;
   emptyCustomer = { id: 1, name: "Anonymous", ci: 1234567 };
-
-  constructor(
-    private ordersSvc: VOrdersService,
-    private inventorySvc: VInventoryService,
-    private router: Router
-  ) {
-    this.total = 0;
-    this.selectedCustomer = Object.assign({}, this.emptyCustomer);
-  }
 
   selectedProducts = [];
   selectedCustomer: any;
@@ -43,6 +42,35 @@ export class ShoppingCartComponent implements OnInit {
   totalReturn = 0;
   toReturn = 0;
   printOrderCount = 0;
+
+  constructor(
+    private ordersSvc: VOrdersService,
+    private inventorySvc: VInventoryService,
+    private router: Router,
+    public dialog: MatDialog
+  ) {
+    this.total = 0;
+    this.selectedCustomer = Object.assign({}, this.emptyCustomer);
+  }
+    
+  openPaymentDialog(): void {
+    const dialogRef = this.dialog.open(PaymentEditDialog, {
+      width: "250px",
+      height: "250px",
+      data: {
+        pay: this.totalPayed,
+        total: this.total
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log("set total with: " + result.total);
+        this.totalPayed = result.pay;
+        this.toReturn = this.totalPayed - this.total;  
+      }
+    });
+  }
 
   @ViewChild("toPrint") myDiv: ElementRef;
 
@@ -70,7 +98,7 @@ export class ShoppingCartComponent implements OnInit {
   }
 
   printOrder() {
-    let popupWinindow;
+    let popupWindow;
     var todayTime = new Date();
     var options = {
       year: "numeric",
@@ -122,14 +150,17 @@ export class ShoppingCartComponent implements OnInit {
       innerContents += "</tr>";
     }
     innerContents += "</table>";
+    innerContents += "<div> Total: " + this.total + " </div>";
+    innerContents += "<div> Payed: " + this.totalPayed + " </div>";
+    innerContents += "<div> Returned: " + this.toReturn + " </div>";
     innerContents += footerInfo;
-    popupWinindow = window.open(
+    popupWindow = window.open(
       "",
       "_blank",
       "width=600,height=400,scrollbars=no,menubar=no,toolbar=no,location=no,status=no,titlebar=no"
     );
-    popupWinindow.document.open();
-    popupWinindow.document.write(
+    popupWindow.document.open();
+    popupWindow.document.write(
       `<html><head><link rel="stylesheet" type="text/css" href="style.css" />
     </head><body onload="window.print()">
     <style>
@@ -187,7 +218,7 @@ export class ShoppingCartComponent implements OnInit {
 
     var selfx = this;
 
-    popupWinindow.document.close();
+    popupWindow.document.close();
   }
 
   submitOrder() {
@@ -334,3 +365,19 @@ export class ShoppingCartComponent implements OnInit {
     this.calTotals();
   }
 }
+
+@Component({
+  selector: "payment-edit-dialog",
+  templateUrl: "payment-edit-dialog.html"
+})
+export class PaymentEditDialog {
+  constructor(
+    public dialogRef: MatDialogRef<PaymentEditDialog>,
+    @Inject(MAT_DIALOG_DATA) public data: PaymentDialogData
+  ) {}
+
+  onNoClick(): void {
+    this.dialogRef.close();
+  }
+}
+
