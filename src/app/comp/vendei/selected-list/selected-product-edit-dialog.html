@@ -1,14 +1,21 @@
 <h1 mat-dialog-title>Update Quantity</h1>
 <div mat-dialog-content>
+  <mat-form-field>
+    <input matInput #input  placeholder="Precio" [(ngModel)]="data.price">
+  </mat-form-field>
+  
   <mat-form-field hintLabel="Max 10">
-    <input matInput #input max="10" placeholder="Enter quantity" [(ngModel)]="data.quantity">
+    <input matInput #input max="10" placeholder="Cantidad" [(ngModel)]="data.quantity">
     <mat-hint align="end">{{input.value || 0}}/10</mat-hint>
   </mat-form-field>
   
+<<<<<<< HEAD
   <mat-form-field>
     <input matInput #input max="10" placeholder="Enter Price" [(ngModel)]="data.price">
   </mat-form-field>
 
+=======
+>>>>>>> 7481ea5f13fe6f78a97a4eb13fd20ad736fe0791
 </div>
 <div mat-dialog-actions>
   <button mat-button (click)="onNoClick()">Cancel</button>

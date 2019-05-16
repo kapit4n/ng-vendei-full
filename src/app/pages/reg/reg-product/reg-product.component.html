@@ -15,56 +15,56 @@
         </select>
       </div>
       <div class="form-group">
-        <label for="name" i18n>Product Name</label>
+        <label for="name" i18n>Nombre</label>
         <input type="text" class="form-control" id="name" value="Data"
           required [(ngModel)]="productInfo.name" [ngModelOptions]="{standalone: true}">
       </div>
 
       <div class="form-group">
-        <label for="code" i18n>Code</label>
+        <label for="code" i18n>Codigo</label>
         <input type="text" class="form-control" id="code" value="Data"
           required [(ngModel)]="productInfo.code" [ngModelOptions]="{standalone: true}">
       </div>
       
       <div class="form-group">
-        <label for="price" i18n>Price</label>
+        <label for="price" i18n>Precio</label>
         <input type="text" class="form-control" id="price" value="Data"
           required [(ngModel)]="productInfo.price" [ngModelOptions]="{standalone: true}">
       </div>
       
       <div class="form-group">
-        <label for="cost" i18n>Cost</label>
+        <label for="cost" i18n>Costo</label>
         <input type="text" class="form-control" id="cost" value="Data"
           required [(ngModel)]="productInfo.cost" [ngModelOptions]="{standalone: true}">
       </div>
       
       
       <div class="form-group">
-        <label for="stock" i18n>Inventory</label>
+        <label for="stock" i18n>En Inventario</label>
         <input type="text" class="form-control" id="stock" value="Data"
           required [(ngModel)]="productInfo.stock" [ngModelOptions]="{standalone: true}">
       </div>
       
       
       <div class="form-group">
-        <label for="img" i18n>Img</label>
+        <label for="img" i18n>Imagen</label>
         <input type="text" class="form-control" id="img" value="Data"
           required [(ngModel)]="productInfo.img" [ngModelOptions]="{standalone: true}">
       </div>
       
       <div class="form-group">
-        <label for="description" i18n>Description</label>
+        <label for="description" i18n>Descripcion</label>
         <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"
         value="Data"
         required [(ngModel)]="productInfo.description" [ngModelOptions]="{standalone: true}"></textarea>
       </div>
       <div class="row">
         <div class="col-6">
-          <button type="submit" class="btn btn-danger" (click)="cancel()">Cancel</button>
+          <button type="submit" class="btn btn-danger" (click)="cancel()">Cancelar</button>
         </div>
         
         <div class="col-6">
-          <button type="submit" class="btn btn-primary" (click)="save()">Save</button>
+          <button type="submit" class="btn btn-primary" (click)="save()">Guardar</button>
         </div>
 
       </div>

@@ -1,21 +1,14 @@
 <mat-list>
-  <h3 mat-subheader>Products</h3>
-  <mat-list-item
-    *ngFor="let product of selectedProducts"
-    style="cursor: initial;"
-  >
-    <mat-icon mat-list-icon
-      ><img [src]="product.img" height="30px" width="30px" alt=""
-    /></mat-icon>
+  <h2 mat-subheader>Textiles O-STAR</h2>
+  <h4 mat-subheader>
+    Cel: 67567639
+  </h4>
+  <mat-list-item *ngFor="let product of selectedProducts" style="cursor: initial;">
+    <mat-icon mat-list-icon><img [src]="product.img" height="30px" width="30px" alt=""></mat-icon>
     <div style="display: inline-block;" mat-line>
-      <div style="display: inline-block; width: 80px;">{{ product.name }}</div>
-      <div
-        style="display: inline-block; padding-left: 10px; float: right;"
-        *ngIf="printOrderCount != 1"
-      >
-        <button mat-mini-fab (click)="removeProduct(product)">
-          <mat-icon>clear</mat-icon>
-        </button>
+      <div style="display: inline-block; width: 80px;">{{product.code}}</div>
+      <div style="display: inline-block; padding-left: 10px; float: right;">
+        <button mat-mini-fab (click)="removeProduct(product)"><mat-icon>clear</mat-icon></button>
       </div>
       <div
         style="display: inline-block; padding-left: 5px; float: right;"
@@ -29,6 +22,7 @@
         {{ product.quantity }} a {{ product.price }}, Subtotal:
         {{ product.price * product.quantity }}
       </div>
+      <div style="display: block; float: right;">c: {{product.quantity}} a {{product.price}} sub: {{product.price * product.quantity}}Bs</div>
     </div>
     <mat-divider></mat-divider>
   </mat-list-item>

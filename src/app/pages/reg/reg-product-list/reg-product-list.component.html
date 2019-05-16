@@ -3,9 +3,10 @@
   <button class="btn" (click)="openCart()"><i class="fa fa-shopping-cart fa-lg"></i></button>
   <table class="table">
     <tr>
-      <th>Product</th>
-      <th>Price</th>
-      <th>Cost</th>
+      <th>Nombre</th>
+      <th>Precio</th>
+      <th>Costo</th>
+      <th>En Inventario</th>
       <th *ngIf="false">Category</th>
       <th></th>
     </tr>
@@ -13,10 +14,11 @@
       <td>{{product.name}}</td>
       <td>{{product.price}}</td>
       <td>{{product.cost}}</td>
+      <td>{{product.stock}}</td>
       <td *ngIf="false">{{product.category?.name}}</td>
       <td>
-        <button class="btn" (click)="openProduct(product.id)">Edit</button> &nbsp;
-        <button class="btn btn-danger" (click)="removeProduct(product.id)">Delete</button>
+        <button class="btn" (click)="openProduct(product.id)">Editar</button> &nbsp;
+        <button class="btn btn-danger" (click)="removeProduct(product.id)">Eliminar</button>
       </td>
     </tr>
   </table>

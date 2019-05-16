@@ -30,19 +30,22 @@
         Return({{ total - totalPayed }})<mat-icon>edit</mat-icon>
       </button>
     </span>
-    <span *ngIf="totalPayed - totalReturn != total" i18n>
-      Payed: {{ totalPayed }}
+
+    <span *ngIf="(totalPayed - totalReturn) != total" i18n>
+      Pagado: {{totalPayed}}
     </span>
-    <span
-      *ngIf="total > 0 && totalPayed - totalReturn == total"
-      class="noPrint"
-      i18n
-    >
-      (PAID OUT)
+    
+    <span *ngIf="total > 0 && (totalPayed - totalReturn) == total" class="noPrint" i18n>
+      (Completado)
     </span>
 
-    <span *ngIf="toReturn > 0"> to return: {{ toReturn }} </span>
-    <span *ngIf="totalDiscount > 0"> Discount: {{ totalDiscount }} </span>
+    <span *ngIf="toReturn > 0">
+      devolver: {{toReturn}}
+    </span>
+    <span *ngIf="totalDiscount > 0">
+      Descuento: {{totalDiscount}}
+    </span>
+
   </div>
   <app-cal-table
     class="cal-table"

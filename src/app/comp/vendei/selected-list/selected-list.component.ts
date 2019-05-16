@@ -40,12 +40,11 @@ export class SelectedListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        let product = this.selectedProducts.filter(
-          p => p.id == result.id
-        )[0];
-
-        product.quantity = Number(result.quantity);
-        product.price = Number(result.price);
+        let p = this.selectedProducts.filter(
+            p => p.id == result.id
+          )[0];
+        p.quantity = Number(result.quantity);
+        p.price = Number(result.price);
         this.recalTotal();
       }
     });
