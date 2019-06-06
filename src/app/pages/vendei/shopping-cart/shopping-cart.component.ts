@@ -72,7 +72,7 @@ export class ShoppingCartComponent implements OnInit {
     });
   }
 
-  @ViewChild("toPrint") myDiv: ElementRef;
+  @ViewChild("toPrint", {static: false}) myDiv: ElementRef;
 
   ngOnInit() {}
 
