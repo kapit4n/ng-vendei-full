@@ -18,39 +18,23 @@
     </div>
   </div>
   <mat-form-field class="search-form">
-    <input
-      matInput
-      type="text"
-      placeholder="Search by Name"
-      (keyup)="filterByName($event)"
-    />
+    <input matInput type="text" placeholder="Search by Name" (keyup)="filterByName($event)" />
   </mat-form-field>
 
   <mat-form-field class="search-form">
-    <input
-      matInput
-      type="text"
-      placeholder="Code"
-      (keyup.enter)="addByCode($event)"
-      [(ngModel)]="productCode"
-      [ngModelOptions]="{ standalone: true }"
-    />
+    <input matInput type="text" placeholder="Code" (keyup.enter)="addByCode($event)" [(ngModel)]="productCode"
+      [ngModelOptions]="{ standalone: true }" />
   </mat-form-field>
 </div>
 <div class="items-container">
-  <div
-    class="product-list-item-t"
-    *ngFor="let product of products"
-    [style.background]="'url(' + product.img + ')'"
-    [style.background-size]="'cover'"
-    (click)="addProduct(product)"
-  >
+  <div class="product-list-item-t" *ngFor="let product of products" [style.background]="'url(' + product.img + ')'"
+    [style.background-size]="'cover'" (click)="addProduct(product)">
     <span style="position:relative; top: 3px; float: right; background: white;">
       Bs {{ product.price }}
     </span>
-    <span
-      style="position:relative; top: 70px;  display: inline-block; float: left; background: white;"
-    >
+    <span style="position:relative; top: 70px;  display: inline-block; background: white;     width: 120px;
+      white-space: nowrap;  overflow: hidden;
+  text-overflow: ellipsis;">
       {{ product.name }}
     </span>
   </div>
