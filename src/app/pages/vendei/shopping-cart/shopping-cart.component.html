@@ -10,7 +10,7 @@
 </div>
 <div class="shopping-cart-container">
   <button mat-raised-button (click)="submitOrder()" *ngIf="total > 0 && totalPayed >= total && printOrderCount == 0">
-    <mat-icon>print</mat-icon>
+    <mat-icon>save</mat-icon>
   </button>
   <button mat-raised-button (click)="submitOrder()" *ngIf="total > 0 && totalPayed >= total && printOrderCount == 1">
     <mat-icon>print 2</mat-icon>

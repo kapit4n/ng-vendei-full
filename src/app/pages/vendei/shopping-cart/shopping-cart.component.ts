@@ -27,6 +27,7 @@ export class ShoppingCartComponent implements OnInit {
   // config
   displayCal = false;
   printTwice = false;
+  printIt = false;
 
   total: number;
   emptyCustomer = { id: 1, name: "Anonymous", ci: 1234567 };
@@ -228,19 +229,23 @@ export class ShoppingCartComponent implements OnInit {
 
   submitOrder() {
 
-    if (!this.printTwice) {
-      this.printOrder();
-      this.clearItems();
-      return;
-    }
+    if (this.printIt) {
+      if (!this.printTwice) {
+        this.printOrder();
+        return;
+      }
 
-    if (this.printOrderCount) {
-      this.printOrder();
-      this.clearItems();
-      return;
+      if (this.printOrderCount) {
+        this.printOrder();
+        this.clearItems();
+        return;
+      }
+
     }
     this.printOrderCount = 1;
-    this.printOrder();
+    if (this.printIt) {
+      this.printOrder();
+    }
 
     let order = {} as any;
     order.customerId = this.selectedCustomer.id;
@@ -290,6 +295,7 @@ export class ShoppingCartComponent implements OnInit {
         });
       });
     }, 800);
+    this.clearItems();
   }
 
   clearItems() {
