@@ -1,26 +1,15 @@
 <mat-list>
   <h3 mat-subheader>Products</h3>
-  <mat-list-item
-    *ngFor="let product of selectedProducts"
-    style="cursor: initial;"
-  >
-    <mat-icon mat-list-icon
-      ><img [src]="product.img" height="30px" width="30px" alt=""
-    /></mat-icon>
+  <mat-list-item *ngFor="let product of selectedProducts" style="cursor: initial;">
+    <mat-icon mat-list-icon><img [src]="product.img" height="30px" width="30px" alt="" /></mat-icon>
     <div style="display: inline-block;" mat-line>
       <div style="display: inline-block; width: 80px;">{{ product.name }}</div>
-      <div
-        style="display: inline-block; padding-left: 10px; float: right;"
-        *ngIf="printOrderCount != 1"
-      >
+      <div style="display: inline-block; padding-left: 10px; float: right;" *ngIf="printOrderCount != 1">
         <button mat-mini-fab (click)="removeProduct(product)">
           <mat-icon>clear</mat-icon>
         </button>
       </div>
-      <div
-        style="display: inline-block; padding-left: 5px; float: right;"
-        *ngIf="printOrderCount != 1"
-      >
+      <div style="display: inline-block; padding-left: 5px; float: right;" *ngIf="printOrderCount != 1">
         <button mat-mini-fab (click)="openDialog(product)">
           <mat-icon>edit</mat-icon>
         </button>

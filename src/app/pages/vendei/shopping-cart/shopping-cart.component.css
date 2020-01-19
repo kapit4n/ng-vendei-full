@@ -1,24 +1,39 @@
-
 /* 
   ##Device = Desktops
   ##Screen = 1281px to higher resolution desktops
 */
 
-@media (min-width: 1281px) {
-  
-  .shopping-cart-container {
-      width: 36%; height: 500px; display: inline-block;
-  }
-  .selected-list {
-      overflow-y:scroll; position:relative; height: 500px; background-color: rgb(174, 175, 193);
-  }
-  .cal-table {
-      width: 100%; height: 300px; background: rgb(174, 175, 193);
-  }
-  .product-list {
-      width: 64%; height: 100%;  display: inline-block; position: absolute; top: 1px; background-color: rgb(174, 175, 193);
-  }
+.open-dialog-button {
+    font-size: 30px;
 }
+
+@media (min-width: 1281px) {
+    .shopping-cart-container {
+        width: 36%;
+        height: 100%;
+        display: inline-block;
+    }
+    .selected-list {
+        overflow-y: scroll;
+        position: relative;
+        height: 100%;
+        background-color: rgb(174, 175, 193);
+    }
+    .cal-table {
+        width: 100%;
+        height: 300px;
+        background: rgb(174, 175, 193);
+    }
+    .product-list {
+        width: 64%;
+        height: 100%;
+        display: inline-block;
+        position: absolute;
+        top: 1px;
+        background-color: rgb(174, 175, 193);
+    }
+}
+
 
 /* 
   ##Device = Laptops, Desktops
@@ -26,20 +41,32 @@
 */
 
 @media (min-width: 1025px) and (max-width: 1280px) {
-  
-  .shopping-cart-container {
-      width: 36%; height: 500px; display: inline-block;
-  }
-  .selected-list {
-      overflow-y:scroll; position:relative; height: 500px; background-color: rgb(100, 111, 130);
-  }
-  .cal-table {
-      width: 100%; height: 300px; background: rgb(100, 111, 130);
-  }
-  .product-list {
-      width: 64%; height: 100%;  display: inline-block; position: absolute; top: 1px; background-color: rgb(100, 111, 130);
-  }
+    .shopping-cart-container {
+        width: 36%;
+        height: 100%;
+        display: inline-block;
+    }
+    .selected-list {
+        overflow-y: scroll;
+        position: relative;
+        height: 100%;
+        background-color: rgb(100, 111, 130);
+    }
+    .cal-table {
+        width: 100%;
+        height: 300px;
+        background: rgb(100, 111, 130);
+    }
+    .product-list {
+        width: 64%;
+        height: 100%;
+        display: inline-block;
+        position: absolute;
+        top: 1px;
+        background-color: rgb(100, 111, 130);
+    }
 }
+
 
 /* 
   ##Device = Tablets, Ipads (portrait)
@@ -47,20 +74,32 @@
 */
 
 @media (min-width: 768px) and (max-width: 1024px) {
-  .shopping-cart-container {
-      width: 36%; height: 500px; display: inline-block;
-  }
-  .selected-list {
-      overflow-y:scroll; position:relative; height: 500px; background-color: rgb(92, 114, 90);
-  }
-  .cal-table {
-      width: 100%; height: 300px; background: rgb(92, 114, 90);
-  }
-  .product-list {
-      width: 64%; height: 100%;  display: inline-block; position: absolute; top: 1px; background-color: rgb(92, 114, 90);
-  }
-  
+    .shopping-cart-container {
+        width: 36%;
+        height: 100%;
+        display: inline-block;
+    }
+    .selected-list {
+        overflow-y: scroll;
+        position: relative;
+        height: 100%;
+        background-color: rgb(92, 114, 90);
+    }
+    .cal-table {
+        width: 100%;
+        height: 300px;
+        background: rgb(92, 114, 90);
+    }
+    .product-list {
+        width: 64%;
+        height: 100%;
+        display: inline-block;
+        position: absolute;
+        top: 1px;
+        background-color: rgb(92, 114, 90);
+    }
 }
+
 
 /* 
   ##Device = Tablets, Ipads (landscape)
@@ -68,21 +107,32 @@
 */
 
 @media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
-  
-  .shopping-cart-container {
-      width: 36%; height: 500px; display: inline-block;
-  }
-  .selected-list {
-      overflow-y:scroll; position:relative; height: 500px; background-color: rgb(186, 183, 120);
-  }
-  .cal-table {
-      width: 100%; height: 300px; background: rgb(186, 183, 120);
-  }
-  .product-list {
-      width: 64%; height: 100%;  display: inline-block; position: absolute; top: 1px; background-color: rgb(186, 183, 120);
-  }
-  
+    .shopping-cart-container {
+        width: 36%;
+        height: 100%;
+        display: inline-block;
+    }
+    .selected-list {
+        overflow-y: scroll;
+        position: relative;
+        height: 100%;
+        background-color: rgb(186, 183, 120);
+    }
+    .cal-table {
+        width: 100%;
+        height: 300px;
+        background: rgb(186, 183, 120);
+    }
+    .product-list {
+        width: 64%;
+        height: 100%;
+        display: inline-block;
+        position: absolute;
+        top: 1px;
+        background-color: rgb(186, 183, 120);
+    }
 }
+
 
 /* 
   ##Device = Low Resolution Tablets, Mobiles (Landscape)
@@ -90,20 +140,30 @@
 */
 
 @media (min-width: 481px) and (max-width: 767px) {
-   .shopping-cart-container {
-      width: 100%; height: 500px; display: inline-block;
-  }
-  .selected-list {
-      overflow-y:scroll; position:relative; height: 200px; background-color: rgb(142, 95, 87);
-  }
-  .cal-table {
-      width: 100%; height: 300px; background: rgb(142, 95, 87);
-  }
-  .product-list {
-      width: 100%; height: 100%;  display: inline-block;background-color: rgb(142, 95, 87);
-  }
- 
+    .shopping-cart-container {
+        width: 100%;
+        height: 500px;
+        display: inline-block;
+    }
+    .selected-list {
+        overflow-y: scroll;
+        position: relative;
+        height: 200px;
+        background-color: rgb(142, 95, 87);
+    }
+    .cal-table {
+        width: 100%;
+        height: 300px;
+        background: rgb(142, 95, 87);
+    }
+    .product-list {
+        width: 100%;
+        height: 100%;
+        display: inline-block;
+        background-color: rgb(142, 95, 87);
+    }
 }
+
 
 /* 
   ##Device = Most of the Smartphones Mobiles (Portrait)
@@ -111,20 +171,31 @@
 */
 
 @media (min-width: 320px) and (max-width: 480px) {
-   .shopping-cart-container {
-      width: 100%; height: 500px; display: inline-block;
-  }
-  .selected-list {
-      overflow-y:scroll; position:relative; height: 200px; background-color: rgb(168, 156, 154);
-  }
-  .cal-table {
-      width: 100%; height: 300px; background: rgb(168, 156, 154);
-  }
-  .product-list {
-      width: 100%; height: 100%;  display: inline-block;background-color: rgb(168, 156, 154);
-  }
-  
+    .shopping-cart-container {
+        width: 100%;
+        height: 500px;
+        display: none;
+    }
+    .selected-list {
+        overflow-y: scroll;
+        position: relative;
+        height: 200px;
+        background-color: rgb(168, 156, 154);
+    }
+    .cal-table {
+        width: 100%;
+        height: 300px;
+        background: rgb(168, 156, 154);
+        display: none;
+    }
+    .product-list {
+        width: 100%;
+        height: 100%;
+        display: inline-block;
+        background-color: rgb(168, 156, 154);
+    }
 }
+
 @media print {
     img {
         display: none !important;

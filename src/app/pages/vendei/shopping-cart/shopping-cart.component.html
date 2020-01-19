@@ -1,69 +1,50 @@
-<div class="shopping-cart-container">
-  <button
-    mat-raised-button
-    (click)="submitOrder()"
-    *ngIf="total > 0 && totalPayed >= total && printOrderCount == 0"
-  >
-    <mat-icon>save</mat-icon>
+<div class="shopping-cart-container-mob" style="height: 50px;">
+  <button class="open-dialog-button" *ngIf="totalPayed - totalReturn < total" mat-raised-button
+    (click)="openPaymentDialog()">
+    Pay ({{ total - totalPayed }})<mat-icon>edit</mat-icon>
   </button>
-  <button
-    mat-raised-button
-    (click)="submitOrder()"
-    *ngIf="total > 0 && totalPayed >= total && printOrderCount == 1"
-  >
+  <button class="open-dialog-button" *ngIf="totalPayed - totalReturn > total" mat-raised-button
+    (click)="openPaymentDialog()">
+    Return ({{ totalPayed - total }})<mat-icon>edit</mat-icon>
+  </button>
+</div>
+<div class="shopping-cart-container">
+  <button mat-raised-button (click)="submitOrder()" *ngIf="total > 0 && totalPayed >= total && printOrderCount == 0">
     <mat-icon>print</mat-icon>
+  </button>
+  <button mat-raised-button (click)="submitOrder()" *ngIf="total > 0 && totalPayed >= total && printOrderCount == 1">
+    <mat-icon>print 2</mat-icon>
   </button>
 
   <div class="selected-list" #toPrint id="toPrint">
-    <app-selected-list
-      [selectedProducts]="selectedProducts"
-      [removeProduct]="removeProduct.bind(this)"
-      [recalTotal]="recalTotal.bind(this)"
-      [(printOrderCount)]="printOrderCount"
-    ></app-selected-list>
-    <span style="display: block;"> Total: 
+    <app-selected-list [selectedProducts]="selectedProducts" [removeProduct]="removeProduct.bind(this)"
+      [recalTotal]="recalTotal.bind(this)" [(printOrderCount)]="printOrderCount"></app-selected-list>
+    <span style="display: block;" *ngIf="total">
       <span *ngIf="totalPayed - totalReturn == total">{{total}}</span>
       <button *ngIf="totalPayed - totalReturn < total" mat-raised-button (click)="openPaymentDialog()">
         Pay({{ total - totalPayed }})<mat-icon>edit</mat-icon>
       </button>
       <button *ngIf="totalPayed - totalReturn > total" mat-raised-button (click)="openPaymentDialog()">
-        Return({{ total - totalPayed }})<mat-icon>edit</mat-icon>
+        Return({{ totalPayed - total }})<mat-icon>edit</mat-icon>
       </button>
     </span>
     <span *ngIf="totalPayed - totalReturn != total" i18n>
       Payed: {{ totalPayed }}
     </span>
-    <span
-      *ngIf="total > 0 && totalPayed - totalReturn == total"
-      class="noPrint"
-      i18n
-    >
+    <span *ngIf="total > 0 && totalPayed - totalReturn == total" class="noPrint" i18n>
       (PAID OUT)
     </span>
 
     <span *ngIf="toReturn > 0"> to return: {{ toReturn }} </span>
     <span *ngIf="totalDiscount > 0"> Discount: {{ totalDiscount }} </span>
   </div>
-  <app-cal-table
-    class="cal-table"
-    [selectCustomer]="selectCustomer.bind(this)"
-    [selectedCustomer]="selectedCustomer"
-    [(payedItems)]="payedItems"
-    [(discountItems)]="discountItems"
-    [(returnItems)]="returnItems"
-    [(totalPayed)]="totalPayed"
-    [(totalDiscount)]="totalDiscount"
-    [(totalReturn)]="totalReturn"
-    [calTotals]="calTotals.bind(this)"
-    [payIt]="payIt.bind(this)"
-    [removeItem]="removeItem.bind(this)"
-    [(printOrderCount)]="printOrderCount"
-  ></app-cal-table>
+  <app-cal-table *ngIf="displayCal" class="cal-table" [selectCustomer]="selectCustomer.bind(this)"
+    [selectedCustomer]="selectedCustomer" [(payedItems)]="payedItems" [(discountItems)]="discountItems"
+    [(returnItems)]="returnItems" [(totalPayed)]="totalPayed" [(totalDiscount)]="totalDiscount"
+    [(totalReturn)]="totalReturn" [calTotals]="calTotals.bind(this)" [payIt]="payIt.bind(this)"
+    [removeItem]="removeItem.bind(this)" [(printOrderCount)]="printOrderCount"></app-cal-table>
 </div>
 <div class="product-list">
-  <app-product-list
-    [selectedProducts]="selectedProducts"
-    [recalTotal]="recalTotal.bind(this)"
-    [(printOrderCount)]="printOrderCount"
-  ></app-product-list>
+  <app-product-list [selectedProducts]="selectedProducts" [recalTotal]="recalTotal.bind(this)"
+    [(printOrderCount)]="printOrderCount"></app-product-list>
 </div>

@@ -23,6 +23,11 @@ export interface PaymentDialogData {
   styleUrls: ["./shopping-cart.component.css"]
 })
 export class ShoppingCartComponent implements OnInit {
+
+  // config
+  displayCal = false;
+  printTwice = false;
+
   total: number;
   emptyCustomer = { id: 1, name: "Anonymous", ci: 1234567 };
 
@@ -52,7 +57,7 @@ export class ShoppingCartComponent implements OnInit {
     this.total = 0;
     this.selectedCustomer = Object.assign({}, this.emptyCustomer);
   }
-    
+
   openPaymentDialog(): void {
     const dialogRef = this.dialog.open(PaymentEditDialog, {
       width: "250px",
@@ -67,14 +72,14 @@ export class ShoppingCartComponent implements OnInit {
       if (result) {
         console.log("set total with: " + result.total);
         this.totalPayed = result.pay;
-        this.toReturn = this.totalPayed - this.total;  
+        this.toReturn = this.totalPayed - this.total;
       }
     });
   }
 
-  @ViewChild("toPrint", {static: false}) myDiv: ElementRef;
+  @ViewChild("toPrint", { static: false }) myDiv: ElementRef;
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   public removeProduct(product: any) {
     if (this.printOrderCount) {
@@ -212,8 +217,8 @@ export class ShoppingCartComponent implements OnInit {
     </script>
 
     ` +
-        innerContents +
-        "</html>"
+      innerContents +
+      "</html>"
     );
 
     var selfx = this;
@@ -222,6 +227,13 @@ export class ShoppingCartComponent implements OnInit {
   }
 
   submitOrder() {
+
+    if (!this.printTwice) {
+      this.printOrder();
+      this.clearItems();
+      return;
+    }
+
     if (this.printOrderCount) {
       this.printOrder();
       this.clearItems();
@@ -323,7 +335,7 @@ export class ShoppingCartComponent implements OnInit {
 
   removeItem(payItem: any) {
     if (this.printOrderCount) return;
-    
+
     switch (payItem.payType) {
       case PaymentType.PAYMONEY:
         this.payedItems = this.payedItems.filter(p => p.id != payItem.id);
@@ -374,7 +386,7 @@ export class PaymentEditDialog {
   constructor(
     public dialogRef: MatDialogRef<PaymentEditDialog>,
     @Inject(MAT_DIALOG_DATA) public data: PaymentDialogData
-  ) {}
+  ) { }
 
   onNoClick(): void {
     this.dialogRef.close();

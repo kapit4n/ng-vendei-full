@@ -66,7 +66,6 @@ import { RepConfigService } from "./services/rep/rep-config.service";
 import { RepProductsService } from "./services/rep/rep-products.service";
 import { RepSellsService } from "./services/rep/rep-sells.service";
 
-
 const appRoutes: Routes = [
   { path: "mock", component: MainScreenshotComponent },
   {
