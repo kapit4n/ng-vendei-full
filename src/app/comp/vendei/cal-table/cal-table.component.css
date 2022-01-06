@@ -1,9 +1,10 @@
 .payment-item {
-  display: inline-block;
-  padding: 3px;
+    display: inline-block;
+    padding: 3px;
 }
+
 .payment-action {
-  display: inline-block;
-  padding: 3px;
-  background-color: blue;
+    display: inline-block;
+    padding: 3px;
+    background-color: blue;
 }

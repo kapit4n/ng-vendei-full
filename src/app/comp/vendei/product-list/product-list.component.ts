@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from "@angular/core";
 import { VProductsService } from "../../../services/vendei/v-products.service";
 import { VCategoriesService } from "../../../services/vendei/v-categories.service";
+import { VConfigService } from "../../../services/vendei/v-config.service";
 import { Router } from "@angular/router";
 
 @Component({
@@ -28,6 +29,7 @@ export class ProductListComponent implements OnInit {
   constructor(
     private productsSvc: VProductsService,
     private categoriesSvc: VCategoriesService,
+    public configSvc: VConfigService,
     private router: Router
   ) {}
 
@@ -85,7 +87,7 @@ export class ProductListComponent implements OnInit {
 
     if (searchCode) {
       let cProduct = this.originalP.find(
-        p => p.code.toLowerCase() == searchCode
+        p => p.code.toLowerCase() == searchCode.toLowerCase()
       );
       if (cProduct) {
         this.addProduct(cProduct);

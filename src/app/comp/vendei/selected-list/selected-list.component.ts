@@ -50,7 +50,6 @@ export class SelectedListComponent implements OnInit {
       }
     });
   }
-
   ngOnInit() {}
 }
 
@@ -68,3 +67,4 @@ export class SelectedProductEditDialog {
     this.dialogRef.close();
   }
 }
+

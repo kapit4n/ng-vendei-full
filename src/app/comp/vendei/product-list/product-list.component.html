@@ -1,13 +1,13 @@
-<div class="category-container">
+<div style="display: flex; justify-content: space-between;">
   <mat-icon *ngIf="false">
-    <button mat-raised-button (click)="openReports()">
+    <button mat-raised-button (click)="openReports()" style="margin: 0 1rem;">
       <mat-icon>info</mat-icon>
     </button>
     <button mat-raised-button (click)="openRegister()">
       <mat-icon>build</mat-icon>
     </button>
   </mat-icon>
-  <button mat-raised-button (click)="openMain()">
+  <button mat-raised-button (click)="openMain()" style="height: 100%; margin: 1rem 0;">
     <mat-icon>home</mat-icon>
   </button>
   <div *ngIf="displayCat">
@@ -17,22 +17,22 @@
       </button>
     </div>
   </div>
-  <mat-form-field class="search-form">
+  <mat-form-field class="search-form" style="margin: 0 1rem;">
     <input matInput type="text" placeholder="Search by Name" (keyup)="filterByName($event)" />
   </mat-form-field>
 
-  <mat-form-field class="search-form">
+  <mat-form-field class="search-form" style="margin: 0 1rem;">
     <input matInput type="text" placeholder="Code" (keyup.enter)="addByCode($event)" [(ngModel)]="productCode"
       [ngModelOptions]="{ standalone: true }" />
   </mat-form-field>
 </div>
-<div class="items-container">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 0.6fr)); grid-gap: 1rem;">
   <div class="product-list-item-t" *ngFor="let product of products" [style.background]="'url(' + product.img + ')'"
     [style.background-size]="'cover'" (click)="addProduct(product)">
     <span style="position:relative; top: 3px; float: right; background: white;">
       Bs {{ product.price }}
     </span>
-    <span style="position:relative; top: 70px;  display: inline-block; background: white;     width: 120px;
+    <span style="position:relative; top: 70px;  display: inline-block; background: white; width: 120px;
       white-space: nowrap;  overflow: hidden;
   text-overflow: ellipsis;">
       {{ product.name }}
