@@ -45,6 +45,7 @@ import { RepOrdersComponent } from "./pages/rep/rep-orders/rep-orders.component"
 
 
 import { ProductListComponent } from './comp/vendei/product-list/product-list.component';
+import { CategoryListComponent } from "./comp/vendei/category-list/category-list.component";
 import { CalTableComponent } from './comp/vendei/cal-table/cal-table.component';
 import { SelectedListComponent, SelectedProductEditDialog } from './comp/vendei/selected-list/selected-list.component';
 import { CustomerListComponent } from './comp/vendei/customer-list/customer-list.component';
@@ -151,6 +152,7 @@ const appRoutes: Routes = [
     AppComponent,
     LoginComponent,
     ProductListComponent,
+    CategoryListComponent,
     MainScreenshotComponent,
     PageNotFoundComponent,
     ShoppingCartComponent,

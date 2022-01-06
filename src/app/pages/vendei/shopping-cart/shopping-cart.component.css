@@ -7,6 +7,10 @@
     font-size: 30px;
 }
 
+.shopping-cart-container-mob {
+    
+}
+
 @media (min-width: 1281px) {
     .shopping-cart-container {
         width: 36%;
@@ -133,8 +137,7 @@
     }
 }
 
-
-/* 
+/*
   ##Device = Low Resolution Tablets, Mobiles (Landscape)
   ##Screen = B/w 481px to 767px
 */

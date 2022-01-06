@@ -1,4 +1,4 @@
-<div class="shopping-cart-container-mob" style="height: 50px;">
+<div class="shopping-cart-container-mob" *ngIf="total > 0" style="height: 50px;">
   <button class="open-dialog-button" *ngIf="totalPayed - totalReturn < total" mat-raised-button
     (click)="openPaymentDialog()">
     Pay ({{ total - totalPayed }})<mat-icon>edit</mat-icon>
@@ -25,7 +25,7 @@
         Pay({{ total - totalPayed }})<mat-icon>edit</mat-icon>
       </button>
       <button *ngIf="totalPayed - totalReturn > total" mat-raised-button (click)="openPaymentDialog()">
-        Return({{ totalPayed - total }})<mat-icon>edit</mat-icon>
+        Return ({{ totalPayed - total }})<mat-icon>edit</mat-icon>
       </button>
     </span>
     <span *ngIf="totalPayed - totalReturn != total" i18n>
@@ -45,6 +45,18 @@
     [removeItem]="removeItem.bind(this)" [(printOrderCount)]="printOrderCount"></app-cal-table>
 </div>
 <div class="product-list">
-  <app-product-list [selectedProducts]="selectedProducts" [recalTotal]="recalTotal.bind(this)"
-    [(printOrderCount)]="printOrderCount"></app-product-list>
+  <div style="height: 80%; width: 100%; overflow: scroll;">
+    <app-product-list [selectedProducts]="selectedProducts" [recalTotal]="recalTotal.bind(this)"
+      [(printOrderCount)]="printOrderCount"></app-product-list>
+  </div>
+  <div style="overflow-x: auto; 
+        height: 18rem; width: 100%; 
+        background-color: #86aceb; 
+        display: flex;">
+    <app-category-list style="  width: 100%;
+    flex-shrink: 0; overflow-x: scroll; display: flex;
+    height: 100%;"></app-category-list>
+  </div>
+</div>
+<div>
 </div>
