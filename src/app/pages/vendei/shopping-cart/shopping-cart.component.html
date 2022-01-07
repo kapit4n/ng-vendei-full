@@ -1,13 +1,3 @@
-<div class="shopping-cart-container-mob" *ngIf="total > 0" style="height: 50px;">
-  <button class="open-dialog-button" *ngIf="totalPayed - totalReturn < total" mat-raised-button
-    (click)="openPaymentDialog()">
-    Pay ({{ total - totalPayed }})<mat-icon>edit</mat-icon>
-  </button>
-  <button class="open-dialog-button" *ngIf="totalPayed - totalReturn > total" mat-raised-button
-    (click)="openPaymentDialog()">
-    Return ({{ totalPayed - total }})<mat-icon>edit</mat-icon>
-  </button>
-</div>
 <div class="shopping-cart-container">
   <button mat-raised-button (click)="submitOrder()" *ngIf="total > 0 && totalPayed >= total && printOrderCount == 0">
     <mat-icon>save</mat-icon>
@@ -44,11 +34,10 @@
     [(totalReturn)]="totalReturn" [calTotals]="calTotals.bind(this)" [payIt]="payIt.bind(this)"
     [removeItem]="removeItem.bind(this)" [(printOrderCount)]="printOrderCount"></app-cal-table>
 </div>
+
 <div class="product-list">
   <app-product-list [selectedProducts]="selectedProducts" [recalTotal]="recalTotal.bind(this)"
     [(printOrderCount)]="printOrderCount"></app-product-list>
 
   <app-category-list class="product-list-categories"></app-category-list>
-</div>
-<div>
 </div>

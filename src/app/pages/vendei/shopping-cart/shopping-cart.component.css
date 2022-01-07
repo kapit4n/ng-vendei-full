@@ -7,10 +7,6 @@
     font-size: 30px;
 }
 
-.shopping-cart-container-mob {
-    
-}
-
 .product-list-products {
     height: 90%;
 }
@@ -56,7 +52,6 @@
     .shopping-cart-container {
         width: 36%;
         height: 100%;
-        display: inline-block;
     }
     .selected-list {
         overflow-y: scroll;
@@ -72,7 +67,6 @@
     .product-list {
         width: 64%;
         height: 100%;
-        display: inline-block;
         position: absolute;
         top: 1px;
         background-color: rgb(100, 111, 130);
@@ -89,7 +83,6 @@
     .shopping-cart-container {
         width: 36%;
         height: 100%;
-        display: inline-block;
     }
     .selected-list {
         overflow-y: scroll;
@@ -105,7 +98,6 @@
     .product-list {
         width: 64%;
         height: 100%;
-        display: inline-block;
         position: absolute;
         top: 1px;
         background-color: rgb(92, 114, 90);
