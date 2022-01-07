@@ -4,7 +4,7 @@
     style="cursor: initial;"
   >
     <mat-icon mat-list-icon
-      ><img [src]="product.img" height="30px" width="30px" alt=""
+      ><img [src]="product.Product.img" height="30px" width="30px" alt=""
     /></mat-icon>
     <div style="display: inline-block;" mat-line>
       <div style="display: inline-block;  display: inline-block; width: 100px; overflow: hidden; overflow-wrap: break-word;
@@ -26,8 +26,8 @@
         </button>
       </div>
       <div style="display: block;">
-        {{ product.quantity }} a {{ product.price }}, Subtotal:
-        {{ product.price * product.quantity }}
+        {{ product.quantity }} a {{ product.currentPrice }}, Subtotal:
+        {{ product.currentPrice * product.quantity }}
       </div>
     </div>
     <mat-divider></mat-divider>

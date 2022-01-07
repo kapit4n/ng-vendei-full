@@ -25,9 +25,9 @@ export interface PaymentDialogData {
 export class ShoppingCartComponent implements OnInit {
 
   // config
-  displayCal = false;
+  displayCal = true;
   printTwice = false;
-  printIt = false;
+  printIt = true;
 
   total: number;
   emptyCustomer = { id: 1, name: "Anonymous", ci: 1234567 };
@@ -98,7 +98,7 @@ export class ShoppingCartComponent implements OnInit {
     }
     this.total = 0;
     this.selectedProducts.forEach(val => {
-      this.total += val.price * val.quantity;
+      this.total += /* val.price */ 100 * val.quantity;
     });
     this.calTotals();
   }

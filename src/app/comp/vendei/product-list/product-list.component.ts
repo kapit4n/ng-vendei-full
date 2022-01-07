@@ -52,7 +52,7 @@ export class ProductListComponent implements OnInit {
     if (this.selectedProducts.some(p => p.id == product.id)) {
       this.selectedProducts.filter(p => p.id == product.id)[0].quantity += 1;
     } else {
-      const selectedP = Object.assign({ quantity: 1 }, product);
+      const selectedP = Object.assign({...product}, { quantity: 1 });
       this.selectedProducts.push(selectedP);
     }
     this.recalTotal();

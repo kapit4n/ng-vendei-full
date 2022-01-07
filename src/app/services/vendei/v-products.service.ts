@@ -17,7 +17,7 @@ export class VProductsService {
 
   /** json URL */
   private jsonFileURL: string = "../../assets/vendei/products.json";
-  private productsURL: string = "http://localhost:3000/products";
+  private productsURL: string = "http://localhost:3000/productPresentations";
 
   /** Product List service constructor */
   constructor(private http: HttpClient, private configSvc: VConfigService) {}
