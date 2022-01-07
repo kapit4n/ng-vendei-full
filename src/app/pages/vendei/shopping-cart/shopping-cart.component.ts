@@ -98,7 +98,7 @@ export class ShoppingCartComponent implements OnInit {
     }
     this.total = 0;
     this.selectedProducts.forEach(val => {
-      this.total += /* val.price */ 100 * val.quantity;
+      this.total += val.currentPrice * val.quantity;
     });
     this.calTotals();
   }
@@ -149,9 +149,9 @@ export class ShoppingCartComponent implements OnInit {
     for (let i = 0; i < this.selectedProducts.length; i++) {
       innerContents += "<tr>";
       innerContents += `<td>${this.selectedProducts[i].quantity}</td>`;
-      innerContents += `<td>${this.selectedProducts[i].name}</td>`;
-      innerContents += `<td>${this.selectedProducts[i].price}</td>`;
-      innerContents += `<td>${this.selectedProducts[i].price *
+      innerContents += `<td>${this.selectedProducts[i].Product.name}</td>`;
+      innerContents += `<td>${this.selectedProducts[i].currentPrice}</td>`;
+      innerContents += `<td>${this.selectedProducts[i].currentPrice *
         this.selectedProducts[i].quantity}</td>`;
       innerContents += "</tr>";
     }
@@ -260,9 +260,9 @@ export class ShoppingCartComponent implements OnInit {
     this.selectedProducts.forEach(p => {
       let detail = {} as any;
       detail.quantity = p.quantity;
-      detail.price = p.price;
+      detail.currentPrice = p.currentPrice;
       detail.discount = 0;
-      detail.totalPrice = Number(p.quantity) * Number(p.price);
+      detail.totalPrice = Number(p.quantity) * Number(p.currentPrice);
       detail.productId = p.id;
       detail.orderId = "0";
       details.push(detail);

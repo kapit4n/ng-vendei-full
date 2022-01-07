@@ -11,15 +11,24 @@
     <div class="col-6">
       <div class="form-group">
         <label for="name" i18n>Category Name</label>
-        <input type="text" class="form-control" id="name" value="Data" required [(ngModel)]="categoryInfo.name"
+        <input type="text" class="form-control" id="name" value="Data"
+          required [(ngModel)]="categoryInfo.name"
           [ngModelOptions]="{standalone: true}">
       </div>
 
       <div class="form-group">
+        <label for="code" i18n>Code</label>
+        <input type="text" class="form-control" id="code" rows="3" value="Data" 
+          required [(ngModel)]="categoryInfo.code"
+          [ngModelOptions]="{standalone: true}" />
+      </div>
+      
+      <div class="form-group">
         <label for="description" i18n>Description</label>
-        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" value="Data" required [(ngModel)]="categoryInfo.description"
+        <textarea class="form-control" id="description" rows="3" value="Data" required [(ngModel)]="categoryInfo.description"
           [ngModelOptions]="{standalone: true}"></textarea>
       </div>
+
       <div class="row">
         <div class="col-6">
           <button type="submit" class="btn btn-danger" (click)="cancel()">Cancel</button>

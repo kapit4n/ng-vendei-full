@@ -1,11 +1,13 @@
-<button class="btn" (click)="newCategory()">+</button>
+<button class="btn btn-primary" (click)="newCategory()">+</button>
 <table class="table">
   <tr>
     <th>Category</th>
+    <th>Code</th>
     <th></th>
   </tr>
   <tr *ngFor="let cat of categories">
     <td>{{cat.name}}</td>
+    <td>{{cat.code}}</td>
     <td>
       <button class="btn" (click)="openCategory(cat.id)">Edit</button> &nbsp;
       <button class="btn btn-danger">Delete</button>
