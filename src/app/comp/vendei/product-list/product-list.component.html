@@ -1,4 +1,4 @@
-<div style="display: flex; justify-content: space-between;">
+<div class="actions-container">
   <mat-icon *ngIf="false">
     <button mat-raised-button (click)="openReports()" style="margin: 0 1rem;">
       <mat-icon>info</mat-icon>
@@ -12,7 +12,7 @@
   </button>
   <div *ngIf="displayCat">
     <div class="category-item" *ngFor="let cat of categories">
-      <button mat-button style="width: 100%;" (click)="filterByCategory(cat)">
+      <button mat-button (click)="filterByCategory(cat)">
         {{ cat.name }}
       </button>
     </div>
@@ -26,16 +26,13 @@
       [ngModelOptions]="{ standalone: true }" />
   </mat-form-field>
 </div>
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 0.6fr)); grid-gap: 1rem;">
-  <div class="product-list-item-t" *ngFor="let product of products" [style.background]="'url(' + product.img + ')'"
-    [style.background-size]="'cover'" (click)="addProduct(product)">
-    <span style="position:relative; top: 3px; float: right; background: white;">
-      Bs {{ product.price }}
-    </span>
-    <span style="position:relative; top: 70px;  display: inline-block; background: white; width: 120px;
-      white-space: nowrap;  overflow: hidden;
-  text-overflow: ellipsis;">
-      {{ product.name }}
-    </span>
-  </div>
+
+<div class="product-list-item-t" *ngFor="let product of products" [style.background]="'url(' + product.img + ')'"
+  [style.background-size]="'cover'" (click)="addProduct(product)">
+  <span>
+    Bs {{ product.price }}
+  </span>
+  <span>
+    {{ product.name }}
+  </span>
 </div>

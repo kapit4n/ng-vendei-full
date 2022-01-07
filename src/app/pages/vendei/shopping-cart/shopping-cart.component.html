@@ -45,11 +45,9 @@
     [removeItem]="removeItem.bind(this)" [(printOrderCount)]="printOrderCount"></app-cal-table>
 </div>
 <div class="product-list">
-  <div class="product-list-products">
-    <app-product-list [selectedProducts]="selectedProducts" [recalTotal]="recalTotal.bind(this)"
-      [(printOrderCount)]="printOrderCount"></app-product-list>
-    
-  </div>
+  <app-product-list [selectedProducts]="selectedProducts" [recalTotal]="recalTotal.bind(this)"
+    [(printOrderCount)]="printOrderCount"></app-product-list>
+
   <app-category-list class="product-list-categories"></app-category-list>
 </div>
 <div>
