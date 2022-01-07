@@ -2,10 +2,12 @@
 <table class="table">
   <tr>
     <th>Customer</th>
+    <th>Code</th>
     <th></th>
   </tr>
   <tr *ngFor="let customer of customers">
     <td>{{customer.name}}</td>
+    <td>{{customer.code}}</td>
     <td>
       <button class="btn" (click)="openCustomer(customer.id)">Edit</button> &nbsp;
       <button class="btn btn-danger">Delete</button>

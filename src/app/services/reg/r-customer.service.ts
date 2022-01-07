@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 export interface ICustomer {
   id: string;
   name: string;
-  ci: string;
+  code: string;
   img: string;
   address: string;
 }
@@ -19,7 +19,7 @@ export class RCustomerService implements RCrudInterface {
   modelUrl: string;
   includeCat: string;
   constructor(private http: HttpClient, private configSvc: RConfigService) {
-    this.modelUrl = this.configSvc.baseUrl + "/customers";
+    this.modelUrl = this.configSvc.baseUrl + "/clients";
   }
 
   getAll(): Observable<any> {

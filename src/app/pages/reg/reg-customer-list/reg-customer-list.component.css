@@ -1,0 +1,8 @@
+table th {
+  background-color: black;
+  color: white
+}
+
+table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
