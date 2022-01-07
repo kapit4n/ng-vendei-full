@@ -13,7 +13,7 @@ import 'rxjs'; //get everything from Rx
 })
 export class VCategoriesService {
   private jsonFileURL: string = "../../assets/vendei/categories.json";
-  private categoriesURL: string = "http://localhost:3000/api/categories";
+  private categoriesURL: string = "http://localhost:3000/categories";
 
   constructor(private http: HttpClient, private configSvc: VConfigService) { }
   

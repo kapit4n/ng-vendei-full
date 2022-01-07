@@ -1,11 +1,8 @@
-<div class="category-list-item-t" *ngFor="let category of categories" [style.background]="'url(' + category.img + ')'"
-  [style.background-size]="'cover'">
-  <span style="position:relative; top: 3px; float: right; background: white;">
-  </span>
-  <span style="position:relative; top: 70px;  display: inline-block; 
-  background: white; width: 180px;
-      white-space: nowrap;  overflow: hidden;
-  text-overflow: ellipsis;  font-size: 2rem;">
-    {{ category.name }}
-  </span>
+<div class="category-list-container">
+  <div class="category-list-item-t" *ngFor="let category of categories"
+    [style.background]="'url(' + category.img + ')'">
+    <span class="category-list-item-name">
+      {{ category.name }}
+    </span>
+  </div>
 </div>

@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
-import { Observable, Subject, of, config } from 'rxjs';
-import { map, filter, switchMap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
-import {VConfigService} from './v-config.service'
+import { VConfigService } from './v-config.service'
 
 import 'rxjs'; //get everything from Rx    
 
@@ -12,10 +12,10 @@ import 'rxjs'; //get everything from Rx
 })
 export class VOrdersService {
   private jsonFileURL: string = "../../assets/vendei/products.json";
-  private ordersURL: string = "http://localhost:3000/api/orders";
-  private detailsURL: string = "http://localhost:3000/api/orderDetails";
+  private ordersURL: string = "http://localhost:3000/orders";
+  private detailsURL: string = "http://localhost:3000/orderDetails";
 
-  constructor(private http: HttpClient, private configSvc: VConfigService) {}
+  constructor(private http: HttpClient, private configSvc: VConfigService) { }
 
   /**
    * Return an observable with the list of orders
@@ -39,7 +39,7 @@ export class VOrdersService {
   }
 
   // save an order in API
-  save(order: any): Observable<any> {  
+  save(order: any): Observable<any> {
     return this.http
       .post(this.ordersURL, order)
       .pipe(

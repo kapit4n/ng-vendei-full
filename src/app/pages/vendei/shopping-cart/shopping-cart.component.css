@@ -11,6 +11,14 @@
     
 }
 
+.product-list-products {
+    height: 90%;
+}
+
+.product-list-categories {
+    height: 10%;
+}
+
 @media (min-width: 1281px) {
     .shopping-cart-container {
         width: 36%;

@@ -5,9 +5,9 @@ import { Injectable } from '@angular/core';
 })
 export class VConfigService {
 
-  isTest: true;
+  isTest: false;
   cardImg: { width: 200, height: 200 }
-  baseUrl = "http://localhost:3000/api";
+  baseUrl = "http://localhost:3000";
 
   constructor() { }
 }

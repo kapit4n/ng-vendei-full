@@ -5,6 +5,6 @@ import { Injectable } from '@angular/core';
 })
 export class RepConfigService {
 
-  baseUrl = "http://localhost:3000/api";
+  baseUrl = "http://localhost:3000";
   constructor() { }
 }
