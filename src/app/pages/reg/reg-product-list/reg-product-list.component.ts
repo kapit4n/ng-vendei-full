@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { RProductService, IProduct } from '../../../services/reg/r-product.service'
+import { RProductPresentationService, IProductPresentation } from '../../../services/reg/r-product-presentation.service'
 import { Router } from "@angular/router";
 
 @Component({
@@ -9,15 +10,24 @@ import { Router } from "@angular/router";
 })
 export class RegProductListComponent implements OnInit {
   products: IProduct[];
-  constructor(private productSvc: RProductService, private router: Router) {}
+  productPresentations: IProductPresentation[];
+  displayProductsTab = true;
+  constructor(private productSvc: RProductService, private productPresentationSvc: RProductPresentationService, private router: Router) {}
 
   ngOnInit() {
     this.loadProducts();
+    this.loadProductPresentations();
   }
 
   loadProducts() {
     this.productSvc.getAll().subscribe(products => {
       this.products = products;
+    });
+  }
+
+  loadProductPresentations() {
+    this.productPresentationSvc.getAll().subscribe(productPresentations => {
+      this.productPresentations = productPresentations;
     });
   }
 
@@ -37,5 +47,19 @@ export class RegProductListComponent implements OnInit {
     this.productSvc.remove(productId).subscribe(product => {
       this.loadProducts();
     });
+  }
+
+  removeProductPresentation(productPId: string) {
+    this.productPresentationSvc.remove(productPId).subscribe(productP => {
+      this.loadProductPresentations();
+    });
+  }
+
+  setProducts() {
+    this.displayProductsTab = true;
+  }
+
+  setProductPresentations() {
+    this.displayProductsTab = false;
   }
 }

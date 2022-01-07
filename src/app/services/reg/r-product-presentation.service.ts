@@ -5,25 +5,23 @@ import { RConfigService } from "./r-config.service";
 import { RCrudInterface } from './r-crud.interface';
 import { Observable } from 'rxjs';
 
-export interface IProduct {
+export interface IProductPresentation {
   id: string;
-  name: string;
   code: string;
-  price: number;
-  cost: number;
+  currentPrice: number;
   img: string;
-  description: string;
-  categoryId: string;
-  stock: number;
+  unitOfMeasure: string;
+  productId: string;
+  quantity: number;
 }
 
 @Injectable({
   providedIn: "root"
 })
-export class RProductService implements RCrudInterface {
+export class RProductPresentationService implements RCrudInterface {
   modelUrl: string;
   constructor(private http: HttpClient, private configSvc: RConfigService) {
-    this.modelUrl = this.configSvc.baseUrl + "/products";
+    this.modelUrl = this.configSvc.baseUrl + "/productPresentations";
   }
 
   getAll(): Observable<any> {

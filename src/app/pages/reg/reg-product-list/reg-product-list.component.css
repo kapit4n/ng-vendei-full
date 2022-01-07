@@ -1,0 +1,33 @@
+.tabs {
+  background-color: black;
+}
+
+.tab {
+  padding: 0.5rem;
+  background-color: skyblue;
+  color: black;
+  border-bottom: none;
+  width: 8rem;
+}
+
+.active-tab {
+  background-color: white;
+  border-bottom: none;
+}
+
+.tab:first-child {
+  margin-left: 0;
+}
+
+.tab-container {
+  background-color: white;
+}
+
+table th {
+  background-color: black;
+  color: white
+}
+
+table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}

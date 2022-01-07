@@ -57,6 +57,7 @@ import { VCustomersService } from './services/vendei/v-customers.service';
 import { VConfigService } from './services/vendei/v-config.service';
 // reg services
 import { RProductService } from "./services/reg/r-product.service";
+import { RProductPresentationService } from "./services/reg/r-product-presentation.service";
 import { RCategoryService } from "./services/reg/r-category.service";
 import { RConfigService } from "./services/reg/r-config.service";
 // inv services
@@ -200,6 +201,7 @@ const appRoutes: Routes = [
     VCustomersService,
     VConfigService,
     RProductService,
+    RProductPresentationService,
     RCategoryService,
     RConfigService,
     RCustomerService,
