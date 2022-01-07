@@ -8,12 +8,14 @@
       </ng-template>
     </div>
     <div class="col-7">
+      
       <div class="form-group">
         <label for="category">Category</label>
         <select class="form-control" id="category" required [(ngModel)]="productInfo.categoryId" [ngModelOptions]="{standalone: true}">
           <option *ngFor="let cat of categories" [value]="cat.id" >{{cat.name}}</option>
         </select>
       </div>
+
       <div class="form-group">
         <label for="name" i18n>Product Name</label>
         <input type="text" class="form-control" id="name" value="Data"
@@ -25,26 +27,6 @@
         <input type="text" class="form-control" id="code" value="Data"
           required [(ngModel)]="productInfo.code" [ngModelOptions]="{standalone: true}">
       </div>
-      
-      <div class="form-group">
-        <label for="price" i18n>Price</label>
-        <input type="text" class="form-control" id="price" value="Data"
-          required [(ngModel)]="productInfo.price" [ngModelOptions]="{standalone: true}">
-      </div>
-      
-      <div class="form-group">
-        <label for="cost" i18n>Cost</label>
-        <input type="text" class="form-control" id="cost" value="Data"
-          required [(ngModel)]="productInfo.cost" [ngModelOptions]="{standalone: true}">
-      </div>
-      
-      
-      <div class="form-group">
-        <label for="stock" i18n>Inventory</label>
-        <input type="text" class="form-control" id="stock" value="Data"
-          required [(ngModel)]="productInfo.stock" [ngModelOptions]="{standalone: true}">
-      </div>
-      
       
       <div class="form-group">
         <label for="img" i18n>Img</label>
