@@ -28,6 +28,7 @@ import { MainComponent } from "./pages/main/main.component";
 //reg pages
 import { RCustomerService } from "./services/reg/r-customer.service";
 import { RegProductComponent } from "./pages/reg/reg-product/reg-product.component";
+import { RegProductPresentationComponent } from "./pages/reg/reg-product-presentation/reg-product-presentation.component";
 import { RegCategoryComponent } from "./pages/reg/reg-category/reg-category.component";
 import { RegCategoryListComponent } from "./pages/reg/reg-category-list/reg-category-list.component";
 import { RegProductListComponent } from "./pages/reg/reg-product-list/reg-product-list.component";
@@ -98,7 +99,17 @@ const appRoutes: Routes = [
   {
     path: "reg/products/:id",
     component: RegProductComponent,
-    data: { breadcrumb: "Register Product" }
+    data: { breadcrumb: "Update Product" }
+  },
+  {
+    path: "reg/productPresentations/new",
+    component: RegProductPresentationComponent,
+    data: { breadcrumb: "Register Product Presentation" }
+  },
+  {
+    path: "reg/productPresentations/:id",
+    component: RegProductPresentationComponent,
+    data: { breadcrumb: "Update Product Presentation" }
   },
   {
     path: "reg/categories",
@@ -164,6 +175,7 @@ const appRoutes: Routes = [
     CustomerListComponent,
     CustomersDialogComponent,
     RegProductComponent,
+    RegProductPresentationComponent,
     RegCategoryComponent,
     RegCategoryListComponent,
     RegProductListComponent,

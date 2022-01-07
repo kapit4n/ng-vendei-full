@@ -1,5 +1,6 @@
 <div class="container">
   <button class="btn" (click)="newProduct()"><i class="fa fa-plus fa-lg"></i></button>
+  <button class="btn" (click)="newProductPresentation()"><i class="fa fa-plus fa-lg"></i></button>
   <button class="btn" (click)="openCart()"><i class="fa fa-shopping-cart fa-lg"></i></button>
   <div class="tabs">
     <button class="tab" [ngClass]="{'active-tab': displayProductsTab}" (click)="setProducts()">Products</button>
@@ -30,11 +31,15 @@
       <tr>
         <th>Product</th>
         <th>Price</th>
+        <th>Unit Of Measure</th>
+        <th>Quantity</th>
         <th>Actions</th>
       </tr>
       <tr *ngFor="let product of productPresentations">
         <td>{{product.Product.name}}</td>
+        <td>{{product.unitOfMeasure}}</td>
         <td>{{product.currentPrice}}</td>
+        <td>{{product.quantity}}</td>
         <td>
           <button class="btn" (click)="openProduct(product.id)">Edit</button> &nbsp;
           <button class="btn btn-danger" (click)="removeProduct(product.id)">Delete</button>

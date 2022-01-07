@@ -11,7 +11,7 @@ import { Router } from "@angular/router";
 export class RegProductListComponent implements OnInit {
   products: IProduct[];
   productPresentations: IProductPresentation[];
-  displayProductsTab = true;
+  displayProductsTab = false;
   constructor(private productSvc: RProductService, private productPresentationSvc: RProductPresentationService, private router: Router) {}
 
   ngOnInit() {
@@ -35,6 +35,10 @@ export class RegProductListComponent implements OnInit {
     this.router.navigate(["/reg/products/new"]);
   }
 
+  newProductPresentation() {
+    this.router.navigate(["/reg/productPresentations/new"]);
+  }
+
   openProduct(id: string) {
     this.router.navigate(["/reg/products/" + id]);
   }
@@ -50,7 +54,7 @@ export class RegProductListComponent implements OnInit {
   }
 
   removeProductPresentation(productPId: string) {
-    this.productPresentationSvc.remove(productPId).subscribe(productP => {
+    this.productPresentationSvc.remove(productPId).subscribe(() => {
       this.loadProductPresentations();
     });
   }
