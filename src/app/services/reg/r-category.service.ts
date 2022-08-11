@@ -3,13 +3,14 @@ import { HttpClient } from "@angular/common/http";
 import { RConfigService } from "./r-config.service";
 
 import { RCrudInterface } from './r-crud.interface'
-import { Observable } from "rxjs/Rx";
+import { Observable } from "rxjs";
 
 export interface ICategory {
   id: number;
   name: string;
   description: string;
   img: string;
+  code: string;
 }
 
 @Injectable({

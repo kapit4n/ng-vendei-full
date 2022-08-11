@@ -4,6 +4,10 @@
 /dist
 /tmp
 /out-tsc
+*.pack
+*.pack.old
+*.json
+
 
 # dependencies
 /node_modules

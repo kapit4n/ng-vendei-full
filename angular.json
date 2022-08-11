@@ -118,5 +118,8 @@
       }
     }
   },
-  "defaultProject": "ng-vendei-full"
+  "defaultProject": "ng-vendei-full",
+  "cli": {
+    "analytics": false
+  }
 }

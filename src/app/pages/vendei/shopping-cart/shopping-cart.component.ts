@@ -106,11 +106,7 @@ export class ShoppingCartComponent implements OnInit {
   printOrder() {
     let popupWindow;
     var todayTime = new Date();
-    var options = {
-      year: "numeric",
-      month: "numeric",
-      day: "numeric"
-    };
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 
     let headerInfo = `
     Codigo Casero: <br CLEAR=”left” />
@@ -137,7 +133,7 @@ export class ShoppingCartComponent implements OnInit {
       ${headerInfo}
     </p>
     ${addressInfo}
-    <div>Date: ${todayTime.toLocaleDateString("es-ES", options)} </div>
+    <div>Date: ${todayTime.toLocaleDateString("es-ES")} </div>
     </div>`;
     innerContents += "<table style='padding-left: 20px;'>";
     innerContents += "<tr>";

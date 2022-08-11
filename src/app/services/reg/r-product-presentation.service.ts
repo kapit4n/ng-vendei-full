@@ -13,6 +13,7 @@ export interface IProductPresentation {
   unitOfMeasure: string;
   productId: string;
   quantity: number;
+  brand: string;
 }
 
 @Injectable({
