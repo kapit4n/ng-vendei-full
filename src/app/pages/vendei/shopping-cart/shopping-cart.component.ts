@@ -3,6 +3,7 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
 import { VOrdersService } from "../../../services/vendei/v-orders.service";
 import { VInventoryService } from "../../../services/vendei/v-inventory.service";
 import { Router } from "@angular/router";
+import { VConfigService } from "src/app/services/vendei/v-config.service";
 
 enum PaymentType {
   PAYMONEY = 1,
@@ -27,7 +28,7 @@ export class ShoppingCartComponent implements OnInit {
   // config
   displayCal = true;
   printTwice = false;
-  printIt = true;
+  printIt = false;
 
   total: number;
   emptyCustomer = { id: 1, name: "Anonymous", ci: 1234567 };
@@ -52,6 +53,7 @@ export class ShoppingCartComponent implements OnInit {
   constructor(
     private ordersSvc: VOrdersService,
     private inventorySvc: VInventoryService,
+    private config: VConfigService,
     private router: Router,
     public dialog: MatDialog
   ) {
@@ -225,7 +227,8 @@ export class ShoppingCartComponent implements OnInit {
 
   submitOrder() {
 
-    if (this.printIt) {
+    // strategy to save an order
+    if (this.config.printInvoice) {
       if (!this.printTwice) {
         this.printOrder();
         return;
@@ -238,10 +241,14 @@ export class ShoppingCartComponent implements OnInit {
       }
 
     }
-    this.printOrderCount = 1;
+
+    // this.printOrderCount = 1;
+  
+    /*
     if (this.printIt) {
       this.printOrder();
     }
+    */
 
     let order = {} as any;
     order.customerId = this.selectedCustomer.id;
