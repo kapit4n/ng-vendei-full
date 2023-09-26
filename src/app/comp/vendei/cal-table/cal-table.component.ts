@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter} from "@angular/core";
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CustomersDialogComponent } from "../customers-dialog/customers-dialog.component";
 
 enum PaymentType {

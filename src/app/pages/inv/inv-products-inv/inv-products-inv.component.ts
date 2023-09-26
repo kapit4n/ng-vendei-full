@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { Router, ActivatedRoute } from "@angular/router";
 import { IProductsService } from "../../../services/inv/i-products.service";
 import { IProductsInvService } from "../../../services/inv/i-products-inv.service";
-import { NgbModal, ModalDismissReasons } from "@ng-bootstrap/ng-bootstrap";
+//import { NgbModal, ModalDismissReasons } from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: "app-inv-products-inv",
@@ -17,7 +17,7 @@ export class InvProductsInvComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private modalService: NgbModal,
+    //private modalService: NgbModal,
     private productSvc: IProductsService,
     private productInvSvc: IProductsInvService
   ) {
@@ -33,6 +33,8 @@ export class InvProductsInvComponent implements OnInit {
   }
 
   open(content) {
+    /**
+     * 
     this.modalService.open(content).result.then(
       result => {
         this.closeResult = `Closed with: ${result}`;
@@ -41,16 +43,19 @@ export class InvProductsInvComponent implements OnInit {
         this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
       }
     );
+     */
   }
 
   private getDismissReason(reason: any): string {
-    if (reason === ModalDismissReasons.ESC) {
-      return "by pressing ESC";
-    } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
-      return "by clicking on a backdrop";
-    } else {
-      return `with: ${reason}`;
-    }
+    // if (reason === ModalDismissReasons.ESC) {
+    //   return "by pressing ESC";
+    // } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
+    //   return "by clicking on a backdrop";
+    // } else {
+    //   return `with: ${reason}`;
+    // }
+
+    throw Error("Change to material dialog")
   }
 
   loadInvInfo(id: string) {
