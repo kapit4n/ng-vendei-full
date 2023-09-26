@@ -46,12 +46,12 @@ import { RepSellsByProductComponent } from "./pages/rep/rep-sells-by-product/rep
 import { RepOrdersComponent } from "./pages/rep/rep-orders/rep-orders.component";
 
 
-import { ProductListComponent } from './comp/vendei/product-list/product-list.component';
-import { CategoryListComponent } from "./comp/vendei/category-list/category-list.component";
-import { CalTableComponent } from './comp/vendei/cal-table/cal-table.component';
-import { SelectedListComponent, SelectedProductEditDialog } from './comp/vendei/selected-list/selected-list.component';
-import { CustomerListComponent } from './comp/vendei/customer-list/customer-list.component';
-import { CustomersDialogComponent } from './comp/vendei/customers-dialog/customers-dialog.component';
+import { ProductListComponent } from './features/vendei/product-list/product-list.component';
+import { CategoryListComponent } from "./features/vendei/category-list/category-list.component";
+import { CalTableComponent } from './features/vendei/cal-table/cal-table.component';
+import { SelectedListComponent, SelectedProductEditDialog } from './features/vendei/selected-list/selected-list.component';
+import { CustomerListComponent } from './features/vendei/customer-list/customer-list.component';
+import { CustomersDialogComponent } from './features/vendei/customers-dialog/customers-dialog.component';
 // reg comp
 
 import { VProductsService } from './services/vendei/v-products.service';
