@@ -14,6 +14,10 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule} from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatListModule } from '@angular/material/list';
@@ -200,6 +204,10 @@ const appRoutes: Routes = [
     MatCheckboxModule,
     MatCardModule,
     MatInputModule,
+    MatFormFieldModule,
+    MatTooltipModule,
+    MatTabsModule,
+    MatSelectModule,
     MatGridListModule,
     MatIconModule,
     MatListModule,

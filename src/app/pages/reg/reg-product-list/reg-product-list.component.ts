@@ -11,7 +11,8 @@ import { Router } from "@angular/router";
 export class RegProductListComponent implements OnInit {
   products: IProduct[];
   productPresentations: IProductPresentation[];
-  displayProductsTab = false;
+  /** 0 = Products, 1 = Product details */
+  tabIndex = 0;
   constructor(private productSvc: RProductService, private productPresentationSvc: RProductPresentationService, private router: Router) {}
 
   ngOnInit() {
@@ -52,22 +53,20 @@ export class RegProductListComponent implements OnInit {
   }
 
   removeProduct(productId: string) {
-    this.productSvc.remove(productId).subscribe(product => {
+    if (!confirm('Delete this product? This cannot be undone.')) {
+      return;
+    }
+    this.productSvc.remove(productId).subscribe(() => {
       this.loadProducts();
     });
   }
 
   removeProductPresentation(productPId: string) {
+    if (!confirm('Delete this product detail? This cannot be undone.')) {
+      return;
+    }
     this.productPresentationSvc.remove(productPId).subscribe(() => {
       this.loadProductPresentations();
     });
-  }
-
-  setProducts() {
-    this.displayProductsTab = true;
-  }
-
-  setProductPresentations() {
-    this.displayProductsTab = false;
   }
 }

@@ -12,13 +12,117 @@
     box-sizing: border-box;
 }
 
-.actions-container {
+.product-toolbar {
     display: flex;
-    justify-content: space-between;
     flex-wrap: wrap;
-    align-items: center;
+    align-items: flex-start;
+    gap: 0.75rem;
     flex-shrink: 0;
-    gap: 0.25rem;
+    padding: 0.25rem 0;
+}
+
+.toolbar-home {
+    flex-shrink: 0;
+    margin-top: 0.35rem;
+}
+
+.search-panel {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.75rem;
+    min-width: 0;
+}
+
+.search-field-main {
+    flex: 1 1 200px;
+    min-width: 0;
+}
+
+.search-field-code {
+    flex: 0 1 220px;
+    min-width: 0;
+}
+
+.search-prefix {
+    margin-right: 0.25rem;
+    color: rgba(0, 0, 0, 0.45);
+}
+
+.category-chips {
+    flex-shrink: 0;
+    margin-top: 0.25rem;
+}
+
+.category-chips-label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: rgba(15, 23, 42, 0.55);
+    margin-bottom: 0.35rem;
+}
+
+.category-chips-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.category-chips .chip {
+    font-size: 0.8rem;
+    line-height: 1.2;
+    min-height: 32px;
+    padding: 0 0.65rem;
+}
+
+.category-chips .chip-active {
+    border-color: #3949ab;
+    background: rgba(57, 73, 171, 0.08);
+    font-weight: 600;
+}
+
+.search-meta {
+    flex-shrink: 0;
+    margin-top: 0.35rem;
+}
+
+.search-meta-count {
+    font-size: 0.75rem;
+    color: rgba(15, 23, 42, 0.55);
+}
+
+.product-cards-empty {
+    flex: 1 1 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 2rem 1rem;
+    text-align: center;
+    color: rgba(15, 23, 42, 0.65);
+}
+
+.product-cards-empty .empty-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    opacity: 0.45;
+}
+
+.product-cards-empty .empty-title {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.product-cards-empty .empty-hint {
+    margin: 0 0 0.5rem;
+    font-size: 0.875rem;
+    max-width: 280px;
 }
 
 .product-cards-box {

@@ -1,50 +1,98 @@
-<div class="container">
-  <button class="btn" (click)="newProduct()"><i class="fa fa-plus fa-lg"></i></button>
-  <button class="btn" (click)="newProductPresentation()"><i class="fa fa-plus fa-lg"></i></button>
-  <button class="btn" (click)="openCart()"><i class="fa fa-shopping-cart fa-lg"></i></button>
-  <div class="tabs">
-    <button class="tab" [ngClass]="{'active-tab': displayProductsTab}" (click)="setProducts()">Products</button>
-    <button class="tab" [ngClass]="{'active-tab': !displayProductsTab}"
-      (click)="setProductPresentations()">Details</button>
+<div class="reg-product-list-page">
+  <div class="page-header">
+    <div class="page-header-text">
+      <h1 class="page-title">Catalog</h1>
+      <p class="page-subtitle">Manage products and sale details (price, unit, stock).</p>
+    </div>
+    <div class="page-header-actions">
+      <button mat-stroked-button type="button" (click)="openCart()">
+        <mat-icon>shopping_cart</mat-icon>
+        POS
+      </button>
+      <button mat-raised-button color="primary" type="button" (click)="newProduct()">
+        <mat-icon>add</mat-icon>
+        New product
+      </button>
+      <button mat-stroked-button color="primary" type="button" (click)="newProductPresentation()">
+        <mat-icon>playlist_add</mat-icon>
+        New detail
+      </button>
+    </div>
   </div>
-  <div *ngIf="displayProductsTab" class="tab-container">
-    <table class="table">
-      <tr>
-        <th>Product</th>
-        <th>Code</th>
-        <th>Category</th>
-        <th>Actions</th>
-      </tr>
-      <tr *ngFor="let product of products">
-        <td>{{product.name}}</td>
-        <td>{{product.code}}</td>
-        <td>{{product.Category?.name}}</td>
-        <td>
-          <button class="btn" (click)="openProduct(product.id)">Edit</button> &nbsp;
-          <button class="btn btn-danger" (click)="removeProduct(product.id)">Delete</button>
-        </td>
-      </tr>
-    </table>
-  </div>
-  <div *ngIf="!displayProductsTab" class="tab-container">
-    <table class="table">
-      <tr>
-        <th>Product</th>
-        <th>Price</th>
-        <th>Unit Of Measure</th>
-        <th>Quantity</th>
-        <th>Actions</th>
-      </tr>
-      <tr *ngFor="let product of productPresentations">
-        <td>{{product.Product.name}}</td>
-        <td>{{product.unitOfMeasure}}</td>
-        <td>{{product.currentPrice}}</td>
-        <td>{{product.quantity}}</td>
-        <td>
-          <button class="btn" (click)="openProductPresentation(product.id)">Edit</button> &nbsp;
-          <button class="btn btn-danger" (click)="removeProductPresentation(product.id)">Delete</button>
-        </td>
-      </tr>
-    </table>
-  </div>
+
+  <mat-tab-group [(selectedIndex)]="tabIndex" class="catalog-tabs" animationDuration="200ms">
+    <mat-tab label="Products">
+      <div class="tab-panel">
+        <div class="empty-state" *ngIf="!products?.length">
+          <mat-icon class="empty-icon">inventory_2</mat-icon>
+          <p class="empty-title">No products yet</p>
+          <p class="empty-hint">Create a product, then add pricing and units under <strong>Product details</strong>.</p>
+          <button mat-raised-button color="primary" type="button" (click)="newProduct()">Create product</button>
+        </div>
+
+        <div class="table-wrap" *ngIf="products?.length">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Code</th>
+                <th>Category</th>
+                <th class="col-actions">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let product of products">
+                <td class="cell-strong">{{ product.name }}</td>
+                <td><code class="code-pill">{{ product.code }}</code></td>
+                <td>{{ product.Category?.name || '—' }}</td>
+                <td class="col-actions">
+                  <button mat-stroked-button color="primary" type="button" (click)="openProduct(product.id)">Edit</button>
+                  <button mat-stroked-button color="warn" type="button" (click)="removeProduct(product.id)">Delete</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </mat-tab>
+
+    <mat-tab label="Product details">
+      <div class="tab-panel">
+        <p class="tab-lead">Price, unit of measure, and quantity per product presentation.</p>
+
+        <div class="empty-state" *ngIf="!productPresentations?.length">
+          <mat-icon class="empty-icon">tune</mat-icon>
+          <p class="empty-title">No product details</p>
+          <p class="empty-hint">Add a detail row for each sellable unit (e.g. bottle, box).</p>
+          <button mat-raised-button color="primary" type="button" (click)="newProductPresentation()">New detail</button>
+        </div>
+
+        <div class="table-wrap" *ngIf="productPresentations?.length">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Unit</th>
+                <th>Qty</th>
+                <th class="col-actions">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of productPresentations">
+                <td class="cell-strong">{{ row.Product?.name || '—' }}</td>
+                <td>{{ row.currentPrice | number:'1.2-2' }}</td>
+                <td>{{ row.unitOfMeasure || '—' }}</td>
+                <td>{{ row.quantity ?? '—' }}</td>
+                <td class="col-actions">
+                  <button mat-stroked-button color="primary" type="button" (click)="openProductPresentation(row.id)">Edit</button>
+                  <button mat-stroked-button color="warn" type="button" (click)="removeProductPresentation(row.id)">Delete</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
 </div>

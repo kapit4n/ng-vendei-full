@@ -1,41 +1,65 @@
 <div class="product-list-shell">
-  <div class="actions-container">
-    <mat-icon *ngIf="false">
-      <button mat-raised-button (click)="openReports()" style="margin: 0 1rem;">
-        <mat-icon>info</mat-icon>
-      </button>
-      <button mat-raised-button (click)="openRegister()">
-        <mat-icon>build</mat-icon>
-      </button>
-    </mat-icon>
-    <button mat-raised-button (click)="openMain()" style="height: 100%; margin: 1rem 0;">
+  <div class="product-toolbar">
+    <button mat-icon-button type="button" class="toolbar-home" (click)="openMain()" matTooltip="Home"
+      aria-label="Home">
       <mat-icon>home</mat-icon>
     </button>
-    <div *ngIf="displayCat">
-      <div class="category-item" *ngFor="let cat of categories">
-        <button mat-button (click)="filterByCategory(cat)">
-          {{ cat.name }}
-        </button>
-      </div>
-    </div>
-    <mat-form-field class="search-form" style="margin: 0 1rem;">
-      <input matInput type="text" placeholder="Search by Name" (keyup)="filterByName($event)" />
-    </mat-form-field>
 
-    <mat-form-field class="search-form" style="margin: 0 1rem;">
-      <input matInput type="text" placeholder="Code" (keyup.enter)="addByCode($event)" [(ngModel)]="productCode"
-        [ngModelOptions]="{ standalone: true }" />
-    </mat-form-field>
+    <div class="search-panel">
+      <mat-form-field appearance="outline" class="search-field-main" subscriptSizing="dynamic">
+        <mat-label>Search products</mat-label>
+        <mat-icon matPrefix class="search-prefix">search</mat-icon>
+        <input matInput type="search" autocomplete="off" [ngModel]="searchQuery"
+          (ngModelChange)="onSearchChange($event)" placeholder="Name or code" [ngModelOptions]="{ standalone: true }" />
+        <button mat-icon-button matSuffix type="button" *ngIf="searchQuery" (click)="clearSearch()"
+          aria-label="Clear search">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="search-field-code" subscriptSizing="dynamic">
+        <mat-label>Quick add by code</mat-label>
+        <mat-icon matPrefix class="search-prefix">qr_code_2</mat-icon>
+        <input matInput type="text" autocomplete="off" [(ngModel)]="productCode"
+          (keyup.enter)="addByCodeField()" placeholder="Exact code · Enter" [ngModelOptions]="{ standalone: true }" />
+        <button mat-icon-button matSuffix type="button" *ngIf="productCode" (click)="productCode = ''"
+          aria-label="Clear code">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <div class="category-chips" *ngIf="categories.length">
+    <span class="category-chips-label">Category</span>
+    <div class="category-chips-row">
+      <button type="button" mat-stroked-button class="chip" *ngFor="let cat of categories"
+        [class.chip-active]="isCategoryActive(cat)" (click)="selectCategoryChip(cat)">
+        {{ cat.name }}
+      </button>
+    </div>
+  </div>
+
+  <div class="search-meta" *ngIf="originalP.length">
+    <span class="search-meta-count">Showing {{ products.length }} of {{ originalP.length }} products</span>
   </div>
 
   <div class="product-cards-box">
-    <button type="button" class="product-list-item-t" *ngFor="let product of products"
-      (click)="addProduct(product)"
+    <div class="product-cards-empty" *ngIf="!products.length && originalP.length">
+      <mat-icon class="empty-icon">search_off</mat-icon>
+      <p class="empty-title">No matches</p>
+      <p class="empty-hint">Try another search or pick a different category.</p>
+      <button mat-stroked-button type="button" color="primary" (click)="resetFilters()">
+        Reset filters
+      </button>
+    </div>
+
+    <button type="button" class="product-list-item-t" *ngFor="let product of products" (click)="addProduct(product)"
       [attr.aria-label]="'Add ' + displayProductName(product)">
       <div class="product-card-image" [style.background-image]="'url(' + productCardImageUrl(product) + ')'"></div>
       <div class="product-card-overlay"></div>
       <div class="product-card-body">
-        <span class="product-card-price">Bs {{ product.currentPrice }}</span>
+        <span class="product-card-price">Bs {{ product.currentPrice | number:'1.2-2' }}</span>
         <span class="product-card-name">{{ displayProductName(product) }}</span>
       </div>
     </button>

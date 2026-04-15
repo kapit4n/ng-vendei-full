@@ -18,7 +18,7 @@
         </div>
       </div>
       <div class="line-meta">
-        <span class="line-qty">{{ product.quantity }} × Bs {{ product.currentPrice }}</span>
+        <span class="line-qty">{{ product.quantity }} × Bs {{ product.currentPrice | number:'1.2-2' }}</span>
         <span class="line-sub">Subtotal: <strong>{{ (product.currentPrice * product.quantity) | number:'1.2-2' }}</strong></span>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Inject } from "@angular/core";
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { roundToCents } from "src/app/utils/money";
 
 export interface DialogData {
   id: string;
@@ -45,7 +46,7 @@ export class SelectedListComponent implements OnInit {
         )[0];
 
         product.quantity = Number(result.quantity);
-        const p = Number(result.price);
+        const p = roundToCents(result.price);
         product.currentPrice = p;
         (product as any).price = p;
         this.recalTotal();

@@ -4,6 +4,7 @@ import { VOrdersService } from "../../../services/vendei/v-orders.service";
 import { VInventoryService } from "../../../services/vendei/v-inventory.service";
 import { Router } from "@angular/router";
 import { VConfigService } from "src/app/services/vendei/v-config.service";
+import { roundToCents } from "src/app/utils/money";
 
 enum PaymentType {
   PAYMONEY = 1,
@@ -74,8 +75,8 @@ export class ShoppingCartComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         console.log("set total with: " + result.total);
-        this.totalPayed = result.pay;
-        this.toReturn = this.totalPayed - this.total;
+        this.totalPayed = roundToCents(result.pay);
+        this.toReturn = roundToCents(this.totalPayed - this.total);
       }
     });
   }
@@ -98,10 +99,11 @@ export class ShoppingCartComponent implements OnInit {
     if (this.printOrderCount) {
       return;
     }
-    this.total = 0;
+    let sum = 0;
     this.selectedProducts.forEach(val => {
-      this.total += val.currentPrice * val.quantity;
+      sum += roundToCents(val.currentPrice) * Number(val.quantity);
     });
+    this.total = roundToCents(sum);
     this.calTotals();
   }
 
@@ -148,15 +150,16 @@ export class ShoppingCartComponent implements OnInit {
       innerContents += "<tr>";
       innerContents += `<td>${this.selectedProducts[i].quantity}</td>`;
       innerContents += `<td>${this.selectedProducts[i].Product.name}</td>`;
-      innerContents += `<td>${this.selectedProducts[i].currentPrice}</td>`;
-      innerContents += `<td>${this.selectedProducts[i].currentPrice *
-        this.selectedProducts[i].quantity}</td>`;
+      innerContents += `<td>${roundToCents(this.selectedProducts[i].currentPrice).toFixed(2)}</td>`;
+      innerContents += `<td>${roundToCents(
+        this.selectedProducts[i].currentPrice * this.selectedProducts[i].quantity
+      ).toFixed(2)}</td>`;
       innerContents += "</tr>";
     }
     innerContents += "</table>";
-    innerContents += "<div> Total: " + this.total + " </div>";
-    innerContents += "<div> Payed: " + this.totalPayed + " </div>";
-    innerContents += "<div> Returned: " + this.toReturn + " </div>";
+    innerContents += "<div> Total: " + roundToCents(this.total).toFixed(2) + " </div>";
+    innerContents += "<div> Payed: " + roundToCents(this.totalPayed).toFixed(2) + " </div>";
+    innerContents += "<div> Returned: " + roundToCents(this.toReturn).toFixed(2) + " </div>";
     innerContents += footerInfo;
     popupWindow = window.open(
       "",
@@ -253,7 +256,7 @@ export class ShoppingCartComponent implements OnInit {
     let order = {} as any;
     order.customerId = this.selectedCustomer.id;
     order.createdDate = new Date();
-    order.total = this.total;
+    order.total = roundToCents(this.total);
     order.description = "";
     order.paid = true;
     order.delivered = true;
@@ -263,9 +266,9 @@ export class ShoppingCartComponent implements OnInit {
     this.selectedProducts.forEach(p => {
       let detail = {} as any;
       detail.quantity = p.quantity;
-      detail.currentPrice = p.currentPrice;
+      detail.currentPrice = roundToCents(p.currentPrice);
       detail.discount = 0;
-      detail.totalPrice = Number(p.quantity) * Number(p.currentPrice);
+      detail.totalPrice = roundToCents(Number(p.quantity) * Number(p.currentPrice));
       detail.productId = p.id;
       detail.orderId = "0";
       details.push(detail);
@@ -327,19 +330,19 @@ export class ShoppingCartComponent implements OnInit {
     if (this.printOrderCount) {
       return;
     }
-    this.totalPayed = this.payedItems
-      .map(x => x.value)
-      .reduce((a, b) => a + b, 0);
+    this.totalPayed = roundToCents(
+      this.payedItems.map(x => x.value).reduce((a, b) => a + b, 0)
+    );
 
-    this.totalReturn = this.returnItems
-      .map(x => x.value)
-      .reduce((a, b) => a + b, 0);
+    this.totalReturn = roundToCents(
+      this.returnItems.map(x => x.value).reduce((a, b) => a + b, 0)
+    );
 
-    this.totalDiscount = this.discountItems
-      .map(x => x.value)
-      .reduce((a, b) => a + b, 0);
+    this.totalDiscount = roundToCents(
+      this.discountItems.map(x => x.value).reduce((a, b) => a + b, 0)
+    );
 
-    this.toReturn = this.totalPayed - this.total - this.totalReturn;
+    this.toReturn = roundToCents(this.totalPayed - this.total - this.totalReturn);
   }
 
   removeItem(payItem: any) {

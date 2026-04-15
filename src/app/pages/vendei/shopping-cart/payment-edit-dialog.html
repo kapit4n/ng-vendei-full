@@ -3,7 +3,7 @@
   <mat-form-field>
     <input matInput #input max="10" placeholder="Enter Pay" [(ngModel)]="data.pay">
   </mat-form-field>
-  <span>Return: {{data.pay - data.total}}</span>
+  <span>Return: {{ (data.pay - data.total) | number:'1.2-2' }}</span>
 </div>
 <div mat-dialog-actions>
   <button mat-button (click)="onNoClick()">Cancel</button>
