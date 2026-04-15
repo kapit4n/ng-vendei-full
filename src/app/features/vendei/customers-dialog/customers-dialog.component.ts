@@ -7,9 +7,10 @@ export interface DialogData {
 }
 
 @Component({
-  selector: "app-customers-dialog",
-  templateUrl: "./customers-dialog.component.html",
-  styleUrls: ["./customers-dialog.component.css"]
+    selector: "app-customers-dialog",
+    templateUrl: "./customers-dialog.component.html",
+    styleUrls: ["./customers-dialog.component.css"],
+    standalone: false
 })
 export class CustomersDialogComponent implements OnInit {
   @Input() selectedCustomer: Function;

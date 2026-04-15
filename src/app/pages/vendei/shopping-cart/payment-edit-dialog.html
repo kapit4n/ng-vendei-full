@@ -1,14 +1,18 @@
 <h2 mat-dialog-title class="pay-dialog-title">Registrar pago</h2>
 
 <mat-dialog-content class="pay-dialog-body">
-  <p class="pay-dialog-due" *ngIf="data.due > 0">
-    <span class="pay-dialog-due-label">Saldo pendiente</span>
-    <span class="pay-dialog-due-value">Bs {{ data.due | number:'1.2-2' }}</span>
-  </p>
-  <p class="pay-dialog-due pay-dialog-due--ok" *ngIf="data.due <= 0 && data.total > 0">
-    <mat-icon inline>check_circle</mat-icon>
-    Cobro completo con el teclado de billetes, o ajuste el total aquí.
-  </p>
+  @if (data.due > 0) {
+    <p class="pay-dialog-due">
+      <span class="pay-dialog-due-label">Saldo pendiente</span>
+      <span class="pay-dialog-due-value">Bs {{ data.due | number:'1.2-2' }}</span>
+    </p>
+  }
+  @if (data.due <= 0 && data.total > 0) {
+    <p class="pay-dialog-due pay-dialog-due--ok">
+      <mat-icon inline>check_circle</mat-icon>
+      Cobro completo con el teclado de billetes, o ajuste el total aquí.
+    </p>
+  }
 
   <mat-form-field appearance="outline" class="pay-dialog-field">
     <mat-label>Total pagado (Bs)</mat-label>
@@ -16,12 +20,18 @@
     <mat-hint>Suma de efectivo, QR y otros medios registrados</mat-hint>
   </mat-form-field>
 
-  <p class="pay-dialog-change" *ngIf="data.pay != null && data.total != null">
-    Cambio / diferencia:
-    <strong>{{ (data.pay - data.total) | number:'1.2-2' }}</strong> Bs
-    <span class="pay-dialog-change-hint" *ngIf="data.pay - data.total < 0">(falta cobrar)</span>
-    <span class="pay-dialog-change-hint" *ngIf="data.pay - data.total > 0">(entregar cambio)</span>
-  </p>
+  @if (data.pay != null && data.total != null) {
+    <p class="pay-dialog-change">
+      Cambio / diferencia:
+      <strong>{{ (data.pay - data.total) | number:'1.2-2' }}</strong> Bs
+      @if (data.pay - data.total < 0) {
+        <span class="pay-dialog-change-hint">(falta cobrar)</span>
+      }
+      @if (data.pay - data.total > 0) {
+        <span class="pay-dialog-change-hint">(entregar cambio)</span>
+      }
+    </p>
+  }
 
   <div class="pay-dialog-quick">
     <button mat-stroked-button type="button" (click)="fillRemainingDue()" [disabled]="data.due <= 0">

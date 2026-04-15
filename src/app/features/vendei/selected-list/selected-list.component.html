@@ -1,34 +1,39 @@
-<div class="cart-lines" *ngIf="selectedProducts?.length; else emptyCart">
-  <div class="line-item" *ngFor="let product of selectedProducts">
-    <div class="line-thumb">
-      <img [src]="lineImageUrl(product)" width="48" height="48" alt="" loading="lazy" />
-    </div>
-    <div class="line-main">
-      <div class="line-title-row">
-        <span class="line-name">{{ lineDisplayName(product) }}</span>
-        <div class="line-actions" *ngIf="printOrderCount != 1">
-          <button type="button" mat-icon-button class="line-btn" (click)="removeProduct(product); $event.stopPropagation()"
-            aria-label="Remove">
-            <mat-icon>delete_outline</mat-icon>
-          </button>
-          <button type="button" mat-icon-button class="line-btn" (click)="openDialog(product); $event.stopPropagation()"
-            aria-label="Edit quantity">
-            <mat-icon>edit</mat-icon>
-          </button>
+@if (selectedProducts?.length) {
+  <div class="cart-lines">
+    @for (product of selectedProducts; track product) {
+      <div class="line-item">
+        <div class="line-thumb">
+          <img [src]="lineImageUrl(product)" width="48" height="48" alt="" loading="lazy" />
+        </div>
+        <div class="line-main">
+          <div class="line-title-row">
+            <span class="line-name">{{ lineDisplayName(product) }}</span>
+            @if (printOrderCount != 1) {
+              <div class="line-actions">
+                <button type="button" mat-icon-button class="line-btn" (click)="removeProduct(product); $event.stopPropagation()"
+                  aria-label="Remove">
+                  <mat-icon>delete_outline</mat-icon>
+                </button>
+                <button type="button" mat-icon-button class="line-btn" (click)="openDialog(product); $event.stopPropagation()"
+                  aria-label="Edit quantity">
+                  <mat-icon>edit</mat-icon>
+                </button>
+              </div>
+            }
+          </div>
+          <div class="line-meta">
+            <span class="line-qty">{{ product.quantity }} × Bs {{ product.currentPrice | number:'1.2-2' }}</span>
+            <span class="line-sub">Subtotal: <strong>{{ (product.currentPrice * product.quantity) | number:'1.2-2' }}</strong></span>
+          </div>
         </div>
       </div>
-      <div class="line-meta">
-        <span class="line-qty">{{ product.quantity }} × Bs {{ product.currentPrice | number:'1.2-2' }}</span>
-        <span class="line-sub">Subtotal: <strong>{{ (product.currentPrice * product.quantity) | number:'1.2-2' }}</strong></span>
-      </div>
-    </div>
+    }
   </div>
-</div>
-
-<ng-template #emptyCart>
+} @else {
   <div class="cart-empty">
     <mat-icon class="cart-empty-icon">shopping_cart</mat-icon>
     <p>No items yet</p>
     <p class="cart-empty-hint">Tap a product to add it to the ticket</p>
   </div>
-</ng-template>
+}
+

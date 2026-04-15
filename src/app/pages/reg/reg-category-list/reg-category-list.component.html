@@ -5,12 +5,14 @@
     <th>Code</th>
     <th></th>
   </tr>
-  <tr *ngFor="let cat of categories">
-    <td>{{cat.name}}</td>
-    <td>{{cat.code}}</td>
-    <td>
-      <button class="btn" (click)="openCategory(cat.id)">Edit</button> &nbsp;
-      <button class="btn btn-danger">Delete</button>
-    </td>
-  </tr>
+  @for (cat of categories; track cat) {
+    <tr>
+      <td>{{cat.name}}</td>
+      <td>{{cat.code}}</td>
+      <td>
+        <button class="btn" (click)="openCategory(cat.id)">Edit</button> &nbsp;
+        <button class="btn btn-danger">Delete</button>
+      </td>
+    </tr>
+  }
 </table>

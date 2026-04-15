@@ -3,9 +3,10 @@ import { ICategory, RCategoryService } from "../../../services/reg/r-category.se
 import { Router, ActivatedRoute } from "@angular/router";
 
 @Component({
-  selector: "app-reg-category",
-  templateUrl: "./reg-category.component.html",
-  styleUrls: ["./reg-category.component.css"]
+    selector: "app-reg-category",
+    templateUrl: "./reg-category.component.html",
+    styleUrls: ["./reg-category.component.css"],
+    standalone: false
 })
 export class RegCategoryComponent implements OnInit {
   categoryInfo: ICategory;

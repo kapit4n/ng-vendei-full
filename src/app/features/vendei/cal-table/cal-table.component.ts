@@ -11,9 +11,10 @@ enum PaymentType {
 }
 
 @Component({
-  selector: "app-cal-table",
-  templateUrl: "./cal-table.component.html",
-  styleUrls: ["./cal-table.component.css"]
+    selector: "app-cal-table",
+    templateUrl: "./cal-table.component.html",
+    styleUrls: ["./cal-table.component.css"],
+    standalone: false
 })
 export class CalTableComponent implements OnInit {
   /** Ticket total (Bs) — used to show balance due. */

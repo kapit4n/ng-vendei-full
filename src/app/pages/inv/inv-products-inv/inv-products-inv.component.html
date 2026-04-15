@@ -2,19 +2,20 @@
   <h2>Register Product</h2>
   <div class="row">
     <div class="col-3">
-        <img *ngIf="invInfo.img; else placeImg" [src]="invInfo.img" width="90%" alt="">
-      <ng-template #placeImg>
+      @if (invInfo.img) {
+        <img [src]="invInfo.img" width="90%" alt="">
+      } @else {
         <img src="https://ilsto.websites.co.in/obaju-pink/img/product-placeholder.png" width="90%" alt="">
-      </ng-template>
+      }
     </div>
     <div class="col-7">
       <div class="panel panel-default">
-          <div class="panel-heading">Inventory - {{invInfo.name}}</div>
+        <div class="panel-heading">Inventory - {{invInfo.name}}</div>
         <div class="panel-body">
           <label for="code" i18n>Code: </label>
           <label id="name" i18n>{{invInfo.code}}</label>
         </div>
-        
+
         <div class="panel-body">
           <label for="cost" i18n>Cost: </label>
           <label id="cost" i18n>{{invInfo.cost}}</label>
@@ -32,14 +33,16 @@
           <th>Total Price</th>
           <th></th>
         </tr>
-        <tr *ngFor="let invItem of productInvs">
-          <td>{{invItem.price}}</td>
-          <td>{{invItem.quantity}}</td>
-          <td>{{invItem.totalPrice}}</td>
-          <td>
-            <button class="btn" (click)="delInvItem(invItem)">Del</button> &nbsp;
-          </td>
-        </tr>
+        @for (invItem of productInvs; track invItem) {
+          <tr>
+            <td>{{invItem.price}}</td>
+            <td>{{invItem.quantity}}</td>
+            <td>{{invItem.totalPrice}}</td>
+            <td>
+              <button class="btn" (click)="delInvItem(invItem)">Del</button> &nbsp;
+            </td>
+          </tr>
+        }
       </table>
 
     </div>

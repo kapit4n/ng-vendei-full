@@ -4,9 +4,10 @@ import { RProductPresentationService, IProductPresentation } from '../../../serv
 import { Router } from "@angular/router";
 
 @Component({
-  selector: "app-reg-product-list",
-  templateUrl: "./reg-product-list.component.html",
-  styleUrls: ["./reg-product-list.component.css"]
+    selector: "app-reg-product-list",
+    templateUrl: "./reg-product-list.component.html",
+    styleUrls: ["./reg-product-list.component.css"],
+    standalone: false
 })
 export class RegProductListComponent implements OnInit {
   products: IProduct[];

@@ -1,82 +1,99 @@
 <div class="pos-shell">
-<div class="shopping-cart-container">
-  <div class="cart-toolbar">
-    <button mat-raised-button color="primary" class="cart-save-btn" (click)="submitOrder()"
-      *ngIf="total > 0 && totalPayed >= total && printOrderCount == 0">
-      <mat-icon>save</mat-icon>
-      Save order
-    </button>
-    <button mat-raised-button color="primary" class="cart-save-btn" (click)="submitOrder()"
-      *ngIf="total > 0 && totalPayed >= total && printOrderCount == 1">
-      <mat-icon>print</mat-icon>
-      Print
-    </button>
+  <div class="shopping-cart-container">
+    <div class="cart-toolbar">
+      @if (total > 0 && totalPayed >= total && printOrderCount == 0) {
+        <button mat-raised-button color="primary" class="cart-save-btn" (click)="submitOrder()"
+          >
+          <mat-icon>save</mat-icon>
+          Save order
+        </button>
+      }
+      @if (total > 0 && totalPayed >= total && printOrderCount == 1) {
+        <button mat-raised-button color="primary" class="cart-save-btn" (click)="submitOrder()"
+          >
+          <mat-icon>print</mat-icon>
+          Print
+        </button>
+      }
+    </div>
+
+    <div class="selected-list" #toPrint id="toPrint">
+      <div class="selected-list-header">
+        <mat-icon class="header-icon">receipt_long</mat-icon>
+        <span class="header-title">Current ticket</span>
+      </div>
+
+      <div class="selected-list-body">
+        <app-selected-list [selectedProducts]="selectedProducts" [removeProduct]="removeProduct.bind(this)"
+          [recalTotal]="recalTotal.bind(this)" [(printOrderCount)]="printOrderCount">
+        </app-selected-list>
+      </div>
+
+      @if (total > 0 || totalPayed > 0) {
+        <div class="cart-summary">
+          <div class="cart-summary-row cart-summary-total">
+            <span class="label">Total</span>
+            <span class="value">Bs {{ total | number:'1.2-2' }}</span>
+          </div>
+          @if (totalPayed - totalReturn != total) {
+            <div class="cart-summary-row">
+              <span class="label" i18n>Payed</span>
+              <span class="value">Bs {{ totalPayed | number:'1.2-2' }}</span>
+            </div>
+          }
+          @if (totalDiscount > 0) {
+            <div class="cart-summary-row">
+              <span class="label">Discount</span>
+              <span class="value discount">− Bs {{ totalDiscount | number:'1.2-2' }}</span>
+            </div>
+          }
+          @if (toReturn > 0) {
+            <div class="cart-summary-row">
+              <span class="label">To return</span>
+              <span class="value">Bs {{ toReturn | number:'1.2-2' }}</span>
+            </div>
+          }
+          @if (total > 0 && totalPayed - totalReturn == total) {
+            <div class="cart-summary-status paid">
+              <mat-icon>check_circle</mat-icon>
+              <span i18n>Paid out</span>
+            </div>
+          }
+          @if (total) {
+            <div class="cart-summary-actions">
+              @if (totalPayed - totalReturn < total) {
+                <button mat-flat-button color="accent" class="pay-btn"
+                  (click)="openPaymentDialog()">
+                  <mat-icon>payments</mat-icon>
+                  Pay Bs {{ (total - totalPayed) | number:'1.2-2' }}
+                </button>
+              }
+              @if (totalPayed - totalReturn > total) {
+                <button mat-flat-button color="warn" class="pay-btn"
+                  (click)="openPaymentDialog()">
+                  <mat-icon>undo</mat-icon>
+                  Return Bs {{ (totalPayed - total) | number:'1.2-2' }}
+                </button>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    @if (displayCal) {
+      <app-cal-table class="cal-table" [selectCustomer]="selectCustomer.bind(this)"
+        [selectedCustomer]="selectedCustomer" [orderTotal]="total" [(payedItems)]="payedItems" [(discountItems)]="discountItems"
+        [(returnItems)]="returnItems" [(totalPayed)]="totalPayed" [(totalDiscount)]="totalDiscount"
+        [(totalReturn)]="totalReturn" [calTotals]="calTotals.bind(this)" [payIt]="payIt.bind(this)"
+      [removeItem]="removeItem.bind(this)" [(printOrderCount)]="printOrderCount"></app-cal-table>
+    }
   </div>
 
-  <div class="selected-list" #toPrint id="toPrint">
-    <div class="selected-list-header">
-      <mat-icon class="header-icon">receipt_long</mat-icon>
-      <span class="header-title">Current ticket</span>
-    </div>
-
-    <div class="selected-list-body">
-      <app-selected-list [selectedProducts]="selectedProducts" [removeProduct]="removeProduct.bind(this)"
-        [recalTotal]="recalTotal.bind(this)" [(printOrderCount)]="printOrderCount">
-      </app-selected-list>
-    </div>
-
-    <div class="cart-summary" *ngIf="total > 0 || totalPayed > 0">
-      <div class="cart-summary-row cart-summary-total">
-        <span class="label">Total</span>
-        <span class="value">Bs {{ total | number:'1.2-2' }}</span>
-      </div>
-
-      <div class="cart-summary-row" *ngIf="totalPayed - totalReturn != total">
-        <span class="label" i18n>Payed</span>
-        <span class="value">Bs {{ totalPayed | number:'1.2-2' }}</span>
-      </div>
-
-      <div class="cart-summary-row" *ngIf="totalDiscount > 0">
-        <span class="label">Discount</span>
-        <span class="value discount">− Bs {{ totalDiscount | number:'1.2-2' }}</span>
-      </div>
-
-      <div class="cart-summary-row" *ngIf="toReturn > 0">
-        <span class="label">To return</span>
-        <span class="value">Bs {{ toReturn | number:'1.2-2' }}</span>
-      </div>
-
-      <div class="cart-summary-status paid" *ngIf="total > 0 && totalPayed - totalReturn == total">
-        <mat-icon>check_circle</mat-icon>
-        <span i18n>Paid out</span>
-      </div>
-
-      <div class="cart-summary-actions" *ngIf="total">
-        <button mat-flat-button color="accent" class="pay-btn" *ngIf="totalPayed - totalReturn < total"
-          (click)="openPaymentDialog()">
-          <mat-icon>payments</mat-icon>
-          Pay Bs {{ (total - totalPayed) | number:'1.2-2' }}
-        </button>
-        <button mat-flat-button color="warn" class="pay-btn" *ngIf="totalPayed - totalReturn > total"
-          (click)="openPaymentDialog()">
-          <mat-icon>undo</mat-icon>
-          Return Bs {{ (totalPayed - total) | number:'1.2-2' }}
-        </button>
-      </div>
-    </div>
-  </div>
-
-    <app-cal-table *ngIf="displayCal" class="cal-table" [selectCustomer]="selectCustomer.bind(this)"
-    [selectedCustomer]="selectedCustomer" [orderTotal]="total" [(payedItems)]="payedItems" [(discountItems)]="discountItems"
-    [(returnItems)]="returnItems" [(totalPayed)]="totalPayed" [(totalDiscount)]="totalDiscount"
-    [(totalReturn)]="totalReturn" [calTotals]="calTotals.bind(this)" [payIt]="payIt.bind(this)"
-    [removeItem]="removeItem.bind(this)" [(printOrderCount)]="printOrderCount"></app-cal-table>
-</div>
-
-<div class="product-list">
-  <app-product-list [selectedProducts]="selectedProducts" [recalTotal]="recalTotal.bind(this)"
+  <div class="product-list">
+    <app-product-list [selectedProducts]="selectedProducts" [recalTotal]="recalTotal.bind(this)"
     [(printOrderCount)]="printOrderCount"></app-product-list>
 
-  <app-category-list class="product-list-categories"></app-category-list>
-</div>
+    <app-category-list class="product-list-categories"></app-category-list>
+  </div>
 </div>

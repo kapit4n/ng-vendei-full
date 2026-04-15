@@ -10,9 +10,10 @@ import { RUploadService } from '../../../services/reg/r-upload.service';
 import { resolvePresentationImageUrl, resolveProductImageUrl } from 'src/app/utils/product-image-url';
 
 @Component({
-  selector: 'app-reg-product-show',
-  templateUrl: './reg-product-show.component.html',
-  styleUrls: ['./reg-product-show.component.css'],
+    selector: 'app-reg-product-show',
+    templateUrl: './reg-product-show.component.html',
+    styleUrls: ['./reg-product-show.component.css'],
+    standalone: false
 })
 export class RegProductShowComponent implements OnInit {
   product: IProduct | null = null;

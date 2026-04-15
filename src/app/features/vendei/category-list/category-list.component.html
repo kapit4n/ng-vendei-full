@@ -1,8 +1,10 @@
 <div class="category-list-container">
-  <div class="category-list-item-t" *ngFor="let category of categories"
-    [style.background]="'url(' + category.img + ')'">
-    <span class="category-list-item-name">
-      {{ category.name }}
-    </span>
-  </div>
+  @for (category of categories; track category) {
+    <div class="category-list-item-t"
+      [style.background]="'url(' + category.img + ')'">
+      <span class="category-list-item-name">
+        {{ category.name }}
+      </span>
+    </div>
+  }
 </div>

@@ -1,31 +1,49 @@
 <div class="payment-panel">
   <section class="payment-sidebar" aria-label="Customer and payment log">
-    <div class="payment-chips" *ngIf="payedItems.length > 0">
-      <span class="payment-chips-label" i18n>Pagos</span>
-      <button type="button" class="chip-thumb" *ngFor="let payI of payedItems" (click)="removeItem(payI)"
-        [attr.aria-label]="'Quitar pago'"
-        [class.chip-thumb--qr]="isQrPayment(payI)">
-        <mat-icon *ngIf="isQrPayment(payI)" class="chip-qr-icon">qr_code_2</mat-icon>
-        <span class="chip-qr-amount" *ngIf="isQrPayment(payI)">{{ payI.name }} Bs</span>
-        <img *ngIf="!isQrPayment(payI) && payI.img" [src]="payI.img" height="28" width="40" alt="" />
-      </button>
-    </div>
+    @if (payedItems.length > 0) {
+      <div class="payment-chips">
+        <span class="payment-chips-label" i18n>Pagos</span>
+        @for (payI of payedItems; track payI) {
+          <button type="button" class="chip-thumb" (click)="removeItem(payI)"
+            [attr.aria-label]="'Quitar pago'"
+            [class.chip-thumb--qr]="isQrPayment(payI)">
+            @if (isQrPayment(payI)) {
+              <mat-icon class="chip-qr-icon">qr_code_2</mat-icon>
+            }
+            @if (isQrPayment(payI)) {
+              <span class="chip-qr-amount">{{ payI.name }} Bs</span>
+            }
+            @if (!isQrPayment(payI) && payI.img) {
+              <img [src]="payI.img" height="28" width="40" alt="" />
+            }
+          </button>
+        }
+      </div>
+    }
 
-    <div class="payment-chips" *ngIf="returnItems.length > 0">
-      <span class="payment-chips-label" i18n>Return</span>
-      <button type="button" class="chip-thumb" *ngFor="let payI of returnItems" (click)="removeItem(payI)">
-        <img [src]="payI.img" height="28" width="40" alt="" />
-      </button>
-    </div>
+    @if (returnItems.length > 0) {
+      <div class="payment-chips">
+        <span class="payment-chips-label" i18n>Return</span>
+        @for (payI of returnItems; track payI) {
+          <button type="button" class="chip-thumb" (click)="removeItem(payI)">
+            <img [src]="payI.img" height="28" width="40" alt="" />
+          </button>
+        }
+      </div>
+    }
 
-    <div class="discount-line" *ngIf="discountItems.length > 0">
-      <span class="payment-chips-label">Discount</span>
-      <span class="discount-tags">
-        <button type="button" class="discount-tag" *ngFor="let payI of discountItems" (click)="removeItem(payI)">
-          {{ payI.name }}
-        </button>
-      </span>
-    </div>
+    @if (discountItems.length > 0) {
+      <div class="discount-line">
+        <span class="payment-chips-label">Discount</span>
+        <span class="discount-tags">
+          @for (payI of discountItems; track payI) {
+            <button type="button" class="discount-tag" (click)="removeItem(payI)">
+              {{ payI.name }}
+            </button>
+          }
+        </span>
+      </div>
+    }
 
     <div class="customer-card">
       <div class="customer-card-label">Customer</div>
@@ -40,20 +58,26 @@
   </section>
 
   <section class="payment-keypad" [attr.aria-label]="payTypeLabel">
-    <div class="due-banner" *ngIf="orderTotal > 0">
-      <div class="due-banner-row">
-        <span class="due-label">Total ticket</span>
-        <span class="due-amount">Bs {{ orderTotal | number:'1.2-2' }}</span>
+    @if (orderTotal > 0) {
+      <div class="due-banner">
+        <div class="due-banner-row">
+          <span class="due-label">Total ticket</span>
+          <span class="due-amount">Bs {{ orderTotal | number:'1.2-2' }}</span>
+        </div>
+        @if (amountDue > 0) {
+          <div class="due-banner-row due-banner-row--accent">
+            <span class="due-label">Pendiente</span>
+            <span class="due-amount">Bs {{ amountDue | number:'1.2-2' }}</span>
+          </div>
+        }
+        @if (orderTotal > 0 && amountDue <= 0) {
+          <div class="due-banner-row due-banner-row--ok">
+            <mat-icon class="due-ok-icon">check_circle</mat-icon>
+            <span>Cobro cubierto — puede guardar o entregar cambio si aplica</span>
+          </div>
+        }
       </div>
-      <div class="due-banner-row due-banner-row--accent" *ngIf="amountDue > 0">
-        <span class="due-label">Pendiente</span>
-        <span class="due-amount">Bs {{ amountDue | number:'1.2-2' }}</span>
-      </div>
-      <div class="due-banner-row due-banner-row--ok" *ngIf="orderTotal > 0 && amountDue <= 0">
-        <mat-icon class="due-ok-icon">check_circle</mat-icon>
-        <span>Cobro cubierto — puede guardar o entregar cambio si aplica</span>
-      </div>
-    </div>
+    }
 
     <div class="mode-tabs" role="tablist" aria-label="Tipo de movimiento">
       <button type="button" role="tab" class="mode-tab" [class.mode-tab--active]="payType === PayKind.PAYMONEY"
@@ -83,12 +107,20 @@
     </div>
 
     <div class="bill-grid" [class.bill-grid--qr]="payType === PayKind.PAYQR">
-      <button type="button" mat-stroked-button class="bill-btn" *ngFor="let payItem of payItems"
-        (click)="payIt(payItem, payType)" [disabled]="printOrderCount">
-        <mat-icon class="bill-qr-badge" *ngIf="payType === PayKind.PAYQR">qr_code_2</mat-icon>
-        <img *ngIf="payItem.img" [src]="payItem.img" class="bill-img" alt="" />
-        <span class="bill-label">{{ payItem.name }}<span *ngIf="displayCurrentType" class="bill-currency">{{ currentType }}</span></span>
-      </button>
+      @for (payItem of payItems; track payItem) {
+        <button type="button" mat-stroked-button class="bill-btn"
+          (click)="payIt(payItem, payType)" [disabled]="printOrderCount">
+          @if (payType === PayKind.PAYQR) {
+            <mat-icon class="bill-qr-badge">qr_code_2</mat-icon>
+          }
+          @if (payItem.img) {
+            <img [src]="payItem.img" class="bill-img" alt="" />
+          }
+          <span class="bill-label">{{ payItem.name }}@if (displayCurrentType) {
+            <span class="bill-currency">{{ currentType }}</span>
+          }</span>
+        </button>
+      }
     </div>
   </section>
 </div>

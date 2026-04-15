@@ -12,9 +12,10 @@ import {
 const PLACEHOLDER_IMG = 'assets/vendei/placeholders/product-card.svg';
 
 @Component({
-  selector: 'app-reg-product',
-  templateUrl: './reg-product.component.html',
-  styleUrls: ['./reg-product.component.css']
+    selector: 'app-reg-product',
+    templateUrl: './reg-product.component.html',
+    styleUrls: ['./reg-product.component.css'],
+    standalone: false
 })
 export class RegProductComponent implements OnInit {
   productInfo: IProduct;

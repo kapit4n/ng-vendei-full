@@ -3,9 +3,10 @@ import { Component, OnInit, Input } from '@angular/core';
 import { VCustomersService } from '../../../services/vendei/v-customers.service';
 
 @Component({
-  selector: "app-customer-list",
-  templateUrl: "./customer-list.component.html",
-  styleUrls: ["./customer-list.component.css"]
+    selector: "app-customer-list",
+    templateUrl: "./customer-list.component.html",
+    styleUrls: ["./customer-list.component.css"],
+    standalone: false
 })
 export class CustomerListComponent implements OnInit {
   @Input() selectCustomer: Function;

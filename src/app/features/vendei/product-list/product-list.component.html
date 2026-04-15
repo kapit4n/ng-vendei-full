@@ -11,10 +11,12 @@
         <mat-icon matPrefix class="search-prefix">search</mat-icon>
         <input matInput type="search" autocomplete="off" [ngModel]="searchQuery"
           (ngModelChange)="onSearchChange($event)" placeholder="Name or code" [ngModelOptions]="{ standalone: true }" />
-        <button mat-icon-button matSuffix type="button" *ngIf="searchQuery" (click)="clearSearch()"
-          aria-label="Clear search">
-          <mat-icon>close</mat-icon>
-        </button>
+        @if (searchQuery) {
+          <button mat-icon-button matSuffix type="button" (click)="clearSearch()"
+            aria-label="Clear search">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="search-field-code" subscriptSizing="dynamic">
@@ -22,46 +24,58 @@
         <mat-icon matPrefix class="search-prefix">qr_code_2</mat-icon>
         <input matInput type="text" autocomplete="off" [(ngModel)]="productCode"
           (keyup.enter)="addByCodeField()" placeholder="Exact code · Enter" [ngModelOptions]="{ standalone: true }" />
-        <button mat-icon-button matSuffix type="button" *ngIf="productCode" (click)="productCode = ''"
-          aria-label="Clear code">
-          <mat-icon>close</mat-icon>
-        </button>
+        @if (productCode) {
+          <button mat-icon-button matSuffix type="button" (click)="productCode = ''"
+            aria-label="Clear code">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
       </mat-form-field>
     </div>
   </div>
 
-  <div class="category-chips" *ngIf="categories.length">
-    <span class="category-chips-label">Category</span>
-    <div class="category-chips-row">
-      <button type="button" mat-stroked-button class="chip" *ngFor="let cat of categories"
-        [class.chip-active]="isCategoryActive(cat)" (click)="selectCategoryChip(cat)">
-        {{ cat.name }}
-      </button>
+  @if (categories.length) {
+    <div class="category-chips">
+      <span class="category-chips-label">Category</span>
+      <div class="category-chips-row">
+        @for (cat of categories; track cat) {
+          <button type="button" mat-stroked-button class="chip"
+            [class.chip-active]="isCategoryActive(cat)" (click)="selectCategoryChip(cat)">
+            {{ cat.name }}
+          </button>
+        }
+      </div>
     </div>
-  </div>
+  }
 
-  <div class="search-meta" *ngIf="originalP.length">
-    <span class="search-meta-count">Showing {{ products.length }} of {{ originalP.length }} products</span>
-  </div>
+  @if (originalP.length) {
+    <div class="search-meta">
+      <span class="search-meta-count">Showing {{ products.length }} of {{ originalP.length }} products</span>
+    </div>
+  }
 
   <div class="product-cards-box">
-    <div class="product-cards-empty" *ngIf="!products.length && originalP.length">
-      <mat-icon class="empty-icon">search_off</mat-icon>
-      <p class="empty-title">No matches</p>
-      <p class="empty-hint">Try another search or pick a different category.</p>
-      <button mat-stroked-button type="button" color="primary" (click)="resetFilters()">
-        Reset filters
-      </button>
-    </div>
-
-    <button type="button" class="product-list-item-t" *ngFor="let product of products" (click)="addProduct(product)"
-      [attr.aria-label]="'Add ' + displayProductName(product)">
-      <div class="product-card-image" [style.background-image]="'url(' + productCardImageUrl(product) + ')'"></div>
-      <div class="product-card-overlay"></div>
-      <div class="product-card-body">
-        <span class="product-card-price">Bs {{ product.currentPrice | number:'1.2-2' }}</span>
-        <span class="product-card-name">{{ displayProductName(product) }}</span>
+    @if (!products.length && originalP.length) {
+      <div class="product-cards-empty">
+        <mat-icon class="empty-icon">search_off</mat-icon>
+        <p class="empty-title">No matches</p>
+        <p class="empty-hint">Try another search or pick a different category.</p>
+        <button mat-stroked-button type="button" color="primary" (click)="resetFilters()">
+          Reset filters
+        </button>
       </div>
-    </button>
+    }
+
+    @for (product of products; track product) {
+      <button type="button" class="product-list-item-t" (click)="addProduct(product)"
+        [attr.aria-label]="'Add ' + displayProductName(product)">
+        <div class="product-card-image" [style.background-image]="'url(' + productCardImageUrl(product) + ')'"></div>
+        <div class="product-card-overlay"></div>
+        <div class="product-card-body">
+          <span class="product-card-price">Bs {{ product.currentPrice | number:'1.2-2' }}</span>
+          <span class="product-card-name">{{ displayProductName(product) }}</span>
+        </div>
+      </button>
+    }
   </div>
 </div>

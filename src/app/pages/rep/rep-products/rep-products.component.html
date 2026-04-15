@@ -8,13 +8,17 @@
       <th>Total Selled</th>
       <th></th>
     </tr>
-    <tr *ngFor="let product of products">
-      <td>{{product.name}}</td>
-      <td>{{product.quantitySelled}}</td>
-      <td>{{product.totalSelled}}</td>
-      <td>
-        <button class="btn" (click)="openProductRep(product.id)" *ngIf="false"><i class="fa fa-folder"></i></button> &nbsp;
-      </td>
-    </tr>
-  </table>
-</div>
+    @for (product of products; track product) {
+      <tr>
+        <td>{{product.name}}</td>
+        <td>{{product.quantitySelled}}</td>
+        <td>{{product.totalSelled}}</td>
+        <td>
+          @if (false) {
+            <button class="btn" (click)="openProductRep(product.id)"><i class="fa fa-folder"></i></button>
+            } &nbsp;
+          </td>
+        </tr>
+      }
+    </table>
+  </div>

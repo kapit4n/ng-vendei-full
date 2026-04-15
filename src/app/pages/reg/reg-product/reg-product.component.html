@@ -6,7 +6,9 @@
     </mat-card-header>
 
     <mat-card-content>
-      <p class="form-error" *ngIf="saveError" role="alert">{{ saveError }}</p>
+      @if (saveError) {
+        <p class="form-error" role="alert">{{ saveError }}</p>
+      }
 
       <div class="form-layout">
         <div class="preview-panel">
@@ -21,7 +23,9 @@
             <mat-label>Category</mat-label>
             <mat-select [(ngModel)]="productInfo.categoryId" name="categoryId" required
               [compareWith]="compareCategoryId">
-              <mat-option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</mat-option>
+              @for (cat of categories; track cat) {
+                <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
+              }
             </mat-select>
           </mat-form-field>
 

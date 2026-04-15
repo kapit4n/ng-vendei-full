@@ -4,9 +4,10 @@ import { VConfigService } from "../../../services/vendei/v-config.service";
 import { Router } from "@angular/router";
 
 @Component({
-  selector: "app-category-list",
-  templateUrl: "./category-list.component.html",
-  styleUrls: ["./category-list.component.css"]
+    selector: "app-category-list",
+    templateUrl: "./category-list.component.html",
+    styleUrls: ["./category-list.component.css"],
+    standalone: false
 })
 export class CategoryListComponent implements OnInit {
   @Input()

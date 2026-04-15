@@ -7,9 +7,10 @@ import {
 } from "../../../services/rep/rep-products.service";
 
 @Component({
-  selector: "app-rep-products",
-  templateUrl: "./rep-products.component.html",
-  styleUrls: ["./rep-products.component.css"]
+    selector: "app-rep-products",
+    templateUrl: "./rep-products.component.html",
+    styleUrls: ["./rep-products.component.css"],
+    standalone: false
 })
 export class RepProductsComponent implements OnInit {
   products: IProduct[];

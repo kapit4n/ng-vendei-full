@@ -23,37 +23,43 @@
   <mat-tab-group [(selectedIndex)]="tabIndex" class="catalog-tabs" animationDuration="200ms">
     <mat-tab label="Products">
       <div class="tab-panel">
-        <div class="empty-state" *ngIf="!products?.length">
-          <mat-icon class="empty-icon">inventory_2</mat-icon>
-          <p class="empty-title">No products yet</p>
-          <p class="empty-hint">Create a product, then add pricing and units under <strong>Product details</strong>.</p>
-          <button mat-raised-button color="primary" type="button" (click)="newProduct()">Create product</button>
-        </div>
+        @if (!products?.length) {
+          <div class="empty-state">
+            <mat-icon class="empty-icon">inventory_2</mat-icon>
+            <p class="empty-title">No products yet</p>
+            <p class="empty-hint">Create a product, then add pricing and units under <strong>Product details</strong>.</p>
+            <button mat-raised-button color="primary" type="button" (click)="newProduct()">Create product</button>
+          </div>
+        }
 
-        <div class="table-wrap" *ngIf="products?.length">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Product</th>
-                <th>Code</th>
-                <th>Category</th>
-                <th class="col-actions">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let product of products">
-                <td class="cell-strong">{{ product.name }}</td>
-                <td><code class="code-pill">{{ product.code }}</code></td>
-                <td>{{ product.Category?.name || '—' }}</td>
-                <td class="col-actions">
-                  <button mat-stroked-button type="button" (click)="openProductShow(product.id)">View</button>
-                  <button mat-stroked-button color="primary" type="button" (click)="openProduct(product.id)">Edit</button>
-                  <button mat-stroked-button color="warn" type="button" (click)="removeProduct(product.id)">Delete</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        @if (products?.length) {
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Code</th>
+                  <th>Category</th>
+                  <th class="col-actions">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (product of products; track product) {
+                  <tr>
+                    <td class="cell-strong">{{ product.name }}</td>
+                    <td><code class="code-pill">{{ product.code }}</code></td>
+                    <td>{{ product.Category?.name || '—' }}</td>
+                    <td class="col-actions">
+                      <button mat-stroked-button type="button" (click)="openProductShow(product.id)">View</button>
+                      <button mat-stroked-button color="primary" type="button" (click)="openProduct(product.id)">Edit</button>
+                      <button mat-stroked-button color="warn" type="button" (click)="removeProduct(product.id)">Delete</button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
       </div>
     </mat-tab>
 
@@ -61,38 +67,44 @@
       <div class="tab-panel">
         <p class="tab-lead">Price, unit of measure, and quantity per product presentation.</p>
 
-        <div class="empty-state" *ngIf="!productPresentations?.length">
-          <mat-icon class="empty-icon">tune</mat-icon>
-          <p class="empty-title">No product details</p>
-          <p class="empty-hint">Add a detail row for each sellable unit (e.g. bottle, box).</p>
-          <button mat-raised-button color="primary" type="button" (click)="newProductPresentation()">New detail</button>
-        </div>
+        @if (!productPresentations?.length) {
+          <div class="empty-state">
+            <mat-icon class="empty-icon">tune</mat-icon>
+            <p class="empty-title">No product details</p>
+            <p class="empty-hint">Add a detail row for each sellable unit (e.g. bottle, box).</p>
+            <button mat-raised-button color="primary" type="button" (click)="newProductPresentation()">New detail</button>
+          </div>
+        }
 
-        <div class="table-wrap" *ngIf="productPresentations?.length">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Product</th>
-                <th>Price</th>
-                <th>Unit</th>
-                <th>Qty</th>
-                <th class="col-actions">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let row of productPresentations">
-                <td class="cell-strong">{{ row.Product?.name || '—' }}</td>
-                <td>{{ row.currentPrice | number:'1.2-2' }}</td>
-                <td>{{ row.unitOfMeasure || '—' }}</td>
-                <td>{{ row.quantity ?? '—' }}</td>
-                <td class="col-actions">
-                  <button mat-stroked-button color="primary" type="button" (click)="openProductPresentation(row.id)">Edit</button>
-                  <button mat-stroked-button color="warn" type="button" (click)="removeProductPresentation(row.id)">Delete</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        @if (productPresentations?.length) {
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Price</th>
+                  <th>Unit</th>
+                  <th>Qty</th>
+                  <th class="col-actions">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (row of productPresentations; track row) {
+                  <tr>
+                    <td class="cell-strong">{{ row.Product?.name || '—' }}</td>
+                    <td>{{ row.currentPrice | number:'1.2-2' }}</td>
+                    <td>{{ row.unitOfMeasure || '—' }}</td>
+                    <td>{{ row.quantity ?? '—' }}</td>
+                    <td class="col-actions">
+                      <button mat-stroked-button color="primary" type="button" (click)="openProductPresentation(row.id)">Edit</button>
+                      <button mat-stroked-button color="warn" type="button" (click)="removeProductPresentation(row.id)">Delete</button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
       </div>
     </mat-tab>
   </mat-tab-group>

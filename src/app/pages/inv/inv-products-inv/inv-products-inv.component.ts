@@ -5,9 +5,10 @@ import { IProductsInvService } from "../../../services/inv/i-products-inv.servic
 //import { NgbModal, ModalDismissReasons } from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
-  selector: "app-inv-products-inv",
-  templateUrl: "./inv-products-inv.component.html",
-  styleUrls: ["./inv-products-inv.component.css"]
+    selector: "app-inv-products-inv",
+    templateUrl: "./inv-products-inv.component.html",
+    styleUrls: ["./inv-products-inv.component.css"],
+    standalone: false
 })
 export class InvProductsInvComponent implements OnInit {
   invInfo: any = {};

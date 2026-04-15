@@ -15,9 +15,10 @@ import { resolvePresentationImageUrl } from 'src/app/utils/product-image-url';
 const PLACEHOLDER_IMG = 'assets/vendei/placeholders/product-card.svg';
 
 @Component({
-  selector: 'app-reg-product-presentation',
-  templateUrl: './reg-product-presentation.component.html',
-  styleUrls: ['./reg-product-presentation.component.css']
+    selector: 'app-reg-product-presentation',
+    templateUrl: './reg-product-presentation.component.html',
+    styleUrls: ['./reg-product-presentation.component.css'],
+    standalone: false
 })
 export class RegProductPresentationComponent implements OnInit {
   productPresentationInfo: IProductPresentation;

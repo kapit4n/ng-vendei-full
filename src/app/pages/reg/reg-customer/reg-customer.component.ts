@@ -6,9 +6,10 @@ import {
 import { Router, ActivatedRoute } from "@angular/router";
 
 @Component({
-  selector: 'app-reg-customer',
-  templateUrl: './reg-customer.component.html',
-  styleUrls: ['./reg-customer.component.css']
+    selector: 'app-reg-customer',
+    templateUrl: './reg-customer.component.html',
+    styleUrls: ['./reg-customer.component.css'],
+    standalone: false
 })
 export class RegCustomerComponent implements OnInit {
   customerInfo: ICustomer;

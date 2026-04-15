@@ -6,9 +6,10 @@ import {
 import { Router } from "@angular/router";
 
 @Component({
-  selector: 'app-reg-customer-list',
-  templateUrl: './reg-customer-list.component.html',
-  styleUrls: ['./reg-customer-list.component.css']
+    selector: 'app-reg-customer-list',
+    templateUrl: './reg-customer-list.component.html',
+    styleUrls: ['./reg-customer-list.component.css'],
+    standalone: false
 })
 export class RegCustomerListComponent implements OnInit {
 

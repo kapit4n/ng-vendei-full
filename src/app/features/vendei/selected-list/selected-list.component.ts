@@ -12,9 +12,10 @@ export interface DialogData {
 }
 
 @Component({
-  selector: "app-selected-list",
-  templateUrl: "./selected-list.component.html",
-  styleUrls: ["./selected-list.component.css"]
+    selector: "app-selected-list",
+    templateUrl: "./selected-list.component.html",
+    styleUrls: ["./selected-list.component.css"],
+    standalone: false
 })
 export class SelectedListComponent implements OnInit {
   pResult: any;
@@ -66,8 +67,9 @@ export class SelectedListComponent implements OnInit {
 }
 
 @Component({
-  selector: "selected-product-edit-dialog",
-  templateUrl: "selected-product-edit-dialog.html"
+    selector: "selected-product-edit-dialog",
+    templateUrl: "selected-product-edit-dialog.html",
+    standalone: false
 })
 export class SelectedProductEditDialog {
   constructor(

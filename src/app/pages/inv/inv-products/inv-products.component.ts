@@ -4,9 +4,10 @@ import { Router } from "@angular/router";
 import { IProductsService, IProduct } from "../../../services/inv/i-products.service";
 
 @Component({
-  selector: "app-inv-products",
-  templateUrl: "./inv-products.component.html",
-  styleUrls: ["./inv-products.component.css"]
+    selector: "app-inv-products",
+    templateUrl: "./inv-products.component.html",
+    styleUrls: ["./inv-products.component.css"],
+    standalone: false
 })
 export class InvProductsComponent implements OnInit {
   

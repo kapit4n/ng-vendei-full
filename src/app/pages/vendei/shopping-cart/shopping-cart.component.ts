@@ -23,9 +23,10 @@ export interface PaymentDialogData {
 
 
 @Component({
-  selector: "app-shopping-cart",
-  templateUrl: "./shopping-cart.component.html",
-  styleUrls: ["./shopping-cart.component.css"]
+    selector: "app-shopping-cart",
+    templateUrl: "./shopping-cart.component.html",
+    styleUrls: ["./shopping-cart.component.css"],
+    standalone: false
 })
 export class ShoppingCartComponent implements OnInit {
 
@@ -407,9 +408,10 @@ export class ShoppingCartComponent implements OnInit {
 }
 
 @Component({
-  selector: "payment-edit-dialog",
-  templateUrl: "payment-edit-dialog.html",
-  styleUrls: ["payment-edit-dialog.css"],
+    selector: "payment-edit-dialog",
+    templateUrl: "payment-edit-dialog.html",
+    styleUrls: ["payment-edit-dialog.css"],
+    standalone: false
 })
 export class PaymentEditDialog {
   constructor(

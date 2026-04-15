@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { HttpClientModule } from "@angular/common/http";
+import { provideHttpClient } from "@angular/common/http";
 import { FormsModule } from "@angular/forms";
 import { ReactiveFormsModule } from "@angular/forms";
 //import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
@@ -201,13 +201,12 @@ const appRoutes: Routes = [
     RepOrdersComponent,
     RepSellsByOrderComponent,
     RepSellsByProductComponent,
-    MainComponent
+    MainComponent,
   ],
   imports: [
     RouterModule.forRoot(appRoutes, { enableTracing: true }),
     BrowserModule,
     BrowserAnimationsModule,
-    HttpClientModule,
     MatButtonModule,
     MatCheckboxModule,
     MatCardModule,
@@ -223,8 +222,7 @@ const appRoutes: Routes = [
     MatDialogModule,
     MatProgressSpinnerModule,
     FormsModule,
-    //NgbModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
   providers: [
     VProductsService,
@@ -237,11 +235,11 @@ const appRoutes: Routes = [
     RCustomerService,
     IConfigService,
     IProductsService,
-    RepConfigService, 
-    RepProductsService, 
-    RepSellsService
+    RepConfigService,
+    RepProductsService,
+    RepSellsService,
+    provideHttpClient(),
   ],
   bootstrap: [AppComponent],
-  entryComponents: [PaymentEditDialog, SelectedProductEditDialog, CustomersDialogComponent]
 })
 export class AppModule {}
