@@ -1,11 +1,13 @@
 import { Component, OnInit, Input, Output, EventEmitter} from "@angular/core";
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CustomersDialogComponent } from "../customers-dialog/customers-dialog.component";
+import { roundToCents } from "src/app/utils/money";
 
 enum PaymentType {
     PAYMONEY = 1,
     PAYRETURN = 2,
-    DISCOUNT = 3
+    DISCOUNT = 3,
+    PAYQR = 4,
 }
 
 @Component({
@@ -14,6 +16,10 @@ enum PaymentType {
   styleUrls: ["./cal-table.component.css"]
 })
 export class CalTableComponent implements OnInit {
+  /** Ticket total (Bs) — used to show balance due. */
+  @Input()
+  orderTotal = 0;
+
   @Input()
   selectCustomer: Function;
   @Input()
@@ -110,6 +116,9 @@ export class CalTableComponent implements OnInit {
   payType: PaymentType;
   payTypeLabel = "";
 
+  /** Expose enum to template for mode tabs. */
+  readonly PayKind = PaymentType;
+
   animal: string;
   name: string;
 
@@ -142,12 +151,45 @@ export class CalTableComponent implements OnInit {
 
   ngOnInit() {}
 
+  /** Bs left to collect (efectivo + QR + …), same basis as the Pay button. */
+  get amountDue(): number {
+    const effective = roundToCents((this.totalPayed || 0) - (this.totalReturn || 0));
+    return roundToCents(Math.max(0, (this.orderTotal || 0) - effective));
+  }
+
+  get keypadHint(): string {
+    switch (this.payType) {
+      case PaymentType.PAYMONEY:
+        return "Toque cada billete o moneda en efectivo.";
+      case PaymentType.PAYQR:
+        return "Toque el monto que el cliente pagó por QR (app o billetera).";
+      case PaymentType.PAYRETURN:
+        return "Registre billetes devueltos al cliente (cambio).";
+      case PaymentType.DISCOUNT:
+        return "Toque el valor del descuento aplicado.";
+      default:
+        return "";
+    }
+  }
+
+  isQrPayment(payI: any): boolean {
+    return payI?.payType === PaymentType.PAYQR;
+  }
+
   payMoney() {
     if (this.printOrderCount) return;
     this.displayCurrentType = true;
     this.payItems = this.bills;
     this.payType = PaymentType.PAYMONEY;
     this.payTypeLabel = "PAYMENT";
+  }
+
+  payWithQr() {
+    if (this.printOrderCount) return;
+    this.displayCurrentType = true;
+    this.payItems = this.bills;
+    this.payType = PaymentType.PAYQR;
+    this.payTypeLabel = "QR";
   }
 
   discount() {

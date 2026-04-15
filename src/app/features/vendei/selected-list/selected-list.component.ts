@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, Inject } from "@angular/core";
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { roundToCents } from "src/app/utils/money";
+import { resolvePresentationImageUrl } from "src/app/utils/product-image-url";
 
 export interface DialogData {
   id: string;
@@ -33,7 +34,7 @@ export class SelectedListComponent implements OnInit {
       data: {
         id: product.id,
         name: product.Product?.name || product.name,
-        img: product.Product?.img || product.img,
+        img: resolvePresentationImageUrl(product?.img, product?.Product?.img),
         quantity: product.quantity,
         price: product.currentPrice
       }
@@ -60,18 +61,7 @@ export class SelectedListComponent implements OnInit {
   }
 
   lineImageUrl(product: any): string {
-    const raw = product?.Product?.img || product?.img;
-    if (!raw || typeof raw !== "string") {
-      return "assets/vendei/placeholders/product-card.svg";
-    }
-    const t = raw.trim();
-    if (t.startsWith("http://") || t.startsWith("https://") || t.startsWith("/")) {
-      return t;
-    }
-    if (t.startsWith("assets/")) {
-      return t;
-    }
-    return "assets/vendei/placeholders/product-card.svg";
+    return resolvePresentationImageUrl(product?.img, product?.Product?.img);
   }
 }
 

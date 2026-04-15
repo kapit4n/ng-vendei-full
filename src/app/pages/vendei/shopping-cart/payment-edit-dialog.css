@@ -1,0 +1,82 @@
+.pay-dialog-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.pay-dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 0.25rem !important;
+}
+
+.pay-dialog-due {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.75rem;
+  margin: 0;
+  padding: 0.65rem 0.75rem;
+  border-radius: 8px;
+  background: rgba(57, 73, 171, 0.08);
+  border: 1px solid rgba(57, 73, 171, 0.2);
+}
+
+.pay-dialog-due--ok {
+  align-items: center;
+  background: rgba(46, 125, 50, 0.08);
+  border-color: rgba(46, 125, 50, 0.25);
+  font-size: 0.875rem;
+  color: #2e7d32;
+}
+
+.pay-dialog-due--ok mat-icon {
+  font-size: 1.1rem;
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-right: 0.35rem;
+}
+
+.pay-dialog-due-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #3949ab;
+}
+
+.pay-dialog-due-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #1a237e;
+}
+
+.pay-dialog-field {
+  width: 100%;
+}
+
+.pay-dialog-change {
+  margin: 0;
+  font-size: 0.875rem;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.pay-dialog-change-hint {
+  display: block;
+  font-size: 0.8rem;
+  color: rgba(0, 0, 0, 0.55);
+  margin-top: 0.2rem;
+}
+
+.pay-dialog-quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.pay-dialog-actions {
+  padding: 0.5rem 1rem 1rem !important;
+  gap: 0.5rem;
+}

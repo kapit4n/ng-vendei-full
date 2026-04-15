@@ -1,0 +1,141 @@
+<div class="product-show-page">
+  <div class="show-toolbar">
+    <button mat-stroked-button type="button" (click)="backToCatalog()">
+      <mat-icon>arrow_back</mat-icon>
+      Catalog
+    </button>
+    <div class="toolbar-spacer"></div>
+    <button mat-stroked-button color="primary" type="button" (click)="editProduct()" *ngIf="product && !notFound">
+      <mat-icon>edit</mat-icon>
+      Edit product
+    </button>
+  </div>
+
+  <div class="not-found" *ngIf="loadError || notFound">
+    <mat-icon class="not-found-icon">error_outline</mat-icon>
+    <p class="not-found-title">{{ loadError || 'Product not found.' }}</p>
+    <button mat-raised-button color="primary" type="button" (click)="backToCatalog()">Back to catalog</button>
+  </div>
+
+  <ng-container *ngIf="product && !notFound">
+    <mat-card class="product-summary-card">
+      <div class="summary-layout">
+        <div class="summary-media">
+          <div class="summary-image-frame">
+            <img [src]="productImageUrl()" [alt]="displayProductName()" class="summary-image" />
+          </div>
+          <div class="image-actions">
+            <input
+              #productFileInput
+              type="file"
+              accept="image/jpeg,image/png,image/gif,image/webp"
+              hidden
+              (change)="onProductImageSelected($event, productFileInput)"
+            />
+            <button
+              mat-stroked-button
+              type="button"
+              (click)="productFileInput.click()"
+              [disabled]="imageUploadBusy"
+            >
+              <mat-icon>upload</mat-icon>
+              Upload image
+            </button>
+            <mat-spinner *ngIf="imageUploadBusy" diameter="22" class="inline-spinner"></mat-spinner>
+          </div>
+          <p class="upload-hint">Saved on the server and used as the default picture for details that don’t set their own.</p>
+          <p class="upload-error" *ngIf="imageUploadError">{{ imageUploadError }}</p>
+        </div>
+        <div class="summary-body">
+          <h1 class="summary-title">{{ displayProductName() }}</h1>
+          <dl class="summary-meta">
+            <div class="meta-row">
+              <dt>Code</dt>
+              <dd><code class="code-pill">{{ product.code || '—' }}</code></dd>
+            </div>
+            <div class="meta-row">
+              <dt>Category</dt>
+              <dd>{{ displayCategory() }}</dd>
+            </div>
+            <div class="meta-row meta-row--block" *ngIf="product.description">
+              <dt>Description</dt>
+              <dd class="description">{{ product.description }}</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </mat-card>
+
+    <section class="presentations-section">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Product details</h2>
+          <p class="section-subtitle">
+            Sellable units (price, stock, UOM). Details without their own photo use the product image above; you can set a different picture per detail (e.g. box vs single unit).
+          </p>
+        </div>
+        <div class="section-header-buttons">
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="clearCustomPresentationImages()"
+            [disabled]="!presentations.length || inheritBusy"
+            matTooltip="Remove custom images so all details fall back to the product photo"
+          >
+            <mat-icon>image</mat-icon>
+            Use product image for all details
+          </button>
+          <mat-spinner *ngIf="inheritBusy" diameter="22" class="inline-spinner"></mat-spinner>
+          <button mat-raised-button color="primary" type="button" (click)="addPresentation()">
+            <mat-icon>add</mat-icon>
+            New detail
+          </button>
+        </div>
+      </div>
+
+      <div class="empty-state" *ngIf="!presentations.length">
+        <mat-icon class="empty-icon">tune</mat-icon>
+        <p class="empty-title">No details yet</p>
+        <p class="empty-hint">Add at least one presentation so this product can be sold with a price and unit.</p>
+        <button mat-stroked-button color="primary" type="button" (click)="addPresentation()">Add product detail</button>
+      </div>
+
+      <div class="table-wrap" *ngIf="presentations.length">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th class="col-thumb">Photo</th>
+              <th>Unit</th>
+              <th>Price</th>
+              <th>Qty</th>
+              <th>Brand</th>
+              <th>Code</th>
+              <th class="col-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of presentations">
+              <td class="thumb-cell">
+                <img [src]="presentationThumbUrl(row)" alt="" class="row-thumb" />
+                <span class="thumb-badge" *ngIf="usesInheritedImage(row)">Product</span>
+                <span class="thumb-badge thumb-badge--custom" *ngIf="!usesInheritedImage(row)">Custom</span>
+              </td>
+              <td class="cell-strong">{{ row.unitOfMeasure || '—' }}</td>
+              <td>{{ row.currentPrice | number:'1.2-2' }}</td>
+              <td>{{ row.quantity ?? '—' }}</td>
+              <td>{{ row.brand || '—' }}</td>
+              <td>
+                <code class="code-pill code-pill--muted" *ngIf="row.code">{{ row.code }}</code>
+                <span *ngIf="!row.code">—</span>
+              </td>
+              <td class="col-actions">
+                <button mat-stroked-button color="primary" type="button" (click)="editPresentation(row.id)">Edit</button>
+                <button mat-stroked-button color="warn" type="button" (click)="removePresentation(row.id)">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </ng-container>
+</div>

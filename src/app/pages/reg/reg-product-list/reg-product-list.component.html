@@ -46,6 +46,7 @@
                 <td><code class="code-pill">{{ product.code }}</code></td>
                 <td>{{ product.Category?.name || '—' }}</td>
                 <td class="col-actions">
+                  <button mat-stroked-button type="button" (click)="openProductShow(product.id)">View</button>
                   <button mat-stroked-button color="primary" type="button" (click)="openProduct(product.id)">Edit</button>
                   <button mat-stroked-button color="warn" type="button" (click)="removeProduct(product.id)">Delete</button>
                 </td>

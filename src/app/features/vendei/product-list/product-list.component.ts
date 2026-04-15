@@ -4,6 +4,7 @@ import { VCategoriesService } from "../../../services/vendei/v-categories.servic
 import { VConfigService } from "../../../services/vendei/v-config.service";
 import { Router } from "@angular/router";
 import { roundToCents } from "src/app/utils/money";
+import { resolvePresentationImageUrl } from "src/app/utils/product-image-url";
 
 @Component({
   selector: "app-product-list",
@@ -142,20 +143,9 @@ export class ProductListComponent implements OnInit {
     this.router.navigate(["/main"]);
   }
 
-  /** Background image for product card; falls back to placeholder when path missing or relative-only. */
+  /** Presentation image, else parent product image, else placeholder. */
   productCardImageUrl(product: any): string {
-    const raw = product?.Product?.img;
-    if (!raw || typeof raw !== "string") {
-      return "assets/vendei/placeholders/product-card.svg";
-    }
-    const t = raw.trim();
-    if (t.startsWith("http://") || t.startsWith("https://") || t.startsWith("/")) {
-      return t;
-    }
-    if (t.startsWith("assets/")) {
-      return t;
-    }
-    return "assets/vendei/placeholders/product-card.svg";
+    return resolvePresentationImageUrl(product?.img, product?.Product?.img);
   }
 
   displayProductName(product: any): string {

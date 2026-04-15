@@ -23,6 +23,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatListModule } from '@angular/material/list';
 import { MatTableModule } from '@angular/material/table';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 
 import { PageNotFoundComponent } from './pages/vendei/page-not-found/page-not-found.component';
@@ -37,6 +38,7 @@ import { RegProductPresentationComponent } from "./pages/reg/reg-product-present
 import { RegCategoryComponent } from "./pages/reg/reg-category/reg-category.component";
 import { RegCategoryListComponent } from "./pages/reg/reg-category-list/reg-category-list.component";
 import { RegProductListComponent } from "./pages/reg/reg-product-list/reg-product-list.component";
+import { RegProductShowComponent } from "./pages/reg/reg-product-show/reg-product-show.component";
 import { RegCustomerComponent } from "./pages/reg/reg-customer/reg-customer.component";
 import { RegCustomerListComponent } from "./pages/reg/reg-customer-list/reg-customer-list.component";
 // inv pages
@@ -100,6 +102,11 @@ const appRoutes: Routes = [
     path: "reg/products/new",
     component: RegProductComponent,
     data: { breadcrumb: "Register Product" }
+  },
+  {
+    path: "reg/products/view/:id",
+    component: RegProductShowComponent,
+    data: { breadcrumb: "Product" }
   },
   {
     path: "reg/products/:id",
@@ -184,6 +191,7 @@ const appRoutes: Routes = [
     RegCategoryComponent,
     RegCategoryListComponent,
     RegProductListComponent,
+    RegProductShowComponent,
     RegCustomerComponent,
     RegCustomerListComponent,
     InvProductsComponent,
@@ -213,6 +221,7 @@ const appRoutes: Routes = [
     MatListModule,
     MatTableModule,
     MatDialogModule,
+    MatProgressSpinnerModule,
     FormsModule,
     //NgbModule,
     ReactiveFormsModule

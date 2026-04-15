@@ -9,12 +9,15 @@ import { roundToCents } from "src/app/utils/money";
 enum PaymentType {
   PAYMONEY = 1,
   PAYRETURN = 2,
-  DISCOUNT = 3
+  DISCOUNT = 3,
+  PAYQR = 4,
 }
 
 export interface PaymentDialogData {
   total: number;
   pay: number;
+  /** Remaining balance (Bs) when dialog opens — for quick-fill actions. */
+  due: number;
 }
 
 
@@ -62,19 +65,26 @@ export class ShoppingCartComponent implements OnInit {
     this.selectedCustomer = Object.assign({}, this.emptyCustomer);
   }
 
+  /** Bs still to collect (same basis as “Pay” on the ticket). */
+  amountDue(): number {
+    const effective = roundToCents(this.totalPayed - this.totalReturn);
+    return roundToCents(Math.max(0, this.total - effective));
+  }
+
   openPaymentDialog(): void {
     const dialogRef = this.dialog.open(PaymentEditDialog, {
-      width: "250px",
-      height: "250px",
+      width: "360px",
+      maxWidth: "95vw",
+      autoFocus: "first-tabbable",
       data: {
         pay: this.totalPayed,
-        total: this.total
+        total: this.total,
+        due: this.amountDue(),
       }
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        console.log("set total with: " + result.total);
         this.totalPayed = roundToCents(result.pay);
         this.toReturn = roundToCents(this.totalPayed - this.total);
       }
@@ -350,6 +360,7 @@ export class ShoppingCartComponent implements OnInit {
 
     switch (payItem.payType) {
       case PaymentType.PAYMONEY:
+      case PaymentType.PAYQR:
         this.payedItems = this.payedItems.filter(p => p.id != payItem.id);
         break;
       case PaymentType.DISCOUNT:
@@ -372,6 +383,11 @@ export class ShoppingCartComponent implements OnInit {
         payItemAux.payType = PaymentType.PAYMONEY;
         this.payedItems.push(payItemAux);
         break;
+      case PaymentType.PAYQR:
+        payItemAux.id = this.paymentItemIds++;
+        payItemAux.payType = PaymentType.PAYQR;
+        this.payedItems.push(payItemAux);
+        break;
       case PaymentType.DISCOUNT:
         payItemAux.id = this.discountItemIds++;
         payItemAux.payType = PaymentType.DISCOUNT;
@@ -392,7 +408,8 @@ export class ShoppingCartComponent implements OnInit {
 
 @Component({
   selector: "payment-edit-dialog",
-  templateUrl: "payment-edit-dialog.html"
+  templateUrl: "payment-edit-dialog.html",
+  styleUrls: ["payment-edit-dialog.css"],
 })
 export class PaymentEditDialog {
   constructor(
@@ -402,6 +419,18 @@ export class PaymentEditDialog {
 
   onNoClick(): void {
     this.dialogRef.close();
+  }
+
+  /** Set total paid equal to order total. */
+  applyExactOrderTotal(): void {
+    this.data.pay = roundToCents(this.data.total);
+  }
+
+  /** Add current balance due to the amount already in the field (top-up to full). */
+  fillRemainingDue(): void {
+    if (this.data.due > 0) {
+      this.data.pay = roundToCents(Number(this.data.pay || 0) + this.data.due);
+    }
   }
 }
 

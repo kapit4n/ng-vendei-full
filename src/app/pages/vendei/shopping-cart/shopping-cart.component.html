@@ -66,8 +66,8 @@
     </div>
   </div>
 
-  <app-cal-table *ngIf="displayCal" class="cal-table" [selectCustomer]="selectCustomer.bind(this)"
-    [selectedCustomer]="selectedCustomer" [(payedItems)]="payedItems" [(discountItems)]="discountItems"
+    <app-cal-table *ngIf="displayCal" class="cal-table" [selectCustomer]="selectCustomer.bind(this)"
+    [selectedCustomer]="selectedCustomer" [orderTotal]="total" [(payedItems)]="payedItems" [(discountItems)]="discountItems"
     [(returnItems)]="returnItems" [(totalPayed)]="totalPayed" [(totalDiscount)]="totalDiscount"
     [(totalReturn)]="totalReturn" [calTotals]="calTotals.bind(this)" [payIt]="payIt.bind(this)"
     [removeItem]="removeItem.bind(this)" [(printOrderCount)]="printOrderCount"></app-cal-table>

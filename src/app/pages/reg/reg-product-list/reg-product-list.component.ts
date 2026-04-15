@@ -44,6 +44,10 @@ export class RegProductListComponent implements OnInit {
     this.router.navigate(["/reg/products/" + id]);
   }
 
+  openProductShow(id: string) {
+    this.router.navigate(["/reg/products/view", id]);
+  }
+
   openProductPresentation(id: string) {
     this.router.navigate(["/reg/productPresentations/" + id]);
   }
