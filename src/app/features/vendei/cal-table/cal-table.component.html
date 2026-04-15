@@ -1,39 +1,61 @@
-<div style="width: 30%; height: 150px; display: inline-block;">
-    <div style="width: 100%;">
-        <div *ngIf="payedItems.length > 0">
-            <span i18n>Payment:</span>
-            <span *ngFor="let payI of payedItems" (click)="removeItem(payI)"><img [src]="payI.img" height="20" alt=""></span>
-        </div>
-
-        <div *ngIf="returnItems.length > 0">
-            <span i18n>Return:</span>
-            <span *ngFor="let payI of returnItems" (click)="removeItem(payI)"><img [src]="payI.img" height="20" alt=""></span>
-        </div>
-
-        <div *ngIf="discountItems.length > 0">
-            Discount:
-            <span *ngFor="let payI of discountItems" (click)="removeItem(payI)">{{payI.name}};</span>
-        </div>
-
-        <div>
-            Customer: {{selectedCustomer.name}} <br /> CI: {{selectedCustomer.ci}}
-        </div>
-        <button mat-raised-button (click)="openDialog()">Select Customer</button>
+<div class="payment-panel">
+  <section class="payment-sidebar" aria-label="Customer and payment log">
+    <div class="payment-chips" *ngIf="payedItems.length > 0">
+      <span class="payment-chips-label" i18n>Payment</span>
+      <button type="button" class="chip-thumb" *ngFor="let payI of payedItems" (click)="removeItem(payI)"
+        [attr.aria-label]="'Remove payment'">
+        <img [src]="payI.img" height="28" width="40" alt="" />
+      </button>
     </div>
-</div>
-<div style="width: 70%; height: 150px; display: inline-block;">
 
-    <span *ngIf="payTypeLabel == 'PAYMENT'">Payment:</span>
-    <span *ngIf="payTypeLabel == 'DISCOUNT'">Discount:</span>
-    <span *ngIf="payTypeLabel == 'RETURN'">Return:</span>
-
-    <div class="payment-item" *ngFor="let payItem of payItems">
-        <button mat-raised-button (click)="payIt(payItem, payType)" color="primary">{{payItem.name}}
-      <span *ngIf="displayCurrentType">{{currentType}}</span>
-    </button>
+    <div class="payment-chips" *ngIf="returnItems.length > 0">
+      <span class="payment-chips-label" i18n>Return</span>
+      <button type="button" class="chip-thumb" *ngFor="let payI of returnItems" (click)="removeItem(payI)">
+        <img [src]="payI.img" height="28" width="40" alt="" />
+      </button>
     </div>
-    <br />
-    <div class="payment-action"><button mat-raised-button (click)="discount()" *ngIf="false">Disc</button></div>
-    <div class="payment-action"><button mat-raised-button (click)="returnMoney()" i18n>Return</button></div>
-    <div class="payment-action"><button mat-raised-button (click)="payMoney()" i18n>Payment</button></div>
+
+    <div class="discount-line" *ngIf="discountItems.length > 0">
+      <span class="payment-chips-label">Discount</span>
+      <span class="discount-tags">
+        <button type="button" class="discount-tag" *ngFor="let payI of discountItems" (click)="removeItem(payI)">
+          {{ payI.name }}
+        </button>
+      </span>
+    </div>
+
+    <div class="customer-card">
+      <div class="customer-card-label">Customer</div>
+      <div class="customer-card-name">{{ selectedCustomer?.name || '—' }}</div>
+      <div class="customer-card-ci">CI: {{ selectedCustomer?.ci ?? '—' }}</div>
+      <button mat-stroked-button color="primary" class="customer-select-btn" (click)="openDialog()"
+        [disabled]="printOrderCount">
+        <mat-icon>person</mat-icon>
+        Select customer
+      </button>
+    </div>
+  </section>
+
+  <section class="payment-keypad" [attr.aria-label]="payTypeLabel">
+    <div class="keypad-header">
+      <span class="keypad-mode" *ngIf="payTypeLabel == 'PAYMENT'" i18n>Payment</span>
+      <span class="keypad-mode" *ngIf="payTypeLabel == 'DISCOUNT'" i18n>Discount</span>
+      <span class="keypad-mode" *ngIf="payTypeLabel == 'RETURN'" i18n>Return</span>
+    </div>
+
+    <div class="bill-grid">
+      <button type="button" mat-stroked-button class="bill-btn" *ngFor="let payItem of payItems"
+        (click)="payIt(payItem, payType)" [disabled]="printOrderCount">
+        <img *ngIf="payItem.img" [src]="payItem.img" class="bill-img" alt="" />
+        <span class="bill-label">{{ payItem.name }}<span *ngIf="displayCurrentType" class="bill-currency">{{ currentType }}</span></span>
+      </button>
+    </div>
+
+    <div class="mode-actions">
+      <button mat-flat-button color="accent" type="button" class="mode-btn" (click)="returnMoney()" i18n
+        [disabled]="printOrderCount">Return</button>
+      <button mat-flat-button color="primary" type="button" class="mode-btn" (click)="payMoney()" i18n
+        [disabled]="printOrderCount">Payment</button>
+    </div>
+  </section>
 </div>

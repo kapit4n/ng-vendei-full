@@ -3,6 +3,11 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
+    "inventory-backend": "bash scripts/run-inventory-backend.sh",
+    "start:full": "bash scripts/run-full-stack.sh",
+    "start:full:db-none": "FULL_STACK_DB=none bash scripts/run-full-stack.sh",
+    "start:full:db-migrate": "FULL_STACK_DB=migrate bash scripts/run-full-stack.sh",
+    "start:full:db-seed": "FULL_STACK_DB=seed bash scripts/run-full-stack.sh",
     "start": "ng serve",
     "build": "ng build",
     "test": "ng test",

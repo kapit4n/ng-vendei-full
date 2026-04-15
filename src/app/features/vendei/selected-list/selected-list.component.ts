@@ -31,10 +31,10 @@ export class SelectedListComponent implements OnInit {
       height: "250px",
       data: {
         id: product.id,
-        name: product.name,
-        img: product.img,
+        name: product.Product?.name || product.name,
+        img: product.Product?.img || product.img,
         quantity: product.quantity,
-        price: product.price
+        price: product.currentPrice
       }
     });
 
@@ -45,12 +45,33 @@ export class SelectedListComponent implements OnInit {
         )[0];
 
         product.quantity = Number(result.quantity);
-        product.price = Number(result.price);
+        const p = Number(result.price);
+        product.currentPrice = p;
+        (product as any).price = p;
         this.recalTotal();
       }
     });
   }
   ngOnInit() {}
+
+  lineDisplayName(product: any): string {
+    return product?.Product?.name || product?.name || "Item";
+  }
+
+  lineImageUrl(product: any): string {
+    const raw = product?.Product?.img || product?.img;
+    if (!raw || typeof raw !== "string") {
+      return "assets/vendei/placeholders/product-card.svg";
+    }
+    const t = raw.trim();
+    if (t.startsWith("http://") || t.startsWith("https://") || t.startsWith("/")) {
+      return t;
+    }
+    if (t.startsWith("assets/")) {
+      return t;
+    }
+    return "assets/vendei/placeholders/product-card.svg";
+  }
 }
 
 @Component({

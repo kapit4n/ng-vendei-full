@@ -1,38 +1,43 @@
-<div class="actions-container">
-  <mat-icon *ngIf="false">
-    <button mat-raised-button (click)="openReports()" style="margin: 0 1rem;">
-      <mat-icon>info</mat-icon>
-    </button>
-    <button mat-raised-button (click)="openRegister()">
-      <mat-icon>build</mat-icon>
-    </button>
-  </mat-icon>
-  <button mat-raised-button (click)="openMain()" style="height: 100%; margin: 1rem 0;">
-    <mat-icon>home</mat-icon>
-  </button>
-  <div *ngIf="displayCat">
-    <div class="category-item" *ngFor="let cat of categories">
-      <button mat-button (click)="filterByCategory(cat)">
-        {{ cat.name }}
+<div class="product-list-shell">
+  <div class="actions-container">
+    <mat-icon *ngIf="false">
+      <button mat-raised-button (click)="openReports()" style="margin: 0 1rem;">
+        <mat-icon>info</mat-icon>
       </button>
+      <button mat-raised-button (click)="openRegister()">
+        <mat-icon>build</mat-icon>
+      </button>
+    </mat-icon>
+    <button mat-raised-button (click)="openMain()" style="height: 100%; margin: 1rem 0;">
+      <mat-icon>home</mat-icon>
+    </button>
+    <div *ngIf="displayCat">
+      <div class="category-item" *ngFor="let cat of categories">
+        <button mat-button (click)="filterByCategory(cat)">
+          {{ cat.name }}
+        </button>
+      </div>
     </div>
+    <mat-form-field class="search-form" style="margin: 0 1rem;">
+      <input matInput type="text" placeholder="Search by Name" (keyup)="filterByName($event)" />
+    </mat-form-field>
+
+    <mat-form-field class="search-form" style="margin: 0 1rem;">
+      <input matInput type="text" placeholder="Code" (keyup.enter)="addByCode($event)" [(ngModel)]="productCode"
+        [ngModelOptions]="{ standalone: true }" />
+    </mat-form-field>
   </div>
-  <mat-form-field class="search-form" style="margin: 0 1rem;">
-    <input matInput type="text" placeholder="Search by Name" (keyup)="filterByName($event)" />
-  </mat-form-field>
 
-  <mat-form-field class="search-form" style="margin: 0 1rem;">
-    <input matInput type="text" placeholder="Code" (keyup.enter)="addByCode($event)" [(ngModel)]="productCode"
-      [ngModelOptions]="{ standalone: true }" />
-  </mat-form-field>
-</div>
-
-<div class="product-list-item-t" *ngFor="let product of products" [style.background]="'url(' + product.Product.img + ')'"
-  [style.background-size]="'cover'" (click)="addProduct(product)">
-  <span>
-    Bs {{ product.currentPrice }}
-  </span>
-  <span>
-    {{ product.Product.name }}
-  </span>
+  <div class="product-cards-box">
+    <button type="button" class="product-list-item-t" *ngFor="let product of products"
+      (click)="addProduct(product)"
+      [attr.aria-label]="'Add ' + displayProductName(product)">
+      <div class="product-card-image" [style.background-image]="'url(' + productCardImageUrl(product) + ')'"></div>
+      <div class="product-card-overlay"></div>
+      <div class="product-card-body">
+        <span class="product-card-price">Bs {{ product.currentPrice }}</span>
+        <span class="product-card-name">{{ displayProductName(product) }}</span>
+      </div>
+    </button>
+  </div>
 </div>

@@ -16,7 +16,6 @@ export class VCustomersService {
 
   /** json URL */
   private jsonFileURL: string = "../../assets/vendei/customers.json";
-  private customersURL: string = "http://localhost:3000/clients";
 
   /** Product List service constructor */
   constructor(private http: HttpClient, private configSvc: VConfigService) {}
@@ -50,7 +49,7 @@ export class VCustomersService {
         })
       );
     } else {
-      return this.http.get(this.customersURL).pipe(
+      return this.http.get(`${this.configSvc.baseUrl}/clients`).pipe(
         map((response: Response) => {
           return <any>response;
         })

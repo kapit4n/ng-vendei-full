@@ -3,7 +3,9 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  /** Dev: empty string = same origin as ng serve; use proxy.conf.json → inventory-nod :3000 */
+  apiBaseUrl: '',
 };
 
 /*

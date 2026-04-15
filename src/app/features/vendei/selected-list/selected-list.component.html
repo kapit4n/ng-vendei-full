@@ -1,35 +1,34 @@
-<mat-list>
-  <mat-list-item
-    *ngFor="let product of selectedProducts"
-    style="cursor: initial;"
-  >
-    <mat-icon mat-list-icon
-      ><img [src]="product.Product.img" height="30px" width="30px" alt=""
-    /></mat-icon>
-    <div style="display: inline-block;" mat-line>
-      <div style="display: inline-block;  display: inline-block; width: 100px; overflow: hidden; overflow-wrap: break-word;
-      text-overflow: ellipsis;">{{ product.name }}</div>
-      <div
-        style="display: inline-block; padding-left: 10px; float: right;"
-        *ngIf="printOrderCount != 1"
-      >
-        <button mat-mini-fab (click)="removeProduct(product)">
-          <mat-icon>clear</mat-icon>
-        </button>
+<div class="cart-lines" *ngIf="selectedProducts?.length; else emptyCart">
+  <div class="line-item" *ngFor="let product of selectedProducts">
+    <div class="line-thumb">
+      <img [src]="lineImageUrl(product)" width="48" height="48" alt="" loading="lazy" />
+    </div>
+    <div class="line-main">
+      <div class="line-title-row">
+        <span class="line-name">{{ lineDisplayName(product) }}</span>
+        <div class="line-actions" *ngIf="printOrderCount != 1">
+          <button type="button" mat-icon-button class="line-btn" (click)="removeProduct(product); $event.stopPropagation()"
+            aria-label="Remove">
+            <mat-icon>delete_outline</mat-icon>
+          </button>
+          <button type="button" mat-icon-button class="line-btn" (click)="openDialog(product); $event.stopPropagation()"
+            aria-label="Edit quantity">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </div>
       </div>
-      <div
-        style="display: inline-block; padding-left: 5px; float: right;"
-        *ngIf="printOrderCount != 1"
-      >
-        <button mat-mini-fab (click)="openDialog(product)">
-          <mat-icon>edit</mat-icon>
-        </button>
-      </div>
-      <div style="display: block;">
-        {{ product.quantity }} a {{ product.currentPrice }}, Subtotal:
-        {{ product.currentPrice * product.quantity }}
+      <div class="line-meta">
+        <span class="line-qty">{{ product.quantity }} × Bs {{ product.currentPrice }}</span>
+        <span class="line-sub">Subtotal: <strong>{{ (product.currentPrice * product.quantity) | number:'1.2-2' }}</strong></span>
       </div>
     </div>
-    <mat-divider></mat-divider>
-  </mat-list-item>
-</mat-list>
+  </div>
+</div>
+
+<ng-template #emptyCart>
+  <div class="cart-empty">
+    <mat-icon class="cart-empty-icon">shopping_cart</mat-icon>
+    <p>No items yet</p>
+    <p class="cart-empty-hint">Tap a product to add it to the ticket</p>
+  </div>
+</ng-template>

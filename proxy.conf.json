@@ -1,0 +1,38 @@
+{
+  "/products": {
+    "target": "http://127.0.0.1:3000",
+    "secure": false
+  },
+  "/categories": {
+    "target": "http://127.0.0.1:3000",
+    "secure": false
+  },
+  "/clients": {
+    "target": "http://127.0.0.1:3000",
+    "secure": false
+  },
+  "/vendors": {
+    "target": "http://127.0.0.1:3000",
+    "secure": false
+  },
+  "/cashiers": {
+    "target": "http://127.0.0.1:3000",
+    "secure": false
+  },
+  "/productPresentations": {
+    "target": "http://127.0.0.1:3000",
+    "secure": false
+  },
+  "/orders": {
+    "target": "http://127.0.0.1:3000",
+    "secure": false
+  },
+  "/orderDetails": {
+    "target": "http://127.0.0.1:3000",
+    "secure": false
+  },
+  "/purchase-items": {
+    "target": "http://127.0.0.1:3000",
+    "secure": false
+  }
+}

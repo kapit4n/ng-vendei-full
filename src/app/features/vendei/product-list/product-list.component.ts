@@ -60,7 +60,10 @@ export class ProductListComponent implements OnInit {
 
   filterByCategory(cat: any) {
     if (cat.id > 0) {
-      this.products = this.originalP.filter(p => p.categoryId == cat.id);
+      this.products = this.originalP.filter(p => {
+        const cid = p.Product?.categoryId ?? p.categoryId;
+        return cid === cat.id;
+      });
     } else {
       this.products = this.originalP;
     }
@@ -70,9 +73,10 @@ export class ProductListComponent implements OnInit {
     let searchText = event.target.value;
     if (searchText) {
       let sText = searchText.toLowerCase();
-      this.products = this.originalP.filter(p =>
-        p.name.toLowerCase().includes(sText)
-      );
+      this.products = this.originalP.filter(p => {
+        const n = (p.Product?.name || p.name || "").toLowerCase();
+        return n.includes(sText);
+      });
     } else {
       this.products = this.originalP;
     }
@@ -86,9 +90,9 @@ export class ProductListComponent implements OnInit {
     let searchCode = event.target.value;
 
     if (searchCode) {
-      let cProduct = this.originalP.find(
-        p => p.code.toLowerCase() == searchCode.toLowerCase()
-      );
+      const codeMatch = (p: any) =>
+        (p.Product?.code || p.code || "").toLowerCase() === searchCode.toLowerCase();
+      let cProduct = this.originalP.find(codeMatch);
       if (cProduct) {
         this.addProduct(cProduct);
         this.productCode = "";
@@ -104,5 +108,25 @@ export class ProductListComponent implements OnInit {
   }
   openMain() {
     this.router.navigate(["/main"]);
+  }
+
+  /** Background image for product card; falls back to placeholder when path missing or relative-only. */
+  productCardImageUrl(product: any): string {
+    const raw = product?.Product?.img;
+    if (!raw || typeof raw !== "string") {
+      return "assets/vendei/placeholders/product-card.svg";
+    }
+    const t = raw.trim();
+    if (t.startsWith("http://") || t.startsWith("https://") || t.startsWith("/")) {
+      return t;
+    }
+    if (t.startsWith("assets/")) {
+      return t;
+    }
+    return "assets/vendei/placeholders/product-card.svg";
+  }
+
+  displayProductName(product: any): string {
+    return product?.Product?.name || product?.name || "Product";
   }
 }
