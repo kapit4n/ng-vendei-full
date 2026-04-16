@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from "@angular/router";
 import { ActivatedRoute } from '@angular/router';
+import { forkJoin, of } from 'rxjs';
+import { catchError, map, switchMap, timeout } from 'rxjs/operators';
 import {
   IProductPresentation, RProductPresentationService
 } from '../../../services/reg/r-product-presentation.service';
@@ -11,6 +13,7 @@ import {
 import { RUploadService } from '../../../services/reg/r-upload.service';
 import { roundToCents } from 'src/app/utils/money';
 import { resolvePresentationImageUrl } from 'src/app/utils/product-image-url';
+import { normalizeApiArray, normalizeApiRecord } from 'src/app/utils/api-body';
 
 const PLACEHOLDER_IMG = 'assets/vendei/placeholders/product-card.svg';
 
@@ -33,7 +36,8 @@ export class RegProductPresentationComponent implements OnInit {
     private router: Router,
     private productSvc: RProductService,
     private route: ActivatedRoute,
-    private uploadSvc: RUploadService
+    private uploadSvc: RUploadService,
+    private cdr: ChangeDetectorRef
   ) {
     this.productPresentationInfo = {} as IProductPresentation;
     this.products = [];
@@ -70,42 +74,115 @@ export class RegProductPresentationComponent implements OnInit {
     return !!this.route.snapshot.paramMap.get('id');
   }
 
+  /**
+   * Mat-option values and ngModel must use the same type; we standardize on string ids.
+   */
   compareProductId(a: string | number | null | undefined, b: string | number | null | undefined): boolean {
+    if (a == null && b == null) {
+      return true;
+    }
     if (a == null || b == null) {
-      return a == b;
+      return false;
     }
     return String(a) === String(b);
   }
 
-  ngOnInit() {
+  /** String id for mat-option [value] to match string productId on the model. */
+  selectValueForProductId(id: string | number | null | undefined): string {
+    return id != null && id !== '' ? String(id) : '';
+  }
+
+  private isUsablePresentationRow(rec: unknown): rec is IProductPresentation {
+    if (rec == null || typeof rec !== 'object') {
+      return false;
+    }
+    const o = rec as Record<string, unknown>;
+    return (
+      o['id'] != null ||
+      o['productId'] != null ||
+      o['product_id'] != null ||
+      (o['Product'] != null && typeof o['Product'] === 'object' && (o['Product'] as any).id != null)
+    );
+  }
+
+  private loadPresentationRow$(presentationId: string) {
+    return this.productPresentationSvc.getById(presentationId).pipe(
+      timeout(8000),
+      map(r => normalizeApiRecord(r) as IProductPresentation | null),
+      switchMap(rec => {
+        if (this.isUsablePresentationRow(rec)) {
+          return of(rec);
+        }
+        return this.productPresentationSvc.getAll().pipe(
+          map(body => normalizeApiArray(body) as IProductPresentation[]),
+          map(list => list.find(x => String(x.id) === String(presentationId)) ?? null)
+        );
+      }),
+      catchError(() =>
+        this.productPresentationSvc.getAll().pipe(
+          map(body => normalizeApiArray(body) as IProductPresentation[]),
+          map(list => list.find(x => String(x.id) === String(presentationId)) ?? null)
+        )
+      )
+    );
+  }
+
+  ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     const presetProductId = this.route.snapshot.queryParamMap.get('productId');
+
+    const products$ = this.productSvc.getAll().pipe(
+      map(body => normalizeApiArray(body) as IProduct[]),
+      map(list =>
+        [...list].sort((a, b) =>
+          (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' })
+        )
+      ),
+      catchError(() => of([] as IProduct[]))
+    );
+
     if (id) {
-      this.productPresentationSvc.getById(id).subscribe(row => {
-        this.productPresentationInfo = {
-          ...row,
-          productId: row.productId != null ? String(row.productId) : '',
-          currentPrice: row.currentPrice != null ? Number(row.currentPrice) : 0,
-          quantity: row.quantity != null ? Number(row.quantity) : 0,
-        };
+      forkJoin({
+        row: this.loadPresentationRow$(id),
+        products: products$,
+      }).subscribe(({ row, products }) => {
+        this.products = products;
+        if (row != null && typeof row === 'object') {
+          const raw = row as any;
+          const pid = raw.productId ?? raw.product_id ?? raw.Product?.id;
+          this.productPresentationInfo = {
+            ...raw,
+            productId: pid != null && pid !== '' ? String(pid) : '',
+            currentPrice: raw.currentPrice != null ? Number(raw.currentPrice) : 0,
+            quantity: raw.quantity != null ? Number(raw.quantity) : 0,
+          };
+        } else {
+          this.saveError = 'Could not load this product detail.';
+        }
         this.syncUseProductImageFlag();
+        // Mat-select needs a tick after options + model are both set (string ids must match mat-option values).
+        this.cdr.detectChanges();
+        queueMicrotask(() => this.cdr.detectChanges());
       });
+      return;
     }
-    this.productSvc.getAll().subscribe(list => {
-      const sorted = [...(list || [])].sort((a, b) =>
-        (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' })
-      );
+
+    products$.subscribe(sorted => {
       this.products = sorted;
-      if (!id && sorted.length) {
+      if (sorted.length) {
         const presetOk =
           presetProductId && sorted.some(p => String(p.id) === String(presetProductId));
         if (presetOk) {
           this.productPresentationInfo.productId = String(presetProductId);
-        } else if (this.productPresentationInfo.productId == null || this.productPresentationInfo.productId === '') {
+        } else if (
+          this.productPresentationInfo.productId == null ||
+          this.productPresentationInfo.productId === ''
+        ) {
           this.productPresentationInfo.productId = String(sorted[0].id);
         }
         this.syncUseProductImageFlag();
       }
+      this.cdr.detectChanges();
     });
   }
 

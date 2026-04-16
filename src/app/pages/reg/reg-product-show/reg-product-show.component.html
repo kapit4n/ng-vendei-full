@@ -5,7 +5,7 @@
       Catalog
     </button>
     <div class="toolbar-spacer"></div>
-    @if (product && !notFound) {
+    @if (!loadingProduct && product && !notFound) {
       <button mat-stroked-button color="primary" type="button" (click)="editProduct()">
         <mat-icon>edit</mat-icon>
         Edit product
@@ -13,7 +13,14 @@
     }
   </div>
 
-  @if (loadError || notFound) {
+  @if (loadingProduct) {
+    <div class="loading-state">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p class="loading-text">Loading product…</p>
+    </div>
+  }
+
+  @if (!loadingProduct && (loadError || notFound)) {
     <div class="not-found">
       <mat-icon class="not-found-icon">error_outline</mat-icon>
       <p class="not-found-title">{{ loadError || 'Product not found.' }}</p>
@@ -21,7 +28,7 @@
     </div>
   }
 
-  @if (product && !notFound) {
+  @if (!loadingProduct && product && !notFound) {
     <mat-card class="product-summary-card">
       <div class="summary-layout">
         <div class="summary-media">
@@ -126,7 +133,7 @@
               </tr>
             </thead>
             <tbody>
-              @for (row of presentations; track row) {
+              @for (row of presentations; track presentationRowTrack($index, row)) {
                 <tr>
                   <td class="thumb-cell">
                     <img [src]="presentationThumbUrl(row)" alt="" class="row-thumb" />

@@ -22,9 +22,10 @@
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Product</mat-label>
             <mat-select [(ngModel)]="productPresentationInfo.productId" name="productId" required
-              [compareWith]="compareProductId" (selectionChange)="onProductIdSelected()">
-              @for (product of products; track product) {
-                <mat-option [value]="product.id">{{ product.name }}</mat-option>
+              [compareWith]="compareProductId" (selectionChange)="onProductIdSelected()"
+              [ngModelOptions]="{ standalone: true }">
+              @for (product of products; track product.id) {
+                <mat-option [value]="selectValueForProductId(product.id)">{{ product.name }}</mat-option>
               }
             </mat-select>
           </mat-form-field>
