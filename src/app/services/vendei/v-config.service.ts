@@ -6,13 +6,14 @@ import { environment } from '../../../environments/environment';
 })
 export class VConfigService {
 
-  isTest: false;
+  /** When true, load products/categories from `assets` JSON instead of the API. */
+  isTest = false;
 
   // cards
-  cardImg: { width: 200, height: 200 }
-  
+  cardImg = { width: 200, height: 200 };
+
   // invoice related
-  printInvoice: false;
+  printInvoice = false;
 
   baseUrl = environment.apiBaseUrl;
 

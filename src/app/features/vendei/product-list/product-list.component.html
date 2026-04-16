@@ -38,7 +38,7 @@
     <div class="category-chips">
       <span class="category-chips-label">Category</span>
       <div class="category-chips-row">
-        @for (cat of categories; track cat) {
+        @for (cat of categories; track cat.id) {
           <button type="button" mat-stroked-button class="chip"
             [class.chip-active]="isCategoryActive(cat)" (click)="selectCategoryChip(cat)">
             {{ cat.name }}
@@ -66,7 +66,7 @@
       </div>
     }
 
-    @for (product of products; track product) {
+    @for (product of products; track productRowTrack($index, product)) {
       <button type="button" class="product-list-item-t" (click)="addProduct(product)"
         [attr.aria-label]="'Add ' + displayProductName(product)">
         <div class="product-card-image" [style.background-image]="'url(' + productCardImageUrl(product) + ')'"></div>

@@ -1,6 +1,6 @@
 @if (selectedProducts?.length) {
   <div class="cart-lines">
-    @for (product of selectedProducts; track product) {
+    @for (product of selectedProducts; track product.id) {
       <div class="line-item">
         <div class="line-thumb">
           <img [src]="lineImageUrl(product)" width="48" height="48" alt="" loading="lazy" />

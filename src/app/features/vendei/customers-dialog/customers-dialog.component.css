@@ -1,0 +1,49 @@
+.dialog-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.title-icon {
+  color: #3949ab;
+}
+
+.dialog-body {
+  min-width: min(92vw, 400px);
+  max-width: 480px;
+  padding-top: 8px !important;
+}
+
+.tab-panel {
+  padding: 12px 0 8px;
+}
+
+.tab-hint {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0 0 12px;
+  line-height: 1.4;
+}
+
+.new-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.new-form .full {
+  width: 100%;
+}
+
+.save-error {
+  font-size: 0.85rem;
+  color: #b71c1c;
+  margin-bottom: 8px;
+}
+
+.save-btn {
+  margin-top: 8px;
+  align-self: flex-start;
+}

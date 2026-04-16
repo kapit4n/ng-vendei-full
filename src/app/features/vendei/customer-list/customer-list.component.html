@@ -1,10 +1,28 @@
-<input type="text" (keyup.enter)="loadCustomers()" class="form-control" id="search"
-  placeholder="Search" value="Data" required [(ngModel)]="searchText" [ngModelOptions]="{standalone: true}">
+<div class="customer-list-wrap">
+  <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
+    <mat-label>Buscar cliente</mat-label>
+    <mat-icon matPrefix class="search-ico">search</mat-icon>
+    <input matInput type="search" [(ngModel)]="searchText" [ngModelOptions]="{ standalone: true }"
+      autocomplete="off" placeholder="Nombre o CI" />
+  </mat-form-field>
 
-<mat-list>
-  @for (customer of customers; track customer) {
-    <mat-list-item (click)="selectCustomer(customer)">
-      {{customer.name}}: {{customer.code}}
-    </mat-list-item>
+  @if (loading) {
+    <p class="status-msg">Cargando clientes…</p>
   }
-</mat-list>
+  @if (loadError) {
+    <p class="status-msg status-msg--error">{{ loadError }}</p>
+  }
+
+  @if (!loading && !loadError && !filteredCustomers.length) {
+    <p class="status-msg">No hay clientes que coincidan.</p>
+  }
+
+  <mat-nav-list class="customer-nav">
+    @for (customer of filteredCustomers; track customer.id ?? customer.code ?? $index) {
+      <a mat-list-item (click)="onSelect(customer)" class="customer-row">
+        <span matListItemTitle>{{ customer.name }}</span>
+        <span matListItemLine>CI / código: {{ customer.code ?? customer.ci ?? "—" }}</span>
+      </a>
+    }
+  </mat-nav-list>
+</div>

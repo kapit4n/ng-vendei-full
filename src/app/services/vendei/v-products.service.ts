@@ -1,12 +1,10 @@
 import { Injectable } from '@angular/core';
 
 import { HttpClient } from "@angular/common/http";
-import { Observable, Subject, of, config } from 'rxjs';
-import { map, filter, switchMap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
 import {VConfigService} from './v-config.service'
-
-import 'rxjs'; //get everything from Rx    
 
 @Injectable({
   providedIn: "root"
@@ -50,20 +48,35 @@ export class VProductsService {
    * Return an observable with the list of products
    */
   getProducts(): Observable<any> {
+    const normalizeList = (body: unknown): any[] => {
+      if (Array.isArray(body)) {
+        return body;
+      }
+      if (body && typeof body === 'object') {
+        const o = body as Record<string, unknown>;
+        const nested = o['data'] ?? o['rows'] ?? o['items'];
+        if (Array.isArray(nested)) {
+          return nested;
+        }
+      }
+      return [];
+    };
+
     if (this.configSvc.isTest) {
       return this.http.get(this.jsonFileURL).pipe(
-        map((response: Response) => {
-          return <any>response;
+        map((response: unknown) => normalizeList(response)),
+        catchError(err => {
+          console.error('[VProductsService] getProducts (JSON) failed', err);
+          return of([]);
         })
       );
-    } else {
-      return this.http
-        .get(`${this.configSvc.baseUrl}/productPresentations`)
-        .pipe(
-          map((response: Response) => {
-            return <any>response;
-          })
-        );
     }
+    return this.http.get(`${this.configSvc.baseUrl}/productPresentations`).pipe(
+      map((response: unknown) => normalizeList(response)),
+      catchError(err => {
+        console.error('[VProductsService] getProducts failed', err);
+        return of([]);
+      })
+    );
   }
 }

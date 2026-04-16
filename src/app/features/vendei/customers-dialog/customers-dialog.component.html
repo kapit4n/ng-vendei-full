@@ -1,7 +1,46 @@
-<div mat-dialog-content>
-  <p>Select a customer</p>
-<app-customer-list [selectCustomer]="data.selectedCustomer.bind(this)"></app-customer-list>
-</div>
-<div mat-dialog-actions>
-  <button mat-button (click)="onNoClick()">Close</button>
-</div>
+<h2 mat-dialog-title class="dialog-title">
+  <mat-icon class="title-icon">person_search</mat-icon>
+  Cliente del ticket
+</h2>
+
+<mat-dialog-content class="dialog-body">
+  <mat-tab-group [(selectedIndex)]="selectedTabIndex" animationDuration="0ms">
+    <mat-tab label="Clientes registrados">
+      <div class="tab-panel">
+        <p class="tab-hint">Busque y elija un cliente, o use la pestaña <strong>Nuevo</strong>.</p>
+        <app-customer-list [selectCustomer]="selectCustomerFromList"></app-customer-list>
+      </div>
+    </mat-tab>
+    <mat-tab label="Nuevo cliente">
+      <div class="tab-panel new-form">
+        @if (saveError) {
+          <div class="save-error">{{ saveError }}</div>
+        }
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>Nombre</mat-label>
+          <input matInput [(ngModel)]="newName" [ngModelOptions]="{ standalone: true }" autocomplete="name" />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>CI / código</mat-label>
+          <input matInput [(ngModel)]="newCode" [ngModelOptions]="{ standalone: true }" autocomplete="off" />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>Dirección (opcional)</mat-label>
+          <input matInput [(ngModel)]="newAddress" [ngModelOptions]="{ standalone: true }" />
+        </mat-form-field>
+        <button mat-flat-button color="primary" type="button" class="save-btn" (click)="saveNewCustomer()"
+          [disabled]="saving">
+          @if (saving) {
+            <span>Guardando…</span>
+          } @else {
+            <span>Guardar y seleccionar</span>
+          }
+        </button>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="close()">Cerrar</button>
+</mat-dialog-actions>

@@ -1,5 +1,41 @@
-mat-list-item:hover {
-    /* background-color: rgb(208, 239, 222); */
-    box-shadow: 1px 1px 5px grey;
-    cursor: pointer;
+.customer-list-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: min(52vh, 360px);
+}
+
+.search-field {
+  width: 100%;
+}
+
+.search-ico {
+  margin-right: 4px;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.status-msg {
+  margin: 8px 0;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.status-msg--error {
+  color: #b71c1c;
+}
+
+.customer-nav {
+  overflow-y: auto;
+  padding-top: 0;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 10px;
+  background: #fafafa;
+}
+
+.customer-row {
+  cursor: pointer;
+}
+
+.customer-row:hover {
+  background: rgba(57, 73, 171, 0.08);
 }

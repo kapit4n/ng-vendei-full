@@ -1,31 +1,59 @@
-import { Component, OnInit, Input } from '@angular/core';
-
-import { VCustomersService } from '../../../services/vendei/v-customers.service';
+import { Component, OnInit, Input } from "@angular/core";
+import { VCustomersService } from "../../../services/vendei/v-customers.service";
 
 @Component({
-    selector: "app-customer-list",
-    templateUrl: "./customer-list.component.html",
-    styleUrls: ["./customer-list.component.css"],
-    standalone: false
+  selector: "app-customer-list",
+  templateUrl: "./customer-list.component.html",
+  styleUrls: ["./customer-list.component.css"],
+  standalone: false,
 })
 export class CustomerListComponent implements OnInit {
-  @Input() selectCustomer: Function;
+  @Input() selectCustomer: (c: any) => void;
 
-  searchText: string = "";
-  customers: any[];
-  constructor(private customersSvc: VCustomersService) {
+  searchText = "";
+  customers: any[] = [];
+  loading = true;
+  loadError = "";
 
+  constructor(private customersSvc: VCustomersService) {}
+
+  ngOnInit(): void {
+    this.loadCustomers();
   }
 
-  ngOnInit() {
-    this.customersSvc.getAll().subscribe(customers => this.customers = customers);
+  loadCustomers(): void {
+    this.loading = true;
+    this.loadError = "";
+    this.customersSvc.getAll().subscribe({
+      next: res => {
+        this.loading = false;
+        const raw = Array.isArray(res) ? res : [];
+        this.customers = raw;
+      },
+      error: err => {
+        this.loading = false;
+        this.customers = [];
+        this.loadError = "No se pudieron cargar los clientes.";
+        console.error(err);
+      },
+    });
   }
 
-  loadCustomers(){
-    console.log("Loocking for " + this.searchText);
+  get filteredCustomers(): any[] {
+    const q = (this.searchText || "").trim().toLowerCase();
+    if (!q) {
+      return this.customers;
+    }
+    return this.customers.filter(c => {
+      const name = String(c?.name ?? "").toLowerCase();
+      const code = String(c?.code ?? c?.ci ?? "").toLowerCase();
+      return name.includes(q) || code.includes(q);
+    });
   }
 
-  addCustomer(customer) {
-    console.log(customer);
+  onSelect(customer: any): void {
+    if (this.selectCustomer) {
+      this.selectCustomer(customer);
+    }
   }
 }

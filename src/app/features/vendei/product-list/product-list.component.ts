@@ -1,4 +1,5 @@
-import { Component, OnInit, Input } from "@angular/core";
+import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
+import { forkJoin } from "rxjs";
 import { VProductsService } from "../../../services/vendei/v-products.service";
 import { VCategoriesService } from "../../../services/vendei/v-categories.service";
 import { VConfigService } from "../../../services/vendei/v-config.service";
@@ -30,33 +31,48 @@ export class ProductListComponent implements OnInit {
     private productsSvc: VProductsService,
     private categoriesSvc: VCategoriesService,
     public configSvc: VConfigService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
-    this.productsSvc.getProducts().subscribe(res => {
-      const normalized = (res || []).map((p: any) => ({
+    // Single completion tick avoids stale UI between the two HTTP calls, and we
+    // run CD explicitly so the grid paints without needing a user event (e.g.
+    // focusing the search field).
+    forkJoin({
+      products: this.productsSvc.getProducts(),
+      categories: this.categoriesSvc.getAll(),
+    }).subscribe(({ products, categories }) => {
+      const normalized = (products || []).map((p: any) => ({
         ...p,
-        currentPrice: roundToCents(p.currentPrice),
+        currentPrice: roundToCents(p.currentPrice ?? p.price),
       }));
       this.originalP = normalized;
-      this.applyFilters();
-    });
-
-    this.categoriesSvc.getAll().subscribe(res => {
-      const list = res || [];
-      this.categories = [{ id: 0, name: "All" }, ...list];
+      const list = Array.isArray(categories) ? categories : [];
+      /** Sentinel -1 avoids clashing with a real category id of 0 from the API. */
+      this.categories = [{ id: -1, name: "All" }, ...list];
       this.activeCategory = null;
       this.applyFilters();
+      this.cdr.detectChanges();
     });
+  }
+
+  /** Stable @for track when `id` is missing or not unique (presentations often use `productId`). */
+  productRowTrack(index: number, product: any): string | number {
+    const id = product?.id ?? product?.productId;
+    if (id !== undefined && id !== null && id !== "") {
+      return id;
+    }
+    return index;
   }
 
   applyFilters(): void {
     let list = [...this.originalP];
-    if (this.activeCategory && this.activeCategory.id > 0) {
+    if (this.activeCategory != null) {
+      const want = Number(this.activeCategory.id);
       list = list.filter(p => {
         const cid = p.Product?.categoryId ?? p.categoryId;
-        return cid === this.activeCategory!.id;
+        return Number(cid) === want;
       });
     }
     const q = (this.searchQuery || "").trim().toLowerCase();
@@ -87,15 +103,15 @@ export class ProductListComponent implements OnInit {
   }
 
   selectCategoryChip(cat: { id: number; name: string }): void {
-    this.activeCategory = cat.id === 0 ? null : cat;
+    this.activeCategory = cat.id === -1 ? null : cat;
     this.applyFilters();
   }
 
   isCategoryActive(cat: { id: number; name: string }): boolean {
-    if (cat.id === 0) {
+    if (cat.id === -1) {
       return this.activeCategory === null;
     }
-    return this.activeCategory?.id === cat.id;
+    return Number(this.activeCategory?.id) === Number(cat.id);
   }
 
   addProduct(product: any) {
@@ -103,16 +119,20 @@ export class ProductListComponent implements OnInit {
       return;
     }
 
-    if (this.selectedProducts.some(p => p.id == product.id)) {
-      const line = this.selectedProducts.filter(p => p.id == product.id)[0];
-      line.quantity += 1;
-      line.currentPrice = roundToCents(line.currentPrice);
+    // Mutate the array in place: it is the same reference as the parent's
+    // `selectedProducts`. Reassigning `this.selectedProducts = [...]` would only
+    // update this @Input locally and would not update the ticket.
+    const list = this.selectedProducts;
+    if (list.some(p => p.id == product.id)) {
+      const line = list.filter(p => p.id == product.id)[0];
+      line.quantity = Number(line.quantity) + 1;
+      line.currentPrice = roundToCents(line.currentPrice ?? line.price);
     } else {
       const selectedP = Object.assign({}, product, {
         quantity: 1,
-        currentPrice: roundToCents(product.currentPrice),
+        currentPrice: roundToCents(product.currentPrice ?? product.price),
       });
-      this.selectedProducts.push(selectedP);
+      list.push(selectedP);
     }
     this.recalTotal();
   }

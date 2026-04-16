@@ -1,21 +1,22 @@
 <div class="payment-panel">
-  <section class="payment-sidebar" aria-label="Customer and payment log">
+  <section class="payment-sidebar" aria-label="Cliente y pagos registrados">
     @if (payedItems.length > 0) {
       <div class="payment-chips">
         <span class="payment-chips-label" i18n>Pagos</span>
-        @for (payI of payedItems; track payI) {
-          <button type="button" class="chip-thumb" (click)="removeItem(payI)"
+        @for (payI of payedItems; track payI.id) {
+          <button type="button" class="chip-amount" (click)="removeItem(payI)"
             [attr.aria-label]="'Quitar pago'"
-            [class.chip-thumb--qr]="isQrPayment(payI)">
+            [class.chip-amount--qr]="isQrPayment(payI)"
+            [class.chip-amount--cash]="!isQrPayment(payI)">
             @if (isQrPayment(payI)) {
-              <mat-icon class="chip-qr-icon">qr_code_2</mat-icon>
+              <mat-icon class="chip-ico">qr_code_2</mat-icon>
+              <span class="chip-label">QR</span>
             }
-            @if (isQrPayment(payI)) {
-              <span class="chip-qr-amount">{{ payI.name }} Bs</span>
+            @if (!isQrPayment(payI)) {
+              <mat-icon class="chip-ico">payments</mat-icon>
+              <span class="chip-label">Efectivo</span>
             }
-            @if (!isQrPayment(payI) && payI.img) {
-              <img [src]="payI.img" height="28" width="40" alt="" />
-            }
+            <span class="chip-value">Bs {{ payI.value | number:'1.2-2' }}</span>
           </button>
         }
       </div>
@@ -23,10 +24,11 @@
 
     @if (returnItems.length > 0) {
       <div class="payment-chips">
-        <span class="payment-chips-label" i18n>Return</span>
-        @for (payI of returnItems; track payI) {
-          <button type="button" class="chip-thumb" (click)="removeItem(payI)">
-            <img [src]="payI.img" height="28" width="40" alt="" />
+        <span class="payment-chips-label" i18n>Cambio</span>
+        @for (payI of returnItems; track payI.id) {
+          <button type="button" class="chip-amount chip-amount--return" (click)="removeItem(payI)">
+            <mat-icon class="chip-ico">undo</mat-icon>
+            <span class="chip-value">Bs {{ payI.value | number:'1.2-2' }}</span>
           </button>
         }
       </div>
@@ -34,11 +36,11 @@
 
     @if (discountItems.length > 0) {
       <div class="discount-line">
-        <span class="payment-chips-label">Discount</span>
+        <span class="payment-chips-label">Descuento</span>
         <span class="discount-tags">
-          @for (payI of discountItems; track payI) {
+          @for (payI of discountItems; track payI.id) {
             <button type="button" class="discount-tag" (click)="removeItem(payI)">
-              {{ payI.name }}
+              − Bs {{ payI.value | number:'1.2-2' }}
             </button>
           }
         </span>
@@ -46,13 +48,13 @@
     }
 
     <div class="customer-card">
-      <div class="customer-card-label">Customer</div>
+      <div class="customer-card-label">Cliente</div>
       <div class="customer-card-name">{{ selectedCustomer?.name || '—' }}</div>
-      <div class="customer-card-ci">CI: {{ selectedCustomer?.ci ?? '—' }}</div>
-      <button mat-stroked-button color="primary" class="customer-select-btn" (click)="openDialog()"
+      <div class="customer-card-ci">CI: {{ selectedCustomer?.ci ?? selectedCustomer?.code ?? '—' }}</div>
+      <button mat-stroked-button color="primary" class="customer-select-btn" type="button" (click)="openDialog()"
         [disabled]="printOrderCount">
-        <mat-icon>person</mat-icon>
-        Select customer
+        <mat-icon>person_search</mat-icon>
+        Elegir o crear cliente
       </button>
     </div>
   </section>
@@ -73,7 +75,7 @@
         @if (orderTotal > 0 && amountDue <= 0) {
           <div class="due-banner-row due-banner-row--ok">
             <mat-icon class="due-ok-icon">check_circle</mat-icon>
-            <span>Cobro cubierto — puede guardar o entregar cambio si aplica</span>
+            <span>Cobro cubierto — puede guardar o registrar cambio si aplica</span>
           </div>
         }
       </div>
@@ -106,19 +108,43 @@
       <span class="keypad-hint">{{ keypadHint }}</span>
     </div>
 
-    <div class="bill-grid" [class.bill-grid--qr]="payType === PayKind.PAYQR">
-      @for (payItem of payItems; track payItem) {
+    @if (payType === PayKind.PAYMONEY || payType === PayKind.PAYQR || payType === PayKind.PAYRETURN || payType === PayKind.DISCOUNT) {
+      <div class="custom-amount-block">
+        <mat-form-field appearance="outline" class="custom-amount-field" subscriptSizing="dynamic">
+          <mat-label>Monto (Bs)</mat-label>
+          <input matInput type="text" inputmode="decimal" [(ngModel)]="customAmountStr"
+            [ngModelOptions]="{ standalone: true }" placeholder="Ej. 12,50"
+            (keyup.enter)="registerCustomAmount()" />
+        </mat-form-field>
+        <div class="custom-amount-actions">
+          <button mat-flat-button color="primary" type="button" class="btn-register"
+            (click)="registerCustomAmount()" [disabled]="printOrderCount">
+            Registrar
+          </button>
+          @if ((payType === PayKind.PAYMONEY || payType === PayKind.PAYQR) && amountDue > 0 && orderTotal > 0) {
+            <button mat-stroked-button color="primary" type="button" (click)="registerPendingDue()"
+              [disabled]="printOrderCount">
+              Registrar pendiente (Bs {{ amountDue | number:'1.2-2' }})
+            </button>
+          }
+        </div>
+      </div>
+    }
+
+    <div class="bill-grid" [class.bill-grid--qr]="payType === PayKind.PAYQR"
+      [class.bill-grid--discount]="payType === PayKind.DISCOUNT">
+      @for (payItem of payItems; track payItem.value) {
         <button type="button" mat-stroked-button class="bill-btn"
           (click)="payIt(payItem, payType)" [disabled]="printOrderCount">
           @if (payType === PayKind.PAYQR) {
             <mat-icon class="bill-qr-badge">qr_code_2</mat-icon>
           }
-          @if (payItem.img) {
-            <img [src]="payItem.img" class="bill-img" alt="" />
-          }
-          <span class="bill-label">{{ payItem.name }}@if (displayCurrentType) {
-            <span class="bill-currency">{{ currentType }}</span>
-          }</span>
+          <span class="bill-label">
+            <span class="bill-amount">{{ payItem.name }}</span>
+            @if (displayCurrentType && payType !== PayKind.DISCOUNT) {
+              <span class="bill-currency">{{ currentType }}</span>
+            }
+          </span>
         </button>
       }
     </div>

@@ -25,7 +25,7 @@
 
       <div class="selected-list-body">
         <app-selected-list [selectedProducts]="selectedProducts" [removeProduct]="removeProduct.bind(this)"
-          [recalTotal]="recalTotal.bind(this)" [(printOrderCount)]="printOrderCount">
+          [recalTotal]="recalTotal.bind(this)" [printOrderCount]="printOrderCount">
         </app-selected-list>
       </div>
 
@@ -86,13 +86,13 @@
         [selectedCustomer]="selectedCustomer" [orderTotal]="total" [(payedItems)]="payedItems" [(discountItems)]="discountItems"
         [(returnItems)]="returnItems" [(totalPayed)]="totalPayed" [(totalDiscount)]="totalDiscount"
         [(totalReturn)]="totalReturn" [calTotals]="calTotals.bind(this)" [payIt]="payIt.bind(this)"
-      [removeItem]="removeItem.bind(this)" [(printOrderCount)]="printOrderCount"></app-cal-table>
+      [removeItem]="removeItem.bind(this)" [printOrderCount]="printOrderCount"></app-cal-table>
     }
   </div>
 
   <div class="product-list">
     <app-product-list [selectedProducts]="selectedProducts" [recalTotal]="recalTotal.bind(this)"
-    [(printOrderCount)]="printOrderCount"></app-product-list>
+    [printOrderCount]="printOrderCount"></app-product-list>
 
     <app-category-list class="product-list-categories"></app-category-list>
   </div>
