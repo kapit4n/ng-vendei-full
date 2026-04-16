@@ -166,22 +166,11 @@
   height: 20px;
 }
 
-.cart-summary-actions {
-  margin-top: 10px;
-}
-
-.pay-btn {
-  width: 100%;
-  min-height: 44px;
-  font-weight: 600 !important;
-  display: inline-flex !important;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-}
-
-.pay-btn mat-icon {
-  margin: 0;
+.cart-payment-hint {
+  margin: 10px 0 0;
+  font-size: 0.82rem;
+  color: #64748b;
+  line-height: 1.4;
 }
 
 .cal-table {
@@ -242,23 +231,26 @@
   }
 }
 
-/* Very small phones: products only (original behavior) */
+/* Narrow phones: stack ticket + payment above products (keep Pay / Submit visible). */
 @media (min-width: 320px) and (max-width: 480px) {
-  .shopping-cart-container {
-    display: none;
-  }
-
-  .cal-table {
-    display: none;
-  }
-
   .pos-shell {
     flex-direction: column;
     padding: 6px;
   }
 
+  .shopping-cart-container {
+    flex: 0 0 auto;
+    max-width: none;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .selected-list-body {
+    max-height: min(28vh, 220px);
+  }
+
   .product-list {
-    min-height: 100%;
+    min-height: 280px;
     flex: 1 1 auto;
   }
 }

@@ -52,14 +52,14 @@
       <div class="customer-card-name">{{ selectedCustomer?.name || '—' }}</div>
       <div class="customer-card-ci">CI: {{ selectedCustomer?.ci ?? selectedCustomer?.code ?? '—' }}</div>
       <button mat-stroked-button color="primary" class="customer-select-btn" type="button" (click)="openDialog()"
-        [disabled]="printOrderCount">
+        [disabled]="isPrintLocked">
         <mat-icon>person_search</mat-icon>
         Elegir o crear cliente
       </button>
     </div>
   </section>
 
-  <section class="payment-keypad" [attr.aria-label]="payTypeLabel">
+  <section class="payment-main" aria-label="Cobro">
     @if (orderTotal > 0) {
       <div class="due-banner">
         <div class="due-banner-row">
@@ -75,78 +75,115 @@
         @if (orderTotal > 0 && amountDue <= 0) {
           <div class="due-banner-row due-banner-row--ok">
             <mat-icon class="due-ok-icon">check_circle</mat-icon>
-            <span>Cobro cubierto — puede guardar o registrar cambio si aplica</span>
+            <span>Cobro cubierto — puede guardar el pedido o registrar cambio si aplica</span>
+          </div>
+        }
+        @if (readyToSubmit) {
+          <div class="finalize-row">
+            <button mat-raised-button color="primary" type="button" class="btn-finalize-order"
+              (click)="submitOrderClick()" [disabled]="isPrintLocked">
+              <mat-icon>save</mat-icon>
+              Submit order
+            </button>
           </div>
         }
       </div>
     }
 
-    <div class="mode-tabs" role="tablist" aria-label="Tipo de movimiento">
-      <button type="button" role="tab" class="mode-tab" [class.mode-tab--active]="payType === PayKind.PAYMONEY"
-        [attr.aria-selected]="payType === PayKind.PAYMONEY" (click)="payMoney()" [disabled]="printOrderCount">
-        <mat-icon>payments</mat-icon>
-        Efectivo
-      </button>
-      <button type="button" role="tab" class="mode-tab" [class.mode-tab--active]="payType === PayKind.PAYQR"
-        [attr.aria-selected]="payType === PayKind.PAYQR" (click)="payWithQr()" [disabled]="printOrderCount">
-        <mat-icon>qr_code_2</mat-icon>
-        QR
-      </button>
-      <button type="button" role="tab" class="mode-tab" [class.mode-tab--active]="payType === PayKind.PAYRETURN"
-        [attr.aria-selected]="payType === PayKind.PAYRETURN" (click)="returnMoney()" [disabled]="printOrderCount">
-        <mat-icon>undo</mat-icon>
-        Cambio
-      </button>
-      <button type="button" role="tab" class="mode-tab" [class.mode-tab--active]="payType === PayKind.DISCOUNT"
-        [attr.aria-selected]="payType === PayKind.DISCOUNT" (click)="discount()" [disabled]="printOrderCount">
-        <mat-icon>percent</mat-icon>
-        Desc.
-      </button>
-    </div>
+    <div class="payment-standard">
+      <div class="section-label">Registrar pagos</div>
+      <p class="section-lead">
+        Elija <strong>efectivo</strong> o <strong>QR</strong>, luego añada cada monto (teclas rápidas o campo).
+        Las líneas aparecen a la izquierda; pulse una para quitarla.
+      </p>
 
-    <div class="keypad-header">
-      <span class="keypad-hint">{{ keypadHint }}</span>
-    </div>
+      <div class="method-toggle" role="group" aria-label="Medio de pago">
+        <button type="button" class="method-btn" [class.method-btn--active]="incomingMethod === 'cash'"
+          (click)="setIncomingMethod('cash')" [disabled]="isPrintLocked">
+          <mat-icon>payments</mat-icon>
+          Efectivo
+        </button>
+        <button type="button" class="method-btn" [class.method-btn--active]="incomingMethod === 'qr'"
+          (click)="setIncomingMethod('qr')" [disabled]="isPrintLocked">
+          <mat-icon>qr_code_2</mat-icon>
+          QR
+        </button>
+      </div>
 
-    @if (payType === PayKind.PAYMONEY || payType === PayKind.PAYQR || payType === PayKind.PAYRETURN || payType === PayKind.DISCOUNT) {
       <div class="custom-amount-block">
         <mat-form-field appearance="outline" class="custom-amount-field" subscriptSizing="dynamic">
           <mat-label>Monto (Bs)</mat-label>
           <input matInput type="text" inputmode="decimal" [(ngModel)]="customAmountStr"
             [ngModelOptions]="{ standalone: true }" placeholder="Ej. 12,50"
-            (keyup.enter)="registerCustomAmount()" />
+            (keyup.enter)="registerIncomingAmount()" />
         </mat-form-field>
         <div class="custom-amount-actions">
           <button mat-flat-button color="primary" type="button" class="btn-register"
-            (click)="registerCustomAmount()" [disabled]="printOrderCount">
-            Registrar
+            (click)="registerIncomingAmount()" [disabled]="isPrintLocked">
+            Pay
           </button>
-          @if ((payType === PayKind.PAYMONEY || payType === PayKind.PAYQR) && amountDue > 0 && orderTotal > 0) {
+          @if (amountDue > 0 && orderTotal > 0) {
             <button mat-stroked-button color="primary" type="button" (click)="registerPendingDue()"
-              [disabled]="printOrderCount">
-              Registrar pendiente (Bs {{ amountDue | number:'1.2-2' }})
+              [disabled]="isPrintLocked">
+              Pagar pendiente (Bs {{ amountDue | number:'1.2-2' }})
             </button>
           }
         </div>
       </div>
-    }
 
-    <div class="bill-grid" [class.bill-grid--qr]="payType === PayKind.PAYQR"
-      [class.bill-grid--discount]="payType === PayKind.DISCOUNT">
-      @for (payItem of payItems; track payItem.value) {
-        <button type="button" mat-stroked-button class="bill-btn"
-          (click)="payIt(payItem, payType)" [disabled]="printOrderCount">
-          @if (payType === PayKind.PAYQR) {
-            <mat-icon class="bill-qr-badge">qr_code_2</mat-icon>
+      <div class="quick-amounts" aria-label="Montos rápidos">
+        @for (v of quickAmounts; track v) {
+          <button type="button" mat-stroked-button class="quick-btn" (click)="addQuickAmount(v)"
+            [disabled]="isPrintLocked">
+            {{ v }} Bs
+          </button>
+        }
+      </div>
+
+      @if (orderTotal > 0) {
+        <div class="checkout-actions">
+          <button mat-raised-button color="primary" type="button" class="btn-submit-order"
+            (click)="submitOrderClick()"
+            [disabled]="!readyToSubmit">
+            <mat-icon>done_all</mat-icon>
+            Submit order
+          </button>
+          @if (!readyToSubmit) {
+            <p class="checkout-hint">
+              Submit enables when <strong>Pending</strong> reaches Bs 0.00 (after discounts and registered payments).
+              Current pending: Bs {{ amountDue | number:'1.2-2' }}.
+            </p>
           }
-          <span class="bill-label">
-            <span class="bill-amount">{{ payItem.name }}</span>
-            @if (displayCurrentType && payType !== PayKind.DISCOUNT) {
-              <span class="bill-currency">{{ currentType }}</span>
-            }
-          </span>
-        </button>
+        </div>
       }
     </div>
+
+    <details class="payment-adjustments">
+      <summary class="adjustments-summary">Descuento o cambio (opcional)</summary>
+      <div class="adjustment-rows">
+        <div class="adjustment-row">
+          <mat-form-field appearance="outline" class="adjust-field" subscriptSizing="dynamic">
+            <mat-label>Descuento (Bs)</mat-label>
+            <input matInput type="text" inputmode="decimal" [(ngModel)]="discountAmountStr"
+              [ngModelOptions]="{ standalone: true }" (keyup.enter)="registerDiscountAmount()" />
+          </mat-form-field>
+          <button mat-stroked-button type="button" color="primary" (click)="registerDiscountAmount()"
+            [disabled]="isPrintLocked">
+            Registrar descuento
+          </button>
+        </div>
+        <div class="adjustment-row">
+          <mat-form-field appearance="outline" class="adjust-field" subscriptSizing="dynamic">
+            <mat-label>Cambio devuelto (Bs)</mat-label>
+            <input matInput type="text" inputmode="decimal" [(ngModel)]="changeAmountStr"
+              [ngModelOptions]="{ standalone: true }" (keyup.enter)="registerChangeAmount()" />
+          </mat-form-field>
+          <button mat-stroked-button type="button" (click)="registerChangeAmount()" [disabled]="isPrintLocked">
+            Registrar cambio
+          </button>
+        </div>
+        <p class="adjustment-hint">Use el cambio cuando el cliente ya cubrió el total y recibe vuelto en efectivo.</p>
+      </div>
+    </details>
   </section>
 </div>

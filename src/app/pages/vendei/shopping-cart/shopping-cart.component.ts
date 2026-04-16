@@ -1,26 +1,9 @@
-import { Component, OnInit, ElementRef, ViewChild, Inject } from "@angular/core";
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { Component, OnInit, ElementRef, ViewChild } from "@angular/core";
 import { VOrdersService } from "../../../services/vendei/v-orders.service";
 import { VInventoryService } from "../../../services/vendei/v-inventory.service";
-import { Router } from "@angular/router";
 import { VConfigService } from "src/app/services/vendei/v-config.service";
-import { roundToCents } from "src/app/utils/money";
-
-enum PaymentType {
-  PAYMONEY = 1,
-  PAYRETURN = 2,
-  DISCOUNT = 3,
-  PAYQR = 4,
-}
-
-export interface PaymentDialogData {
-  total: number;
-  pay: number;
-  /** Remaining balance (Bs) when dialog opens — for quick-fill actions. */
-  due: number;
-}
-
-
+import { roundToCents, isOrderReadyToSubmit, orderAmountDue } from "src/app/utils/money";
+import { PaymentType } from "src/app/features/vendei/payment-types";
 
 @Component({
     selector: "app-shopping-cart",
@@ -58,38 +41,10 @@ export class ShoppingCartComponent implements OnInit {
   constructor(
     private ordersSvc: VOrdersService,
     private inventorySvc: VInventoryService,
-    private config: VConfigService,
-    private router: Router,
-    public dialog: MatDialog
+    private config: VConfigService
   ) {
     this.total = 0;
     this.selectedCustomer = Object.assign({}, this.emptyCustomer);
-  }
-
-  /** Bs still to collect (same basis as “Pay” on the ticket). */
-  amountDue(): number {
-    const effective = roundToCents(this.totalPayed - this.totalReturn);
-    return roundToCents(Math.max(0, this.total - effective));
-  }
-
-  openPaymentDialog(): void {
-    const dialogRef = this.dialog.open(PaymentEditDialog, {
-      width: "360px",
-      maxWidth: "95vw",
-      autoFocus: "first-tabbable",
-      data: {
-        pay: this.totalPayed,
-        total: this.total,
-        due: this.amountDue(),
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.totalPayed = roundToCents(result.pay);
-        this.toReturn = roundToCents(this.totalPayed - this.total);
-      }
-    });
   }
 
   @ViewChild("toPrint", { static: false }) myDiv: ElementRef;
@@ -338,9 +293,6 @@ export class ShoppingCartComponent implements OnInit {
   }
 
   public calTotals() {
-    if (this.printOrderCount) {
-      return;
-    }
     this.totalPayed = roundToCents(
       this.payedItems.map(x => x.value).reduce((a, b) => a + b, 0)
     );
@@ -353,7 +305,32 @@ export class ShoppingCartComponent implements OnInit {
       this.discountItems.map(x => x.value).reduce((a, b) => a + b, 0)
     );
 
-    this.toReturn = roundToCents(this.totalPayed - this.total - this.totalReturn);
+    const net = Math.max(0, roundToCents(this.total - this.totalDiscount));
+    this.toReturn = roundToCents(this.totalPayed - net - this.totalReturn);
+  }
+
+  /** Gross ticket total minus discounts — amount the customer must cover. */
+  get netOrderTotal(): number {
+    return Math.max(0, roundToCents(this.total - this.totalDiscount));
+  }
+
+  /** Cash/QR taken in minus change lines already registered. */
+  get effectivePaid(): number {
+    return roundToCents(this.totalPayed - this.totalReturn);
+  }
+
+  get amountDue(): number {
+    return orderAmountDue(this.total, this.totalPayed, this.totalReturn, this.totalDiscount);
+  }
+
+  get isOrderPaid(): boolean {
+    return isOrderReadyToSubmit(
+      this.total,
+      this.totalPayed,
+      this.totalReturn,
+      this.totalDiscount,
+      this.printOrderCount
+    );
   }
 
   removeItem(payItem: any) {
@@ -377,6 +354,9 @@ export class ShoppingCartComponent implements OnInit {
   }
 
   payIt(payItem: any, payType: any) {
+    if (this.printOrderCount) {
+      return;
+    }
     let payItemAux = Object.assign({}, payItem);
     switch (payType) {
       case PaymentType.PAYMONEY:
@@ -406,33 +386,3 @@ export class ShoppingCartComponent implements OnInit {
     this.calTotals();
   }
 }
-
-@Component({
-    selector: "payment-edit-dialog",
-    templateUrl: "payment-edit-dialog.html",
-    styleUrls: ["payment-edit-dialog.css"],
-    standalone: false
-})
-export class PaymentEditDialog {
-  constructor(
-    public dialogRef: MatDialogRef<PaymentEditDialog>,
-    @Inject(MAT_DIALOG_DATA) public data: PaymentDialogData
-  ) { }
-
-  onNoClick(): void {
-    this.dialogRef.close();
-  }
-
-  /** Set total paid equal to order total. */
-  applyExactOrderTotal(): void {
-    this.data.pay = roundToCents(this.data.total);
-  }
-
-  /** Add current balance due to the amount already in the field (top-up to full). */
-  fillRemainingDue(): void {
-    if (this.data.due > 0) {
-      this.data.pay = roundToCents(Number(this.data.pay || 0) + this.data.due);
-    }
-  }
-}
-

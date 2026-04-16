@@ -155,12 +155,165 @@
   gap: 6px;
 }
 
-.payment-keypad {
+.payment-main {
   flex: 2 1 280px;
   min-width: 240px;
   display: flex;
   flex-direction: column;
+  gap: 12px;
+}
+
+.payment-standard {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+}
+
+.section-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.section-lead {
+  margin: 0 0 12px;
+  font-size: 0.82rem;
+  color: #475569;
+  line-height: 1.45;
+}
+
+.method-toggle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.method-btn {
+  flex: 1 1 120px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(15, 23, 42, 0.15);
+  background: #f8fafc;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.method-btn mat-icon {
+  font-size: 20px !important;
+  width: 20px !important;
+  height: 20px !important;
+}
+
+.method-btn:hover:not(:disabled) {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.method-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.method-btn--active {
+  background: linear-gradient(180deg, #e8eaf6 0%, #c5cae9 100%);
+  border-color: #3949ab;
+  color: #1a237e;
+  box-shadow: 0 1px 4px rgba(57, 73, 171, 0.2);
+}
+
+.quick-amounts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed rgba(15, 23, 42, 0.1);
+}
+
+.quick-btn {
+  min-width: 72px;
+  font-weight: 600 !important;
+}
+
+.checkout-actions {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(15, 23, 42, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.btn-submit-order {
+  width: 100%;
+  display: inline-flex !important;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700 !important;
+}
+
+.checkout-hint {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.payment-adjustments {
+  margin-top: 4px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(248, 250, 252, 0.9);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.adjustments-summary {
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #475569;
+  padding: 6px 4px;
+  list-style-position: outside;
+}
+
+.adjustment-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 8px 4px 4px;
+}
+
+.adjustment-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
   gap: 10px;
+}
+
+.adjust-field {
+  flex: 1 1 160px;
+  min-width: 140px;
+}
+
+.adjustment-hint {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #64748b;
+  line-height: 1.35;
 }
 
 .due-banner {
@@ -213,6 +366,20 @@
   margin-right: 6px;
 }
 
+.finalize-row {
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.btn-finalize-order {
+  width: 100%;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+}
+
 .due-label {
   font-size: 0.72rem;
   font-weight: 600;
@@ -227,127 +394,11 @@
   color: #0f172a;
 }
 
-.mode-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.mode-tab {
-  flex: 1 1 auto;
-  min-width: 72px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  padding: 8px 10px;
-  border-radius: 10px;
-  border: 1px solid rgba(15, 23, 42, 0.15);
-  background: #fff;
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: #475569;
-  cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
-}
-
-.mode-tab mat-icon {
-  font-size: 18px !important;
-  width: 18px !important;
-  height: 18px !important;
-}
-
-.mode-tab:hover:not(:disabled) {
-  background: #f1f5f9;
-  border-color: #94a3b8;
-}
-
-.mode-tab:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-.mode-tab--active {
-  background: linear-gradient(180deg, #e8eaf6 0%, #c5cae9 100%);
-  border-color: #3949ab;
-  color: #1a237e;
-  box-shadow: 0 1px 4px rgba(57, 73, 171, 0.25);
-}
-
-.keypad-header {
-  padding-bottom: 4px;
-  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
-}
-
-.keypad-hint {
-  font-size: 0.8rem;
-  color: #546e7a;
-  line-height: 1.35;
-}
-
-.bill-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
-  gap: 8px;
-}
-
-.bill-btn {
-  position: relative;
-  display: flex !important;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  min-height: 72px;
-  padding: 8px 6px !important;
-  line-height: 1.1 !important;
-  border-radius: 10px !important;
-  background: #fff !important;
-  border-color: rgba(15, 23, 42, 0.12) !important;
-}
-
-.bill-grid--qr .bill-btn {
-  border-color: rgba(21, 101, 192, 0.35) !important;
-  background: linear-gradient(180deg, #fafdff 0%, #e3f2fd 100%) !important;
-}
-
-.bill-qr-badge {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  font-size: 16px !important;
-  width: 16px !important;
-  height: 16px !important;
-  color: #1565c0;
-  opacity: 0.9;
-}
-
-.bill-btn:hover:not([disabled]) {
-  background: #f1f5f9 !important;
-  border-color: #94a3b8 !important;
-}
-
-.bill-label {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #0f172a;
-}
-
-.bill-amount {
-  font-size: 1rem;
-  font-variant-numeric: tabular-nums;
-}
-
 .custom-amount-block {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 8px 0;
-  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  padding: 0;
 }
 
 .custom-amount-field {
@@ -363,17 +414,5 @@
 
 .btn-register {
   min-width: 120px;
-}
-
-.bill-grid--discount .bill-btn {
-  border-color: rgba(123, 31, 162, 0.35) !important;
-  background: linear-gradient(180deg, #fdf8ff 0%, #f3e5f5 100%) !important;
-}
-
-.bill-currency {
-  font-size: 0.65rem;
-  font-weight: 600;
-  color: #64748b;
-  margin-left: 2px;
 }
 

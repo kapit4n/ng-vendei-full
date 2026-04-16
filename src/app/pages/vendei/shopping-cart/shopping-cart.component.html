@@ -1,14 +1,14 @@
 <div class="pos-shell">
   <div class="shopping-cart-container">
     <div class="cart-toolbar">
-      @if (total > 0 && totalPayed >= total && printOrderCount == 0) {
+      @if (isOrderPaid && printOrderCount == 0) {
         <button mat-raised-button color="primary" class="cart-save-btn" (click)="submitOrder()"
           >
           <mat-icon>save</mat-icon>
-          Save order
+          Submit order
         </button>
       }
-      @if (total > 0 && totalPayed >= total && printOrderCount == 1) {
+      @if (isOrderPaid && printOrderCount == 1) {
         <button mat-raised-button color="primary" class="cart-save-btn" (click)="submitOrder()"
           >
           <mat-icon>print</mat-icon>
@@ -35,7 +35,7 @@
             <span class="label">Total</span>
             <span class="value">Bs {{ total | number:'1.2-2' }}</span>
           </div>
-          @if (totalPayed - totalReturn != total) {
+          @if (totalPayed > 0 && effectivePaid != netOrderTotal) {
             <div class="cart-summary-row">
               <span class="label" i18n>Payed</span>
               <span class="value">Bs {{ totalPayed | number:'1.2-2' }}</span>
@@ -53,29 +53,14 @@
               <span class="value">Bs {{ toReturn | number:'1.2-2' }}</span>
             </div>
           }
-          @if (total > 0 && totalPayed - totalReturn == total) {
+          @if (isOrderPaid) {
             <div class="cart-summary-status paid">
               <mat-icon>check_circle</mat-icon>
               <span i18n>Paid out</span>
             </div>
           }
-          @if (total) {
-            <div class="cart-summary-actions">
-              @if (totalPayed - totalReturn < total) {
-                <button mat-flat-button color="accent" class="pay-btn"
-                  (click)="openPaymentDialog()">
-                  <mat-icon>payments</mat-icon>
-                  Pay Bs {{ (total - totalPayed) | number:'1.2-2' }}
-                </button>
-              }
-              @if (totalPayed - totalReturn > total) {
-                <button mat-flat-button color="warn" class="pay-btn"
-                  (click)="openPaymentDialog()">
-                  <mat-icon>undo</mat-icon>
-                  Return Bs {{ (totalPayed - total) | number:'1.2-2' }}
-                </button>
-              }
-            </div>
+          @if (total > 0 && !isOrderPaid) {
+            <p class="cart-payment-hint">Use el panel de cobro abajo para registrar pagos.</p>
           }
         </div>
       }
@@ -83,10 +68,11 @@
 
     @if (displayCal) {
       <app-cal-table class="cal-table" [selectCustomer]="selectCustomer.bind(this)"
-        [selectedCustomer]="selectedCustomer" [orderTotal]="total" [(payedItems)]="payedItems" [(discountItems)]="discountItems"
-        [(returnItems)]="returnItems" [(totalPayed)]="totalPayed" [(totalDiscount)]="totalDiscount"
-        [(totalReturn)]="totalReturn" [calTotals]="calTotals.bind(this)" [payIt]="payIt.bind(this)"
-      [removeItem]="removeItem.bind(this)" [printOrderCount]="printOrderCount"></app-cal-table>
+        [selectedCustomer]="selectedCustomer" [orderTotal]="total" [payedItems]="payedItems"
+        [discountItems]="discountItems" [returnItems]="returnItems" [totalPayed]="totalPayed"
+        [totalDiscount]="totalDiscount" [totalReturn]="totalReturn" [calTotals]="calTotals.bind(this)"
+        [payIt]="payIt.bind(this)" [removeItem]="removeItem.bind(this)" [printOrderCount]="printOrderCount"
+        [finalizeOrder]="submitOrder.bind(this)"></app-cal-table>
     }
   </div>
 
