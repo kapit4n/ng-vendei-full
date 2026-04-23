@@ -1,178 +1,210 @@
 [
   {
     "id": 1,
-    "name": "Cellphone",
-    "img": "https://img.purch.com/w/660/aHR0cDovL3d3dy5saXZlc2NpZW5jZS5jb20vaW1hZ2VzL2kvMDAwLzAyMC83NzIvb3JpZ2luYWwvaXBob25lLTAyLmpwZw==",
-    "price": 500,
+    "name": "Red Apple (1 lb)",
+    "img": "assets/vendei/demo-products/apple.jpg",
+    "price": 2.49,
     "categoryId": 1,
-    "code": "1"
+    "code": "GROC-0001"
   },
   {
     "id": 2,
-    "name": "TV",
-    "img": "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/5900/5900135_sd.jpg;maxHeight=640;maxWidth=550",
-    "price": 600,
-    "categoryId": 2,
-    "code": "2"
+    "name": "Bananas (1 lb)",
+    "img": "assets/vendei/demo-products/bananas.jpg",
+    "price": 1.29,
+    "categoryId": 1,
+    "code": "GROC-0002"
   },
   {
     "id": 3,
-    "name": "Camera",
-    "img": "https://rukminim1.flixcart.com/image/312/312/camera/j/s/u/canon-eos-1300d-dslr-original-imaeh33eyhy9gcgm.jpeg?q=70",
-    "price": 300,
+    "name": "Baguette Bread",
+    "img": "assets/vendei/demo-products/bread.jpg",
+    "price": 2.99,
     "categoryId": 1,
-    "code": "3"
+    "code": "GROC-0003"
   },
   {
     "id": 4,
-    "name": "Laptop",
-    "img": "https://images-na.ssl-images-amazon.com/images/I/61aZwj3rIyL._SX425_.jpg",
-    "price": 1400,
-    "categoryId": 3,
-    "code": "4"
+    "name": "Milk (1 L)",
+    "img": "assets/vendei/demo-products/milk.jpg",
+    "price": 1.89,
+    "categoryId": 1,
+    "code": "GROC-0004"
   },
   {
     "id": 5,
-    "name": "Tablet",
-    "img": "https://assets.pcmag.com/media/images/466265-amazon-fire-hd-10.jpg?width=810&height=456",
-    "price": 700,
+    "name": "Eggs (12 pack)",
+    "img": "assets/vendei/demo-products/eggs.jpg",
+    "price": 3.79,
     "categoryId": 1,
-    "code": "5"
+    "code": "GROC-0005"
   },
   {
     "id": 6,
-    "name": "Radio",
-    "img": "https://www.clasohlson.com/medias/sys_master/9507317350430.jpg",
-    "price": 200,
+    "name": "Pasta (500 g)",
+    "img": "assets/vendei/demo-products/pasta.jpg",
+    "price": 1.59,
     "categoryId": 1,
-    "code": "6"
+    "code": "GROC-0006"
   },
   {
     "id": 7,
-    "name": "DVD Reader",
-    "img": "https://images-na.ssl-images-amazon.com/images/G/01/aplusautomation/vendorimages/5e7f9c9f-4fcc-4c17-82e5-3e723a9c89ee.jpg._CB323335399_.jpg",
-    "price": 200,
+    "name": "White Rice (1 kg)",
+    "img": "assets/vendei/demo-products/rice.jpg",
+    "price": 2.69,
     "categoryId": 1,
-    "code": "7"
+    "code": "GROC-0007"
   },
   {
     "id": 8,
-    "name": "Monitor",
-    "img": "https://www.lg.com/us/images/monitors/md05771107/gallery/medium01.jpg",
-    "price": 130,
-    "categoryId": 3,
-    "code": "8"
+    "name": "Coffee (ground, 250 g)",
+    "img": "assets/vendei/demo-products/coffee.jpg",
+    "price": 4.49,
+    "categoryId": 1,
+    "code": "GROC-0008"
   },
   {
     "id": 9,
-    "name": "ASUS",
-    "img": "https://media.aws.alkosto.com/media/catalog/product/cache/6/image/69ace863370f34bdf190e4e164b6e123/8/8/889349100943_2.png",
-    "price": 140,
-    "categoryId": 3,
-    "code": "9"
+    "name": "Black Tea (20 bags)",
+    "img": "assets/vendei/demo-products/tea.jpg",
+    "price": 2.39,
+    "categoryId": 1,
+    "code": "GROC-0009"
   },
   {
     "id": 10,
-    "name": "Cooler",
-    "img": "https://lojamultilaser.vteximg.com.br/arquivos/ids/155988-1000-1000/AC267_1.jpg",
-    "price": 20,
-    "categoryId": 3,
-    "code": "10"
+    "name": "Olive Oil (500 ml)",
+    "img": "assets/vendei/demo-products/olive-oil.jpg",
+    "price": 7.99,
+    "categoryId": 1,
+    "code": "GROC-0010"
   },
   {
     "id": 11,
-    "name": "Drone",
-    "img": "https://i.ebayimg.com/images/g/xxgAAOSwY4taxIyC/s-l300.jpg",
-    "price": 500,
+    "name": "Cheddar Cheese (200 g)",
+    "img": "assets/vendei/demo-products/cheese.jpg",
+    "price": 3.49,
     "categoryId": 1,
-    "code": "11"
+    "code": "GROC-0011"
   },
   {
     "id": 12,
-    "name": "Cellphone",
-    "img": "https://img.purch.com/w/660/aHR0cDovL3d3dy5saXZlc2NpZW5jZS5jb20vaW1hZ2VzL2kvMDAwLzAyMC83NzIvb3JpZ2luYWwvaXBob25lLTAyLmpwZw==",
-    "price": 500,
+    "name": "Chicken Breast (1 lb)",
+    "img": "assets/vendei/demo-products/chicken.jpg",
+    "price": 5.99,
     "categoryId": 1,
-    "code": "12"
+    "code": "GROC-0012"
   },
   {
     "id": 13,
-    "name": "TV",
-    "img": "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/5900/5900135_sd.jpg;maxHeight=640;maxWidth=550",
-    "price": 300,
-    "categoryId": 2,
-    "code": "13"
+    "name": "Cereal (500 g)",
+    "img": "assets/vendei/demo-products/cereal.jpg",
+    "price": 3.29,
+    "categoryId": 1,
+    "code": "GROC-0013"
   },
   {
     "id": 14,
-    "name": "Camera",
-    "img": "https://rukminim1.flixcart.com/image/312/312/camera/j/s/u/canon-eos-1300d-dslr-original-imaeh33eyhy9gcgm.jpeg?q=70",
-    "price": 200,
+    "name": "Yogurt (plain, 1 kg)",
+    "img": "assets/vendei/demo-products/yogurt.jpg",
+    "price": 4.19,
     "categoryId": 1,
-    "code": "14"
+    "code": "GROC-0014"
   },
   {
     "id": 15,
-    "name": "Laptop",
-    "img": "https://images-na.ssl-images-amazon.com/images/I/61aZwj3rIyL._SX425_.jpg",
-    "price": 1600,
-    "categoryId": 3,
-    "code": "15"
+    "name": "Orange Juice (1 L)",
+    "img": "assets/vendei/demo-products/orange-juice.jpg",
+    "price": 3.59,
+    "categoryId": 1,
+    "code": "GROC-0015"
   },
   {
     "id": 16,
-    "name": "Tablet",
-    "img": "https://assets.pcmag.com/media/images/466265-amazon-fire-hd-10.jpg?width=810&height=456",
-    "price": 900,
+    "name": "Tomatoes (1 lb)",
+    "img": "assets/vendei/demo-products/tomato.jpg",
+    "price": 2.19,
     "categoryId": 1,
-    "code": "16"
+    "code": "GROC-0016"
   },
   {
     "id": 17,
-    "name": "Radio",
-    "img": "https://www.clasohlson.com/medias/sys_master/9507317350430.jpg",
-    "price": 120,
+    "name": "Onions (1 lb)",
+    "img": "assets/vendei/demo-products/onion.jpg",
+    "price": 1.19,
     "categoryId": 1,
-    "code": "17"
+    "code": "GROC-0017"
   },
   {
     "id": 18,
-    "name": "DVD Reader",
-    "img": "https://images-na.ssl-images-amazon.com/images/G/01/aplusautomation/vendorimages/5e7f9c9f-4fcc-4c17-82e5-3e723a9c89ee.jpg._CB323335399_.jpg",
-    "price": 200,
+    "name": "Potatoes (2 lb)",
+    "img": "assets/vendei/demo-products/potato.jpg",
+    "price": 2.99,
     "categoryId": 1,
-    "code": "18"
+    "code": "GROC-0018"
   },
   {
     "id": 19,
-    "name": "Monitor",
-    "img": "https://www.lg.com/us/images/monitors/md05771107/gallery/medium01.jpg",
-    "price": 300,
-    "categoryId": 3,
-    "code": "19"
+    "name": "Bottled Water (1.5 L)",
+    "img": "assets/vendei/demo-products/water.jpg",
+    "price": 1.09,
+    "categoryId": 1,
+    "code": "GROC-0019"
   },
   {
-    "id": 29,
-    "name": "ASUS",
-    "img": "https://media.aws.alkosto.com/media/catalog/product/cache/6/image/69ace863370f34bdf190e4e164b6e123/8/8/889349100943_2.png",
-    "price": 200,
+    "id": 20,
+    "name": "Toothpaste (120 g)",
+    "img": "assets/vendei/demo-products/toothpaste.jpg",
+    "price": 2.49,
     "categoryId": 3,
-    "code": "20"
+    "code": "HOME-0001"
   },
   {
     "id": 21,
-    "name": "Cooler",
-    "img": "https://lojamultilaser.vteximg.com.br/arquivos/ids/155988-1000-1000/AC267_1.jpg",
-    "price": 20,
+    "name": "Shampoo (400 ml)",
+    "img": "assets/vendei/demo-products/shampoo.jpg",
+    "price": 5.49,
     "categoryId": 3,
-    "code": "21"
+    "code": "HOME-0002"
   },
   {
     "id": 22,
-    "name": "Drone",
-    "img": "https://i.ebayimg.com/images/g/xxgAAOSwY4taxIyC/s-l300.jpg",
-    "price": 600,
-    "categoryId": 1,
-    "code": "22"
+    "name": "Laundry Detergent (1.5 L)",
+    "img": "assets/vendei/demo-products/detergent.jpg",
+    "price": 8.99,
+    "categoryId": 3,
+    "code": "HOME-0003"
+  },
+  {
+    "id": 23,
+    "name": "Paper Towels (2 rolls)",
+    "img": "assets/vendei/demo-products/paper-towels.jpg",
+    "price": 3.79,
+    "categoryId": 3,
+    "code": "HOME-0004"
+  },
+  {
+    "id": 24,
+    "name": "Hand Soap (500 ml)",
+    "img": "assets/vendei/demo-products/soap.jpg",
+    "price": 2.99,
+    "categoryId": 3,
+    "code": "HOME-0005"
+  },
+  {
+    "id": 25,
+    "name": "Smartphone (Demo)",
+    "img": "assets/vendei/demo-products/smartphone.jpg",
+    "price": 399,
+    "categoryId": 2,
+    "code": "ELEC-0001"
+  },
+  {
+    "id": 26,
+    "name": "Wireless Headphones (Demo)",
+    "img": "assets/vendei/demo-products/headphones.jpg",
+    "price": 79,
+    "categoryId": 2,
+    "code": "ELEC-0002"
   }
 ]
