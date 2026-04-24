@@ -4,6 +4,7 @@ import { RConfigService } from "./r-config.service";
 
 import { RCrudInterface } from './r-crud.interface';
 import { Observable } from 'rxjs';
+import type { IUnitOfMeasure } from './r-unit-of-measure.service';
 
 export interface IProduct {
   id: string;
@@ -15,6 +16,10 @@ export interface IProduct {
   description: string;
   categoryId: string;
   stock: number;
+  /** Allowed units for this product (from API). */
+  UnitOfMeasures?: IUnitOfMeasure[];
+  /** IDs to send when saving (optional). */
+  unitOfMeasureIds?: (string | number)[];
 }
 
 @Injectable({

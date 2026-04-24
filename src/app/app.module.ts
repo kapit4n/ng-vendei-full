@@ -41,6 +41,8 @@ import { RegProductListComponent } from "./pages/reg/reg-product-list/reg-produc
 import { RegProductShowComponent } from "./pages/reg/reg-product-show/reg-product-show.component";
 import { RegCustomerComponent } from "./pages/reg/reg-customer/reg-customer.component";
 import { RegCustomerListComponent } from "./pages/reg/reg-customer-list/reg-customer-list.component";
+import { RegUnitOfMeasureListComponent } from "./pages/reg/reg-unit-of-measure-list/reg-unit-of-measure-list.component";
+import { RegUnitOfMeasureComponent } from "./pages/reg/reg-unit-of-measure/reg-unit-of-measure.component";
 // inv pages
 import { InvProductsComponent } from "./pages/inv/inv-products/inv-products.component";
 import { InvProductsInvComponent } from "./pages/inv/inv-products-inv/inv-products-inv.component";
@@ -67,6 +69,7 @@ import { VConfigService } from './services/vendei/v-config.service';
 import { RProductService } from "./services/reg/r-product.service";
 import { RProductPresentationService } from "./services/reg/r-product-presentation.service";
 import { RCategoryService } from "./services/reg/r-category.service";
+import { RUnitOfMeasureService } from "./services/reg/r-unit-of-measure.service";
 import { RConfigService } from "./services/reg/r-config.service";
 // inv services
 import { IConfigService } from './services/inv/i-config.service';
@@ -134,6 +137,16 @@ const appRoutes: Routes = [
     data: { breadcrumb: "Register Category" }
   },
   {
+    path: "reg/unit-of-measures",
+    component: RegUnitOfMeasureListComponent,
+    data: { breadcrumb: "Units of measure" }
+  },
+  {
+    path: "reg/unit-of-measures/:id",
+    component: RegUnitOfMeasureComponent,
+    data: { breadcrumb: "Unit of measure" }
+  },
+  {
     path: "reg/customers",
     component: RegCustomerListComponent,
     data: { breadcrumb: "List Customer" }
@@ -193,6 +206,8 @@ const appRoutes: Routes = [
     RegProductShowComponent,
     RegCustomerComponent,
     RegCustomerListComponent,
+    RegUnitOfMeasureListComponent,
+    RegUnitOfMeasureComponent,
     InvProductsComponent,
     InvProductsInvComponent,
     RepProductsComponent,
@@ -230,6 +245,7 @@ const appRoutes: Routes = [
     RProductService,
     RProductPresentationService,
     RCategoryService,
+    RUnitOfMeasureService,
     RConfigService,
     RCustomerService,
     IConfigService,

@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef } from '@angular/core';
 import { Router } from "@angular/router";
 import { ActivatedRoute } from '@angular/router';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import {
   IProduct, RProductService
 } from '../../../services/reg/r-product.service';
@@ -8,6 +11,8 @@ import {
   RCategoryService,
   ICategory
 } from "../../../services/reg/r-category.service";
+import { IUnitOfMeasure, RUnitOfMeasureService } from '../../../services/reg/r-unit-of-measure.service';
+import { normalizeApiRecord } from 'src/app/utils/api-body';
 
 const PLACEHOLDER_IMG = 'assets/vendei/placeholders/product-card.svg';
 
@@ -20,11 +25,14 @@ const PLACEHOLDER_IMG = 'assets/vendei/placeholders/product-card.svg';
 export class RegProductComponent implements OnInit {
   productInfo: IProduct;
   categories: ICategory[];
+  allUnitOfMeasures: IUnitOfMeasure[] = [];
   saveError = '';
 
   constructor(private productSvc: RProductService, private router: Router,
-    private categorySvc: RCategoryService, private route: ActivatedRoute) {
-    this.productInfo = {} as IProduct;
+    private categorySvc: RCategoryService, private route: ActivatedRoute,
+    private uomSvc: RUnitOfMeasureService,
+    private cdr: ChangeDetectorRef) {
+    this.productInfo = { unitOfMeasureIds: [] } as IProduct;
     this.categories = [];
   }
 
@@ -61,21 +69,65 @@ export class RegProductComponent implements OnInit {
     return String(a) === String(b);
   }
 
+  compareUnitId(a: string | number | null | undefined, b: string | number | null | undefined): boolean {
+    if (a == null && b == null) {
+      return true;
+    }
+    if (a == null || b == null) {
+      return false;
+    }
+    return String(a) === String(b);
+  }
+
+  uomTriggerText(): string {
+    const ids = (this.productInfo.unitOfMeasureIds || []).map((x) => String(x));
+    if (!ids.length) {
+      return 'None';
+    }
+    const byId = new Map(this.allUnitOfMeasures.map((u) => [String(u.id), u]));
+    const labels = ids
+      .map((id) => {
+        const u = byId.get(id);
+        return u?.code || u?.name || id;
+      })
+      .filter(Boolean);
+    if (!labels.length) {
+      return `${ids.length} selected`;
+    }
+    const first = labels.slice(0, 3);
+    const more = labels.length - first.length;
+    return more > 0 ? `${first.join(', ')} +${more}` : first.join(', ');
+  }
+
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.productSvc.getById(id).subscribe(product => {
+    /** Load categories, UOM list, and (when editing) product together so the multi-select always has options before values bind. */
+    forkJoin({
+      cats: this.categorySvc.getAll().pipe(catchError(() => of([] as ICategory[]))),
+      uoms: this.uomSvc.getAll().pipe(catchError(() => of([] as IUnitOfMeasure[]))),
+      product: id ? this.productSvc.getById(id).pipe(catchError(() => of(null))) : of(null),
+    }).subscribe(({ cats, uoms, product }) => {
+      this.categories = Array.isArray(cats) ? cats : [];
+      this.allUnitOfMeasures = Array.isArray(uoms) ? uoms : [];
+
+      const normalized = normalizeApiRecord(product) as IProduct | null;
+      if (id && normalized) {
+        const linked =
+          (normalized as IProduct).UnitOfMeasures ||
+          ((normalized as unknown as Record<string, unknown>)['unitOfMeasures'] as IUnitOfMeasure[] | undefined);
+        const uomList = Array.isArray(linked) ? linked : [];
         this.productInfo = {
-          ...product,
-          categoryId: product.categoryId != null ? String(product.categoryId) : '',
+          ...normalized,
+          categoryId: normalized.categoryId != null ? String(normalized.categoryId) : '',
+          unitOfMeasureIds: uomList.map(u => String(u.id)),
         };
-      });
-    }
-    this.categorySvc.getAll().subscribe(cats => {
-      this.categories = cats || [];
-      if (!id && this.categories.length && (this.productInfo.categoryId == null || this.productInfo.categoryId === '')) {
+      } else if (!id && this.categories.length && (this.productInfo.categoryId == null || this.productInfo.categoryId === '')) {
         this.productInfo.categoryId = String(this.categories[0].id);
       }
+
+      // Some Material + ngModel combos can delay painting until next tick; force refresh.
+      this.cdr.detectChanges();
+      queueMicrotask(() => this.cdr.detectChanges());
     });
   }
 
@@ -96,12 +148,23 @@ export class RegProductComponent implements OnInit {
       return;
     }
 
-    const payload = {
-      ...this.productInfo,
+    const unitIds = (this.productInfo.unitOfMeasureIds || [])
+      .map(x => Number(x))
+      .filter(n => Number.isFinite(n) && n > 0);
+
+    const p = this.productInfo as IProduct & Record<string, unknown>;
+    const payload: Record<string, unknown> = {
+      id: p.id,
       name,
       code,
-      categoryId: this.productInfo.categoryId,
+      description: p.description ?? '',
+      img: p.img ?? '',
+      categoryId: p.categoryId,
+      unitOfMeasureIds: unitIds,
     };
+    if (p.vendorId != null && String(p.vendorId).trim() !== '') {
+      payload.vendorId = Number(p.vendorId);
+    }
 
     const onErr = () => {
       this.saveError = 'Could not save. Check your connection and try again.';

@@ -90,3 +90,8 @@
   padding: 1rem 1rem 1.25rem !important;
   gap: 0.5rem;
 }
+
+/* Keep UOM multi-select as a standard Material control (no overlap with neighbors). */
+.uom-multi-field {
+  margin-top: 0.25rem;
+}

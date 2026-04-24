@@ -144,7 +144,7 @@
                       <span class="thumb-badge thumb-badge--custom">Custom</span>
                     }
                   </td>
-                  <td class="cell-strong">{{ row.unitOfMeasure || '—' }}</td>
+                  <td class="cell-strong">{{ formatPresentationUnit(row) }}</td>
                   <td>{{ row.currentPrice | number:'1.2-2' }}</td>
                   <td>{{ row.quantity ?? '—' }}</td>
                   <td>{{ row.brand || '—' }}</td>

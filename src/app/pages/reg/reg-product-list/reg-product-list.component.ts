@@ -74,4 +74,15 @@ export class RegProductListComponent implements OnInit {
       this.loadProductPresentations();
     });
   }
+
+  presentationUnitLabel(row: IProductPresentation & { UnitOfMeasure?: { code?: string; name?: string } }): string {
+    const u = row.UnitOfMeasure;
+    if (u?.code && u?.name) {
+      return `${u.code} — ${u.name}`;
+    }
+    if (u?.name) {
+      return u.name;
+    }
+    return (row.unitOfMeasure || '').trim() || '—';
+  }
 }

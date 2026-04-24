@@ -33,8 +33,15 @@
           <div class="field-row">
             <mat-form-field appearance="outline" class="flex-1">
               <mat-label>Unit of measure</mat-label>
-              <input matInput type="text" [(ngModel)]="productPresentationInfo.unitOfMeasure" name="unitOfMeasure"
-                required autocomplete="off" placeholder="e.g. unit, box, bottle" />
+              <mat-select [(ngModel)]="productPresentationInfo.unitOfMeasureId" name="unitOfMeasureId" required
+                [compareWith]="compareUnitId">
+                @for (u of unitOptions; track u.id) {
+                  <mat-option [value]="selectValueForUnitId(u.id)">{{ u.code }} — {{ u.name }}</mat-option>
+                }
+              </mat-select>
+              @if (allowedUnitOfMeasures.length === 0 && allUnitOfMeasures.length) {
+                <mat-hint>No units assigned on this product yet — showing all registered units. Assign some on the product form for stricter choices.</mat-hint>
+              }
             </mat-form-field>
             <mat-form-field appearance="outline" class="flex-narrow">
               <mat-label>Price</mat-label>

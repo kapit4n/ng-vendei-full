@@ -263,6 +263,17 @@ export class RegProductShowComponent implements OnInit {
     this.router.navigate(['/reg/products']);
   }
 
+  formatPresentationUnit(row: IProductPresentation & { UnitOfMeasure?: { code?: string; name?: string } }): string {
+    const u = row.UnitOfMeasure;
+    if (u?.code && u?.name) {
+      return `${u.code} — ${u.name}`;
+    }
+    if (u?.name) {
+      return u.name;
+    }
+    return (row.unitOfMeasure || '').trim() || '—';
+  }
+
   editProduct(): void {
     this.router.navigate(['/reg/products', this.productId]);
   }

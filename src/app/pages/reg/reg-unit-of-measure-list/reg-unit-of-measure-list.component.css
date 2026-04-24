@@ -1,0 +1,72 @@
+.uom-list-page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1rem 1.25rem 2rem;
+}
+
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.page-subtitle {
+  margin: 0.35rem 0 0;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+  text-align: left;
+  padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.data-table th {
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.cell-strong {
+  font-weight: 500;
+}
+
+.code-pill {
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.06);
+  font-size: 0.85rem;
+}
+
+.col-actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.form-error {
+  color: #b00020;
+}
+
+.empty-hint {
+  color: rgba(0, 0, 0, 0.6);
+}

@@ -93,7 +93,7 @@
                   <tr>
                     <td class="cell-strong">{{ row.Product?.name || '—' }}</td>
                     <td>{{ row.currentPrice | number:'1.2-2' }}</td>
-                    <td>{{ row.unitOfMeasure || '—' }}</td>
+                    <td>{{ presentationUnitLabel(row) }}</td>
                     <td>{{ row.quantity ?? '—' }}</td>
                     <td class="col-actions">
                       <button mat-stroked-button color="primary" type="button" (click)="openProductPresentation(row.id)">Edit</button>

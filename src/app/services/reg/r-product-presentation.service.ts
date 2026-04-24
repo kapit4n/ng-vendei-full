@@ -11,6 +11,7 @@ export interface IProductPresentation {
   currentPrice: number;
   img: string;
   unitOfMeasure: string;
+  unitOfMeasureId?: string | number | null;
   productId: string;
   quantity: number;
   brand: string;

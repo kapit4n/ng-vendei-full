@@ -10,6 +10,7 @@ import {
   RProductService,
   IProduct
 } from "../../../services/reg/r-product.service";
+import { IUnitOfMeasure, RUnitOfMeasureService } from '../../../services/reg/r-unit-of-measure.service';
 import { RUploadService } from '../../../services/reg/r-upload.service';
 import { roundToCents } from 'src/app/utils/money';
 import { resolvePresentationImageUrl } from 'src/app/utils/product-image-url';
@@ -26,6 +27,8 @@ const PLACEHOLDER_IMG = 'assets/vendei/placeholders/product-card.svg';
 export class RegProductPresentationComponent implements OnInit {
   productPresentationInfo: IProductPresentation;
   products: IProduct[];
+  allUnitOfMeasures: IUnitOfMeasure[] = [];
+  allowedUnitOfMeasures: IUnitOfMeasure[] = [];
   saveError = '';
   useProductImage = false;
   detailImageUploading = false;
@@ -37,6 +40,7 @@ export class RegProductPresentationComponent implements OnInit {
     private productSvc: RProductService,
     private route: ActivatedRoute,
     private uploadSvc: RUploadService,
+    private uomSvc: RUnitOfMeasureService,
     private cdr: ChangeDetectorRef
   ) {
     this.productPresentationInfo = {} as IProductPresentation;
@@ -92,6 +96,60 @@ export class RegProductPresentationComponent implements OnInit {
     return id != null && id !== '' ? String(id) : '';
   }
 
+  get unitOptions(): IUnitOfMeasure[] {
+    return this.allowedUnitOfMeasures.length ? this.allowedUnitOfMeasures : this.allUnitOfMeasures;
+  }
+
+  compareUnitId(a: string | number | null | undefined, b: string | number | null | undefined): boolean {
+    if (a == null && b == null) {
+      return true;
+    }
+    if (a == null || b == null) {
+      return false;
+    }
+    return String(a) === String(b);
+  }
+
+  selectValueForUnitId(id: string | number | null | undefined): string {
+    return id != null && id !== '' ? String(id) : '';
+  }
+
+  private ensureSelectedUnitStillValid(): void {
+    const cur = String(this.productPresentationInfo.unitOfMeasureId ?? '').trim();
+    if (!cur) {
+      return;
+    }
+    const ok = this.unitOptions.some(u => String(u.id) === cur);
+    if (!ok) {
+      this.productPresentationInfo.unitOfMeasureId = '';
+    }
+  }
+
+  private refreshAllowedUnitsForProductId(productId: string): void {
+    if (!productId) {
+      this.allowedUnitOfMeasures = [];
+      return;
+    }
+    const p = this.products.find(x => String(x.id) === String(productId));
+    const embedded = p?.UnitOfMeasures;
+    if (embedded?.length) {
+      this.allowedUnitOfMeasures = embedded as IUnitOfMeasure[];
+      this.ensureSelectedUnitStillValid();
+      return;
+    }
+    this.productSvc.getById(String(productId)).subscribe({
+      next: full => {
+        const u = (full as IProduct)?.UnitOfMeasures;
+        this.allowedUnitOfMeasures = Array.isArray(u) ? (u as IUnitOfMeasure[]) : [];
+        this.ensureSelectedUnitStillValid();
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.allowedUnitOfMeasures = [];
+      },
+    });
+  }
+
   private isUsablePresentationRow(rec: unknown): rec is IProductPresentation {
     if (rec == null || typeof rec !== 'object') {
       return false;
@@ -141,24 +199,32 @@ export class RegProductPresentationComponent implements OnInit {
       catchError(() => of([] as IProduct[]))
     );
 
+    const uoms$ = this.uomSvc.getAll().pipe(catchError(() => of([] as IUnitOfMeasure[])));
+
     if (id) {
       forkJoin({
         row: this.loadPresentationRow$(id),
         products: products$,
-      }).subscribe(({ row, products }) => {
+        uoms: uoms$,
+      }).subscribe(({ row, products, uoms }) => {
         this.products = products;
+        this.allUnitOfMeasures = Array.isArray(uoms) ? uoms : [];
         if (row != null && typeof row === 'object') {
           const raw = row as any;
           const pid = raw.productId ?? raw.product_id ?? raw.Product?.id;
+          const uomid = raw.unitOfMeasureId ?? raw.UnitOfMeasure?.id;
           this.productPresentationInfo = {
             ...raw,
             productId: pid != null && pid !== '' ? String(pid) : '',
+            unitOfMeasureId:
+              uomid != null && uomid !== '' ? String(uomid) : '',
             currentPrice: raw.currentPrice != null ? Number(raw.currentPrice) : 0,
             quantity: raw.quantity != null ? Number(raw.quantity) : 0,
           };
         } else {
           this.saveError = 'Could not load this product detail.';
         }
+        this.refreshAllowedUnitsForProductId(this.productPresentationInfo.productId);
         this.syncUseProductImageFlag();
         // Mat-select needs a tick after options + model are both set (string ids must match mat-option values).
         this.cdr.detectChanges();
@@ -167,8 +233,9 @@ export class RegProductPresentationComponent implements OnInit {
       return;
     }
 
-    products$.subscribe(sorted => {
+    forkJoin({ products: products$, uoms: uoms$ }).subscribe(({ products: sorted, uoms }) => {
       this.products = sorted;
+      this.allUnitOfMeasures = Array.isArray(uoms) ? uoms : [];
       if (sorted.length) {
         const presetOk =
           presetProductId && sorted.some(p => String(p.id) === String(presetProductId));
@@ -180,6 +247,7 @@ export class RegProductPresentationComponent implements OnInit {
         ) {
           this.productPresentationInfo.productId = String(sorted[0].id);
         }
+        this.refreshAllowedUnitsForProductId(this.productPresentationInfo.productId);
         this.syncUseProductImageFlag();
       }
       this.cdr.detectChanges();
@@ -194,6 +262,7 @@ export class RegProductPresentationComponent implements OnInit {
     if (this.useProductImage) {
       this.productPresentationInfo.img = '';
     }
+    this.refreshAllowedUnitsForProductId(this.productPresentationInfo.productId);
   }
 
   onUseProductImageToggle(): void {
@@ -257,9 +326,19 @@ export class RegProductPresentationComponent implements OnInit {
       this.saveError = 'Please choose a product.';
       return;
     }
-    const unit = (this.productPresentationInfo.unitOfMeasure || '').trim();
-    if (!unit) {
-      this.saveError = 'Unit of measure is required.';
+    const unitIdStr = String(this.productPresentationInfo.unitOfMeasureId ?? '').trim();
+    if (!unitIdStr) {
+      this.saveError = 'Please select a unit of measure.';
+      return;
+    }
+    const unitId = Number(unitIdStr);
+    if (!Number.isFinite(unitId) || unitId <= 0) {
+      this.saveError = 'Please select a valid unit of measure.';
+      return;
+    }
+    const uomRow = this.unitOptions.find(u => String(u.id) === unitIdStr);
+    if (!uomRow) {
+      this.saveError = 'Selected unit is not available for this product. Add it on the product form first.';
       return;
     }
     const price = roundToCents(this.productPresentationInfo.currentPrice);
@@ -278,7 +357,8 @@ export class RegProductPresentationComponent implements OnInit {
     const payload = {
       ...this.productPresentationInfo,
       productId,
-      unitOfMeasure: unit,
+      unitOfMeasureId: unitId,
+      unitOfMeasure: uomRow.name || uomRow.code || String(unitId),
       currentPrice: price,
       quantity: qty,
       brand: (this.productPresentationInfo.brand || '').trim(),

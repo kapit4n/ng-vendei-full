@@ -1,0 +1,45 @@
+<div class="uom-list-page">
+  <div class="page-header">
+    <div class="page-header-text">
+      <h1 class="page-title">Units of measure</h1>
+      <p class="page-subtitle">Register codes and labels used across products and product details.</p>
+    </div>
+    <button mat-raised-button color="primary" type="button" (click)="newUnit()">
+      <mat-icon>add</mat-icon>
+      New unit
+    </button>
+  </div>
+
+  @if (loadError) {
+    <p class="form-error" role="alert">{{ loadError }}</p>
+  }
+
+  @if (!rows.length && !loadError) {
+    <p class="empty-hint">No units yet. Create common ones like UNIT, KG, L, BOX.</p>
+  }
+
+  @if (rows.length) {
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Name</th>
+            <th class="col-actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (u of rows; track u.id) {
+            <tr>
+              <td><code class="code-pill">{{ u.code }}</code></td>
+              <td class="cell-strong">{{ u.name }}</td>
+              <td class="col-actions">
+                <button mat-stroked-button color="primary" type="button" (click)="openUnit(u.id)">Edit</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

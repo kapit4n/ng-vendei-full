@@ -29,6 +29,18 @@
             </mat-select>
           </mat-form-field>
 
+          <mat-form-field appearance="outline" class="full-width uom-multi-field" subscriptSizing="dynamic">
+            <mat-label>Allowed units of measure</mat-label>
+            <mat-select multiple [(ngModel)]="productInfo.unitOfMeasureIds" name="unitOfMeasureIds"
+              [compareWith]="compareUnitId" placeholder="Select one or more">
+              <mat-select-trigger>{{ uomTriggerText() }}</mat-select-trigger>
+              @for (u of allUnitOfMeasures; track u.id) {
+                <mat-option [value]="String(u.id)">{{ u.code }} — {{ u.name }}</mat-option>
+              }
+            </mat-select>
+            <mat-hint>These units appear when you add a product detail for this product.</mat-hint>
+          </mat-form-field>
+
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Product name</mat-label>
             <input matInput type="text" [(ngModel)]="productInfo.name" name="name" required autocomplete="off" />
