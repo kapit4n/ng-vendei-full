@@ -1,46 +1,59 @@
-<div class="container">
-  <h2>Register Category</h2>
-  <div class="row">
-    <div class="col-4">
+<div class="reg-category-page">
+  <mat-card class="reg-category-card">
+    <mat-card-header>
+      <mat-card-title>{{ pageTitle }}</mat-card-title>
+      <mat-card-subtitle>Code should be short and unique (e.g. GROCERY, ELEC).</mat-card-subtitle>
+    </mat-card-header>
 
-      @if (categoryInfo.img) {
-        <img [src]="categoryInfo.img" width="90%" alt="">
-      } @else {
-        <img src="https://ilsto.websites.co.in/obaju-pink/img/product-placeholder.png" width="90%" alt="">
+    <mat-card-content>
+      @if (loadError) {
+        <p class="form-error" role="alert">{{ loadError }}</p>
       }
-    </div>
-    <div class="col-6">
-      <div class="form-group">
-        <label for="name" i18n>Category Name</label>
-        <input type="text" class="form-control" id="name" value="Data"
-          required [(ngModel)]="categoryInfo.name"
-          [ngModelOptions]="{standalone: true}">
-      </div>
+      @if (saveError) {
+        <p class="form-error" role="alert">{{ saveError }}</p>
+      }
 
-      <div class="form-group">
-        <label for="code" i18n>Code</label>
-        <input type="text" class="form-control" id="code" rows="3" value="Data"
-          required [(ngModel)]="categoryInfo.code"
-          [ngModelOptions]="{standalone: true}" />
-      </div>
-
-      <div class="form-group">
-        <label for="description" i18n>Description</label>
-        <textarea class="form-control" id="description" rows="3" value="Data" required [(ngModel)]="categoryInfo.description"
-        [ngModelOptions]="{standalone: true}"></textarea>
-      </div>
-
-      <div class="row">
-        <div class="col-6">
-          <button type="submit" class="btn btn-danger" (click)="cancel()">Cancel</button>
+      <div class="form-layout">
+        <div class="preview-panel">
+          <div class="preview-frame" [class.preview-frame--empty]="!((categoryInfo.img || '').trim())">
+            <img [src]="imagePreviewUrl" alt="Category image preview" class="preview-img" />
+          </div>
+          <p class="preview-hint">Set image URL below, or leave empty for placeholder.</p>
         </div>
 
-        <div class="col-6">
-          <button type="submit" class="btn btn-primary" (click)="save()">Save</button>
+        <div class="fields-panel">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Name</mat-label>
+            <input matInput [(ngModel)]="categoryInfo.name" name="name" required autocomplete="off" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Code</mat-label>
+            <input matInput [(ngModel)]="categoryInfo.code" name="code" required autocomplete="off" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Description</mat-label>
+            <textarea matInput rows="3" [(ngModel)]="categoryInfo.description" name="description"></textarea>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Image URL</mat-label>
+            <input
+              matInput
+              type="url"
+              [(ngModel)]="categoryInfo.img"
+              name="img"
+              autocomplete="off"
+              placeholder="https://… or assets/…" />
+          </mat-form-field>
         </div>
-
       </div>
+    </mat-card-content>
 
-    </div>
-  </div>
+    <mat-card-actions align="end" class="card-actions">
+      <button mat-stroked-button type="button" (click)="cancel()">Cancel</button>
+      <button mat-raised-button color="primary" type="button" (click)="save()">Save</button>
+    </mat-card-actions>
+  </mat-card>
 </div>

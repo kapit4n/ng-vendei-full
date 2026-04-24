@@ -6,7 +6,7 @@ import { RCrudInterface } from './r-crud.interface'
 import { Observable } from "rxjs";
 
 export interface ICategory {
-  id: number;
+  id?: number | string;
   name: string;
   description: string;
   img: string;
@@ -38,4 +38,7 @@ export class RCategoryService implements RCrudInterface {
     return this.http.put(`${this.modelUrl}/${data.id}`, data);
   }
 
+  remove(id: string | number): Observable<any> {
+    return this.http.delete(`${this.modelUrl}/${id}`);
+  }
 }

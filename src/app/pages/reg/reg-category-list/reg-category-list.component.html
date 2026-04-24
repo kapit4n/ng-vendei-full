@@ -1,18 +1,60 @@
-<button class="btn btn-primary" (click)="newCategory()">+</button>
-<table class="table">
-  <tr>
-    <th>Category</th>
-    <th>Code</th>
-    <th></th>
-  </tr>
-  @for (cat of categories; track cat) {
-    <tr>
-      <td>{{cat.name}}</td>
-      <td>{{cat.code}}</td>
-      <td>
-        <button class="btn" (click)="openCategory(cat.id)">Edit</button> &nbsp;
-        <button class="btn btn-danger">Delete</button>
-      </td>
-    </tr>
+<div class="reg-category-list-page">
+  <div class="page-header">
+    <div class="page-header-text">
+      <h1 class="page-title">Categories</h1>
+      <p class="page-subtitle">Create and maintain product categories used across the catalog.</p>
+    </div>
+    <button mat-raised-button color="primary" type="button" (click)="newCategory()">
+      <mat-icon>add</mat-icon>
+      New category
+    </button>
+  </div>
+
+  @if (loadError) {
+    <p class="form-error" role="alert">{{ loadError }}</p>
   }
-</table>
+
+  @if (!categories.length && !loadError) {
+    <div class="empty-state">
+      <mat-icon class="empty-icon">category</mat-icon>
+      <p class="empty-title">No categories yet</p>
+      <p class="empty-hint">Add a category so you can assign products to it.</p>
+      <button mat-raised-button color="primary" type="button" (click)="newCategory()">Create category</button>
+    </div>
+  }
+
+  @if (categories.length) {
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Code</th>
+            <th>Description</th>
+            <th class="col-actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (cat of categories; track trackCategory($index, cat)) {
+            <tr>
+              <td class="cell-strong">{{ cat.name }}</td>
+              <td><code class="code-pill">{{ cat.code }}</code></td>
+              <td class="cell-muted">{{ (cat.description || '').trim() || '—' }}</td>
+              <td class="col-actions">
+                <button mat-stroked-button color="primary" type="button" (click)="openCategory(cat.id!)">Edit</button>
+                <button
+                  mat-stroked-button
+                  color="warn"
+                  type="button"
+                  [disabled]="deleteBusyId === cat.id"
+                  (click)="removeCategory(cat)">
+                  Delete
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
