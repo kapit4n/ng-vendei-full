@@ -24,7 +24,7 @@ export class VCategoriesService {
       }
       if (body && typeof body === 'object') {
         const o = body as Record<string, unknown>;
-        const nested = o['data'] ?? o['rows'] ?? o['items'];
+        const nested = o['data'] ?? o['rows'] ?? o['items'] ?? o['categories'] ?? o['Categories'];
         if (Array.isArray(nested)) {
           return nested;
         }

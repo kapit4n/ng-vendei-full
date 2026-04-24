@@ -40,6 +40,8 @@ export function normalizeApiArray(body: unknown): unknown[] {
       o["rows"] ??
       o["items"] ??
       o["results"] ??
+      o["categories"] ??
+      o["Categories"] ??
       o["productPresentations"] ??
       o["product_presentations"];
     if (Array.isArray(nested)) {

@@ -1,10 +1,11 @@
 .category-list-container {
     display: flex;
     height: 100%;
-    overflow-x: scroll;
+    overflow-x: auto;
     width: 100%;
     justify-content: flex-start;
-    display: none;
+    align-items: stretch;
+    gap: 0.25rem;
 }
 
 .category-list-item-t {

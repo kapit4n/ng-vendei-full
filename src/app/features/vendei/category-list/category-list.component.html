@@ -1,5 +1,5 @@
 <div class="category-list-container">
-  @for (category of categories; track category) {
+  @for (category of categories; track category.id) {
     <div class="category-list-item-t"
       [style.background]="'url(' + category.img + ')'">
       <span class="category-list-item-name">
