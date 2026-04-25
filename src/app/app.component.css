@@ -1,0 +1,101 @@
+.app-root-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.app-top-nav {
+  flex: 0 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  min-height: 48px;
+  padding: 0.35rem 0.5rem;
+  box-sizing: border-box;
+  background: #3f51b5;
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+}
+
+.nav-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: inherit;
+  text-decoration: none;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 0 0.35rem;
+  border-radius: 6px;
+}
+
+.nav-brand:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.nav-brand--active {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.nav-brand-icon {
+  font-size: 1.35rem;
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+.nav-brand-text {
+  font-size: 0.95rem;
+}
+
+.nav-link-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.nav-link-row a {
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.nav-link--active {
+  background: rgba(0, 0, 0, 0.18) !important;
+  font-weight: 600;
+}
+
+/* POS: floating admin — does not consume vertical space (fixed positioning). */
+.pos-admin-fab {
+  position: fixed;
+  top: calc(0.5rem + env(safe-area-inset-top, 0px));
+  right: calc(0.5rem + env(safe-area-inset-right, 0px));
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.22) !important;
+}
+
+.app-outlet-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Routed view is inserted after <router-outlet> as a sibling inside this wrapper. */
+.app-outlet-wrap > :not(router-outlet) {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  overflow: auto;
+}

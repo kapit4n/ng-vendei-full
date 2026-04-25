@@ -55,7 +55,6 @@ import { RepOrdersComponent } from "./pages/rep/rep-orders/rep-orders.component"
 
 
 import { ProductListComponent } from './features/vendei/product-list/product-list.component';
-import { CategoryListComponent } from "./features/vendei/category-list/category-list.component";
 import { CalTableComponent } from './features/vendei/cal-table/cal-table.component';
 import { SelectedListComponent, SelectedProductEditDialog } from './features/vendei/selected-list/selected-list.component';
 import { CustomerListComponent } from './features/vendei/customer-list/customer-list.component';
@@ -157,9 +156,14 @@ const appRoutes: Routes = [
     data: { breadcrumb: "List Customer" }
   },
   {
+    path: "reg/customers/new",
+    component: RegCustomerComponent,
+    data: { breadcrumb: "New customer" }
+  },
+  {
     path: "reg/customers/:id",
     component: RegCustomerComponent,
-    data: { breadcrumb: "Register Customer" }
+    data: { breadcrumb: "Edit customer" }
   },
   {
     path: "inv/products",
@@ -181,11 +185,6 @@ const appRoutes: Routes = [
     component: RepSellsComponent,
     data: { breadcrumb: "Rep Sells" }
   },
-  {
-    path: "",
-    redirectTo: "/",
-    pathMatch: "full"
-  },
   { path: "**", component: PageNotFoundComponent }
 ];
 
@@ -194,7 +193,6 @@ const appRoutes: Routes = [
     AppComponent,
     LoginComponent,
     ProductListComponent,
-    CategoryListComponent,
     MainScreenshotComponent,
     PageNotFoundComponent,
     ShoppingCartComponent,
@@ -223,7 +221,7 @@ const appRoutes: Routes = [
     MainComponent,
   ],
   imports: [
-    RouterModule.forRoot(appRoutes, { enableTracing: true }),
+    RouterModule.forRoot(appRoutes),
     BrowserModule,
     BrowserAnimationsModule,
     MatButtonModule,

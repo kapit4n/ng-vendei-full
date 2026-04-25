@@ -1,0 +1,100 @@
+<div class="quick-edit-page">
+  @if (pageLoading) {
+    <div class="loading-state">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p class="loading-text">Loading categories, units, and product…</p>
+    </div>
+  }
+
+  @if (!pageLoading && pageError) {
+    <mat-card class="error-card">
+      <mat-card-content>
+        <p class="form-error" role="alert">{{ pageError }}</p>
+        <button mat-stroked-button type="button" (click)="cancel()">Back to catalog</button>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  @if (!pageLoading && !pageError) {
+    <mat-card class="edit-card">
+      <mat-card-header>
+        <mat-card-title>{{ pageTitle }}</mat-card-title>
+        <mat-card-subtitle>{{ pageSubtitle }}</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        @if (saveError) {
+          <p class="form-error" role="alert">{{ saveError }}</p>
+        }
+
+        <form [formGroup]="form" (ngSubmit)="save()" class="quick-form" novalidate>
+          <div class="form-layout">
+            <div class="preview-panel">
+              <div class="preview-frame">
+                <img [src]="imagePreviewUrl" alt="Product preview" class="preview-img" />
+              </div>
+              <p class="preview-hint">Image URL updates this preview.</p>
+            </div>
+
+            <div class="fields-panel">
+              <div class="field-block">
+                <label class="field-label" for="qe-category">Category</label>
+                <select id="qe-category" class="native-select" formControlName="categoryId">
+                  <option value="" disabled>Choose a category…</option>
+                  @for (cat of categories; track cat.id) {
+                    <option [value]="categoryOptionValue(cat)">{{ categoryLabel(cat) }}</option>
+                  }
+                </select>
+              </div>
+
+              <div class="field-block">
+                <span class="field-label">Allowed units of measure</span>
+                <p class="field-hint">Used when adding product details for this product.</p>
+                <div class="uom-check-list">
+                  @for (u of allUnitOfMeasures; track trackUomRow($index, u)) {
+                    <label class="uom-check">
+                      <input
+                        type="checkbox"
+                        [checked]="uomSelected(u.id)"
+                        (change)="onUomToggle(u.id, $any($event.target).checked)"
+                      />
+                      <span class="uom-check-text">{{ uomLabel(u) }}</span>
+                    </label>
+                  }
+                  @if (!allUnitOfMeasures.length) {
+                    <p class="field-hint muted">No units registered yet. Add some under Units of measure.</p>
+                  }
+                </div>
+              </div>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Product name</mat-label>
+                <input matInput type="text" formControlName="name" autocomplete="off" />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Code</mat-label>
+                <input matInput type="text" formControlName="code" autocomplete="off" />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Image URL</mat-label>
+                <input matInput type="url" formControlName="img" autocomplete="off" placeholder="https://… or /uploads/…" />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Description</mat-label>
+                <textarea matInput rows="4" formControlName="description"></textarea>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <mat-card-actions align="end" class="card-actions">
+            <button mat-stroked-button type="button" (click)="cancel()">Cancel</button>
+            <button mat-raised-button color="primary" type="submit">Save</button>
+          </mat-card-actions>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

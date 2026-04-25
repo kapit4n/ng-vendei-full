@@ -23,8 +23,8 @@
             <mat-label>Category</mat-label>
             <mat-select [(ngModel)]="productInfo.categoryId" name="categoryId" required
               [compareWith]="compareCategoryId">
-              @for (cat of categories; track cat) {
-                <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
+              @for (cat of categories; track cat.id) {
+                <mat-option [value]="categoryOptionValue(cat)">{{ categoryLabel(cat) }}</mat-option>
               }
             </mat-select>
           </mat-form-field>
@@ -34,8 +34,8 @@
             <mat-select multiple [(ngModel)]="productInfo.unitOfMeasureIds" name="unitOfMeasureIds"
               [compareWith]="compareUnitId" placeholder="Select one or more">
               <mat-select-trigger>{{ uomTriggerText() }}</mat-select-trigger>
-              @for (u of allUnitOfMeasures; track u.id) {
-                <mat-option [value]="String(u.id)">{{ u.code }} — {{ u.name }}</mat-option>
+              @for (u of allUnitOfMeasures; track trackUomRow($index, u)) {
+                <mat-option [value]="uomOptionValue(u)">{{ uomLabel(u) }}</mat-option>
               }
             </mat-select>
             <mat-hint>These units appear when you add a product detail for this product.</mat-hint>

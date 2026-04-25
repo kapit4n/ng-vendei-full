@@ -1,9 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from "@angular/router";
 import { ActivatedRoute } from '@angular/router';
-import { forkJoin, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { forkJoin, of, Subject } from 'rxjs';
+import { catchError, map, switchMap, takeUntil } from 'rxjs/operators';
 import {
   IProduct, RProductService
 } from '../../../services/reg/r-product.service';
@@ -12,7 +11,13 @@ import {
   ICategory
 } from "../../../services/reg/r-category.service";
 import { IUnitOfMeasure, RUnitOfMeasureService } from '../../../services/reg/r-unit-of-measure.service';
-import { normalizeApiRecord } from 'src/app/utils/api-body';
+import { normalizeApiArray, normalizeApiRecord } from 'src/app/utils/api-body';
+import {
+  categoryOptionLabel,
+  coerceCategoryRows,
+  coerceUnitOfMeasureRows,
+  uomOptionLabel,
+} from 'src/app/utils/reg-catalog-entities';
 
 const PLACEHOLDER_IMG = 'assets/vendei/placeholders/product-card.svg';
 
@@ -22,7 +27,9 @@ const PLACEHOLDER_IMG = 'assets/vendei/placeholders/product-card.svg';
     styleUrls: ['./reg-product.component.css'],
     standalone: false
 })
-export class RegProductComponent implements OnInit {
+export class RegProductComponent implements OnInit, OnDestroy {
+  private readonly destroy$ = new Subject<void>();
+
   productInfo: IProduct;
   categories: ICategory[];
   allUnitOfMeasures: IUnitOfMeasure[] = [];
@@ -79,6 +86,27 @@ export class RegProductComponent implements OnInit {
     return String(a) === String(b);
   }
 
+  /** mat-option `[value]` must use component helpers — `String()` is not valid in templates. */
+  categoryOptionValue(c: ICategory): string {
+    return c.id != null && c.id !== '' ? `${c.id}` : '';
+  }
+
+  uomOptionValue(u: IUnitOfMeasure): string {
+    return u.id != null && u.id !== '' ? `${u.id}` : '';
+  }
+
+  categoryLabel(c: ICategory): string {
+    return categoryOptionLabel(c);
+  }
+
+  uomLabel(u: IUnitOfMeasure): string {
+    return uomOptionLabel(u);
+  }
+
+  trackUomRow(index: number, u: IUnitOfMeasure): string | number {
+    return u.id != null && u.id !== '' ? u.id : `uom-${index}`;
+  }
+
   uomTriggerText(): string {
     const ids = (this.productInfo.unitOfMeasureIds || []).map((x) => String(x));
     if (!ids.length) {
@@ -99,36 +127,55 @@ export class RegProductComponent implements OnInit {
     return more > 0 ? `${first.join(', ')} +${more}` : first.join(', ');
   }
 
-  ngOnInit() {
-    const id = this.route.snapshot.paramMap.get('id');
-    /** Load categories, UOM list, and (when editing) product together so the multi-select always has options before values bind. */
-    forkJoin({
-      cats: this.categorySvc.getAll().pipe(catchError(() => of([] as ICategory[]))),
-      uoms: this.uomSvc.getAll().pipe(catchError(() => of([] as IUnitOfMeasure[]))),
-      product: id ? this.productSvc.getById(id).pipe(catchError(() => of(null))) : of(null),
-    }).subscribe(({ cats, uoms, product }) => {
-      this.categories = Array.isArray(cats) ? cats : [];
-      this.allUnitOfMeasures = Array.isArray(uoms) ? uoms : [];
+  ngOnInit(): void {
+    /** Reload when route id changes; unwrap list APIs that are not plain arrays. */
+    this.route.paramMap
+      .pipe(
+        takeUntil(this.destroy$),
+        switchMap(() => {
+          const id = this.route.snapshot.paramMap.get('id');
+          return forkJoin({
+            cats: this.categorySvc.getAll().pipe(
+              map(body => coerceCategoryRows(normalizeApiArray(body))),
+              catchError(() => of([] as ICategory[]))
+            ),
+            uoms: this.uomSvc.getAll().pipe(
+              map(body => coerceUnitOfMeasureRows(normalizeApiArray(body))),
+              catchError(() => of([] as IUnitOfMeasure[]))
+            ),
+            product: id ? this.productSvc.getById(id).pipe(catchError(() => of(null))) : of(null),
+          }).pipe(map(data => ({ ...data, id })));
+        })
+      )
+      .subscribe(({ cats, uoms, product, id }) => {
+        this.categories = cats;
+        this.allUnitOfMeasures = uoms;
 
-      const normalized = normalizeApiRecord(product) as IProduct | null;
-      if (id && normalized) {
-        const linked =
-          (normalized as IProduct).UnitOfMeasures ||
-          ((normalized as unknown as Record<string, unknown>)['unitOfMeasures'] as IUnitOfMeasure[] | undefined);
-        const uomList = Array.isArray(linked) ? linked : [];
-        this.productInfo = {
-          ...normalized,
-          categoryId: normalized.categoryId != null ? String(normalized.categoryId) : '',
-          unitOfMeasureIds: uomList.map(u => String(u.id)),
-        };
-      } else if (!id && this.categories.length && (this.productInfo.categoryId == null || this.productInfo.categoryId === '')) {
-        this.productInfo.categoryId = String(this.categories[0].id);
-      }
+        const normalized = normalizeApiRecord(product) as IProduct | null;
+        if (id && normalized) {
+          const rec = normalized as IProduct & Record<string, unknown>;
+          const linked =
+            normalized.UnitOfMeasures ||
+            (rec['unitOfMeasures'] as IUnitOfMeasure[] | undefined) ||
+            (rec['UnitOfMeasures'] as IUnitOfMeasure[] | undefined);
+          const uomList = Array.isArray(linked) ? linked : [];
+          this.productInfo = {
+            ...normalized,
+            categoryId: normalized.categoryId != null ? String(normalized.categoryId) : '',
+            unitOfMeasureIds: uomList.map(u => String(u.id)),
+          };
+        } else if (!id && this.categories.length && (this.productInfo.categoryId == null || this.productInfo.categoryId === '')) {
+          this.productInfo.categoryId = String(this.categories[0].id);
+        }
 
-      // Some Material + ngModel combos can delay painting until next tick; force refresh.
-      this.cdr.detectChanges();
-      queueMicrotask(() => this.cdr.detectChanges());
-    });
+        this.cdr.detectChanges();
+        queueMicrotask(() => this.cdr.detectChanges());
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   save() {

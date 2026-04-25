@@ -64,15 +64,15 @@ export class CustomersDialogComponent implements OnInit {
       name,
       code,
       address: (this.newAddress || "").trim(),
-      img: "",
     };
     this.customerReg.save(payload).subscribe({
       next: created => {
         this.saving = false;
+        const o = created as Record<string, unknown> | null;
         const row =
-          created && typeof created === "object" && created !== null && "id" in created
-            ? created
-            : { ...payload, id: (created as string | number | undefined) ?? "" };
+          o && typeof o === "object" && o["id"] != null
+            ? o
+            : { ...payload, id: "" as string | number };
         this.pickCustomer(row);
       },
       error: err => {

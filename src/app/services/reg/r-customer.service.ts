@@ -1,40 +1,44 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from "@angular/common/http";
-import { RConfigService } from "./r-config.service";
+import { HttpClient } from '@angular/common/http';
+import { RConfigService } from './r-config.service';
 
 import { RCrudInterface } from './r-crud.interface';
 import { Observable } from 'rxjs';
 
 export interface ICustomer {
-  id: string;
+  id?: string | number;
   name: string;
   code: string;
-  img: string;
   address: string;
 }
+
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root',
 })
 export class RCustomerService implements RCrudInterface {
   modelUrl: string;
-  includeCat: string;
+
   constructor(private http: HttpClient, private configSvc: RConfigService) {
-    this.modelUrl = this.configSvc.baseUrl + "/clients";
+    this.modelUrl = this.configSvc.baseUrl + '/clients';
   }
 
-  getAll(): Observable<any> {
+  getAll(): Observable<object> {
     return this.http.get(`${this.modelUrl}`);
   }
 
-  getById(id: string): Observable<any> {
+  getById(id: string): Observable<object> {
     return this.http.get(`${this.modelUrl}/${id}`);
   }
 
-  save(data: any): Observable<any> {
+  save(data: Partial<ICustomer>): Observable<object> {
     return this.http.post(this.modelUrl, data);
   }
 
-  update(data: any): Observable<any> {
+  update(data: Partial<ICustomer> & { id: string | number }): Observable<object> {
     return this.http.put(`${this.modelUrl}/${data.id}`, data);
+  }
+
+  remove(id: string | number): Observable<object> {
+    return this.http.delete(`${this.modelUrl}/${id}`);
   }
 }

@@ -1,18 +1,60 @@
-<button class="btn" (click)="newCustomer()">+</button>
-<table class="table">
-  <tr>
-    <th>Customer</th>
-    <th>Code</th>
-    <th></th>
-  </tr>
-  @for (customer of customers; track customer) {
-    <tr>
-      <td>{{customer.name}}</td>
-      <td>{{customer.code}}</td>
-      <td>
-        <button class="btn" (click)="openCustomer(customer.id)">Edit</button> &nbsp;
-        <button class="btn btn-danger">Delete</button>
-      </td>
-    </tr>
+<div class="reg-customer-list-page">
+  <div class="page-header">
+    <div class="page-header-text">
+      <h1 class="page-title">Customers</h1>
+      <p class="page-subtitle">Register clients used for orders, invoicing, and the POS customer picker.</p>
+    </div>
+    <button mat-raised-button color="primary" type="button" (click)="newCustomer()">
+      <mat-icon>add</mat-icon>
+      New customer
+    </button>
+  </div>
+
+  @if (loadError) {
+    <p class="form-error" role="alert">{{ loadError }}</p>
   }
-</table>
+
+  @if (!customers.length && !loadError) {
+    <div class="empty-state">
+      <mat-icon class="empty-icon">person</mat-icon>
+      <p class="empty-title">No customers yet</p>
+      <p class="empty-hint">Add a customer to attach them to sales and reports.</p>
+      <button mat-raised-button color="primary" type="button" (click)="newCustomer()">Create customer</button>
+    </div>
+  }
+
+  @if (customers.length) {
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Code</th>
+            <th>Address</th>
+            <th class="col-actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (c of customers; track trackCustomerRow($index, c)) {
+            <tr>
+              <td class="cell-strong">{{ c.name }}</td>
+              <td><code class="code-pill">{{ c.code }}</code></td>
+              <td class="cell-muted">{{ (c.address || '').trim() || '—' }}</td>
+              <td class="col-actions">
+                <button mat-stroked-button color="primary" type="button" (click)="openCustomer(c.id!)">Edit</button>
+                <button
+                  mat-stroked-button
+                  color="warn"
+                  type="button"
+                  [disabled]="deleteBusyId === c.id"
+                  (click)="removeCustomer(c)">
+                  Delete
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

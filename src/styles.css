@@ -4,3 +4,9 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: 'Roboto', sans-serif; }
+
+/* Ensure Material select panel option text stays readable (some themes / overlays wash contrast). */
+.cdk-overlay-container .mat-mdc-select-panel .mat-mdc-option .mdc-list-item__primary-text,
+.cdk-overlay-container .mat-mdc-select-panel .mat-mdc-option {
+  color: rgba(0, 0, 0, 0.87);
+}

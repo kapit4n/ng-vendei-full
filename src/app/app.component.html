@@ -1,1 +1,34 @@
-  <router-outlet></router-outlet>
+<div class="app-root-layout">
+  @if (!isPosShell) {
+    <header class="app-top-nav mat-app-background" role="navigation" aria-label="Main">
+      <a routerLink="/" class="nav-brand" routerLinkActive="nav-brand--active" [routerLinkActiveOptions]="{ exact: true }">
+        <mat-icon class="nav-brand-icon" aria-hidden="true">point_of_sale</mat-icon>
+        <span class="nav-brand-text">POS</span>
+      </a>
+
+      <nav class="nav-link-row" aria-label="Site sections">
+        <a mat-button routerLink="/main" routerLinkActive="nav-link--active">Home</a>
+        <a mat-button routerLink="/reg/products" routerLinkActive="nav-link--active">Catalog</a>
+        <a mat-button routerLink="/reg/categories" routerLinkActive="nav-link--active">Categories</a>
+        <a mat-button routerLink="/reg/customers" routerLinkActive="nav-link--active">Customers</a>
+        <a mat-button routerLink="/reg/unit-of-measures" routerLinkActive="nav-link--active">Units</a>
+        <a mat-button routerLink="/rep/products" routerLinkActive="nav-link--active">Reports</a>
+      </nav>
+    </header>
+  }
+
+  @if (isPosShell) {
+    <a
+      mat-mini-fab
+      routerLink="/main"
+      class="pos-admin-fab"
+      matTooltip="Administration"
+      aria-label="Open administration home">
+      <mat-icon>admin_panel_settings</mat-icon>
+    </a>
+  }
+
+  <div class="app-outlet-wrap">
+    <router-outlet />
+  </div>
+</div>

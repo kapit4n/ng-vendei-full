@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { RCategoryService, ICategory } from '../../../services/reg/r-category.service';
 import { normalizeApiArray } from 'src/app/utils/api-body';
@@ -14,7 +14,11 @@ export class RegCategoryListComponent implements OnInit {
   loadError = '';
   deleteBusyId: string | number | null = null;
 
-  constructor(private categorySvc: RCategoryService, private router: Router) {}
+  constructor(
+    private categorySvc: RCategoryService,
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.loadCategories();
@@ -24,10 +28,17 @@ export class RegCategoryListComponent implements OnInit {
     this.loadError = '';
     this.categorySvc.getAll().subscribe({
       next: body => {
-        const list = normalizeApiArray(body) as ICategory[];
-        this.categories = [...list].sort((a, b) =>
-          (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' })
+        const raw = normalizeApiArray(body) as ICategory[];
+        const list = raw.filter(
+          (row): row is ICategory =>
+            row != null && typeof row === 'object' && !Array.isArray(row)
         );
+        this.categories = [...list].sort((a, b) =>
+          String(a?.name || '').localeCompare(String(b?.name || ''), undefined, {
+            sensitivity: 'base',
+          })
+        );
+        this.cdr.detectChanges();
       },
       error: () => {
         this.categories = [];
@@ -36,8 +47,8 @@ export class RegCategoryListComponent implements OnInit {
     });
   }
 
-  trackCategory(index: number, cat: ICategory): string | number {
-    return cat.id != null ? cat.id : `idx-${index}`;
+  trackCategoryRow(index: number, cat: ICategory): string | number {
+    return cat.id != null && cat.id !== '' ? cat.id : `row-${index}`;
   }
 
   newCategory(): void {

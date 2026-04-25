@@ -1,42 +1,35 @@
-<div class="container">
-  <h2>Register customer</h2>
-  <div class="row">
-    <div class="col-4">
-
-      @if (customerInfo.img) {
-        <img [src]="customerInfo.img" width="90%" alt="">
-      } @else {
-        <img src="http://autozonevic.com.au/images/team_1.jpg" width="90%" alt="">
+<div class="customer-form-page">
+  <mat-card class="customer-card">
+    <mat-card-header>
+      <mat-card-title>{{ pageTitle }}</mat-card-title>
+      <mat-card-subtitle>Use a unique code (e.g. CUST-001) for imports and APIs.</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      @if (loadError) {
+        <p class="form-error" role="alert">{{ loadError }}</p>
       }
-    </div>
-    <div class="col-6">
-      <div class="form-group">
-        <label for="name" i18n>Customer Name</label>
-        <input type="text" class="form-control" id="name" value="Data" required [(ngModel)]="customerInfo.name"
-          [ngModelOptions]="{standalone: true}">
-      </div>
-      <div class="form-group">
-        <label for="address" i18n>Address</label>
-        <input type="text" class="form-control" id="address" value="Data" required [(ngModel)]="customerInfo.address"
-          [ngModelOptions]="{standalone: true}">
-      </div>
-      <div class="form-group">
-        <label for="ci" i18n>CI</label>
-        <input type="text" class="form-control" id="code" value="Data" required [(ngModel)]="customerInfo.code"
-          [ngModelOptions]="{standalone: true}">
-      </div>
+      @if (saveError) {
+        <p class="form-error" role="alert">{{ saveError }}</p>
+      }
 
-      <div class="row">
-        <div class="col-6">
-          <button type="submit" class="btn btn-danger" (click)="cancel()">Cancel</button>
-        </div>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Name</mat-label>
+        <input matInput [(ngModel)]="customerInfo.name" name="name" required autocomplete="off" />
+      </mat-form-field>
 
-        <div class="col-6">
-          <button type="submit" class="btn btn-primary" (click)="save()">Save</button>
-        </div>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Code</mat-label>
+        <input matInput [(ngModel)]="customerInfo.code" name="code" required autocomplete="off" />
+      </mat-form-field>
 
-      </div>
-
-    </div>
-  </div>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Address</mat-label>
+        <textarea matInput rows="3" [(ngModel)]="customerInfo.address" name="address"></textarea>
+      </mat-form-field>
+    </mat-card-content>
+    <mat-card-actions align="end">
+      <button mat-stroked-button type="button" (click)="cancel()">Cancel</button>
+      <button mat-raised-button color="primary" type="button" (click)="save()">Save</button>
+    </mat-card-actions>
+  </mat-card>
 </div>

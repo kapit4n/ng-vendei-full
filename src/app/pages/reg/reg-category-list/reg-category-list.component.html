@@ -35,7 +35,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (cat of categories; track trackCategory($index, cat)) {
+          @for (cat of categories; track trackCategoryRow($index, cat)) {
             <tr>
               <td class="cell-strong">{{ cat.name }}</td>
               <td><code class="code-pill">{{ cat.code }}</code></td>

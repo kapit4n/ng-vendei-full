@@ -29,7 +29,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (u of rows; track u.id) {
+          @for (u of rows; track trackUomRow($index, u)) {
             <tr>
               <td><code class="code-pill">{{ u.code }}</code></td>
               <td class="cell-strong">{{ u.name }}</td>
