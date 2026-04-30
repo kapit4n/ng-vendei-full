@@ -1,28 +1,113 @@
-<div class="container">
-  <button class="btn" (click)="openProducts()"><i class="fa fa-info fa-lg"></i></button>
-  <button class="btn" (click)="openCart()"><i class="fa fa-shopping-cart fa-lg"></i></button>
-  <table class="table">
-    <tr>
-      <th>Product</th>
-      <th>Quantity</th>
-      <th>Price</th>
-      <th>Total Price</th>
-      <th>Date</th>
-      <th></th>
-    </tr>
-    @for (sell of sells; track sell) {
-      <tr>
-        <td>{{sell.product.name}}</td>
-        <td>{{sell.quantity}}</td>
-        <td>{{sell.price}}</td>
-        <td>{{sell.totalPrice}}</td>
-        <td>{{sell.createdDate | date:'medium'}}</td>
-        <td>
-          @if (false) {
-            <button class="btn" (click)="openSellRep(sell.id)"><i class="fa fa-folder"></i></button>
-            } &nbsp;
-          </td>
-        </tr>
-      }
-    </table>
+<div class="rep-sells-page">
+  <div class="rep-sells-toolbar">
+    <div class="rep-sells-toolbar-actions">
+      <button mat-stroked-button type="button" (click)="openProducts()">
+        <mat-icon>inventory_2</mat-icon>
+        Products report
+      </button>
+      <button mat-stroked-button type="button" (click)="openCart()">
+        <mat-icon>shopping_cart</mat-icon>
+        POS
+      </button>
+    </div>
+    <h1 class="rep-sells-title">Sales reports</h1>
   </div>
+
+  @if (loading) {
+    <div class="rep-sells-state">
+      <mat-progress-spinner diameter="40" mode="indeterminate" aria-label="Loading"></mat-progress-spinner>
+      <span>Loading sales…</span>
+    </div>
+  }
+
+  @if (!loading && loadError) {
+    <p class="rep-sells-error">{{ loadError }}</p>
+  }
+
+  @if (!loading) {
+    <mat-card class="rep-sells-filters">
+      <mat-card-title>Time range</mat-card-title>
+      <mat-card-content>
+        <div class="rep-sells-range-row">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>From</mat-label>
+            <input matInput type="date" [(ngModel)]="rangeStartStr" (ngModelChange)="applyRange()" />
+          </mat-form-field>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>To</mat-label>
+            <input matInput type="date" [(ngModel)]="rangeEndStr" (ngModelChange)="applyRange()" />
+          </mat-form-field>
+        </div>
+        <div class="rep-sells-presets">
+          <span class="presets-label">Quick range</span>
+          <button mat-stroked-button type="button" (click)="setPresetDays(7)">Last 7 days</button>
+          <button mat-stroked-button type="button" (click)="setPresetDays(30)">Last 30 days</button>
+          <button mat-stroked-button type="button" (click)="setPresetDays(90)">Last 90 days</button>
+          <button mat-stroked-button type="button" (click)="setYearToDate()">Year to date</button>
+        </div>
+        <div class="rep-sells-summary">
+          <span><strong>{{ lineCount }}</strong> line(s) in range</span>
+          <span class="summary-total">Total: <strong>Bs {{ rangeTotal | number:'1.2-2' }}</strong></span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <div class="rep-sells-charts">
+      <mat-card class="chart-card">
+        <mat-card-title>Daily sales</mat-card-title>
+        <mat-card-subtitle>Total Bs per day in the selected range</mat-card-subtitle>
+        <mat-card-content>
+          <div class="chart-surface">
+            <canvas #dailyCanvas aria-label="Daily sales chart"></canvas>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="chart-card">
+        <mat-card-title>Monthly comparison</mat-card-title>
+        <mat-card-subtitle>Total Bs per calendar month within the range</mat-card-subtitle>
+        <mat-card-content>
+          <div class="chart-surface">
+            <canvas #monthlyCanvas aria-label="Monthly sales chart"></canvas>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <mat-card class="rep-sells-table-card">
+      <mat-card-title>Line items</mat-card-title>
+      <mat-card-subtitle>Order detail rows in the selected range</mat-card-subtitle>
+      <mat-card-content>
+        <div class="table-wrap">
+          <table mat-table [dataSource]="sells" class="rep-sells-mat-table">
+            <ng-container matColumnDef="product">
+              <th mat-header-cell *matHeaderCellDef>Product</th>
+              <td mat-cell *matCellDef="let sell">{{ productName(sell) }}</td>
+            </ng-container>
+            <ng-container matColumnDef="quantity">
+              <th mat-header-cell *matHeaderCellDef class="num">Qty</th>
+              <td mat-cell *matCellDef="let sell" class="num">{{ sell.quantity }}</td>
+            </ng-container>
+            <ng-container matColumnDef="price">
+              <th mat-header-cell *matHeaderCellDef class="num">Price</th>
+              <td mat-cell *matCellDef="let sell" class="num">Bs {{ sell.price | number:'1.2-2' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="totalPrice">
+              <th mat-header-cell *matHeaderCellDef class="num">Line total</th>
+              <td mat-cell *matCellDef="let sell" class="num">Bs {{ sell.totalPrice | number:'1.2-2' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="createdDate">
+              <th mat-header-cell *matHeaderCellDef>Date</th>
+              <td mat-cell *matCellDef="let sell">{{ sell.createdDate | date:'medium' }}</td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          </table>
+        </div>
+        @if (!sells.length) {
+          <p class="table-empty">No rows in this range.</p>
+        }
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

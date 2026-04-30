@@ -242,10 +242,14 @@ export class ShoppingCartComponent implements OnInit {
     let orderAux = {} as any;
     setTimeout(() => {
       this.ordersSvc.save(order).subscribe(o => {
+        console.log('save order', o);
+        console.log('order', order);
         details.forEach(d => {
-          d.orderId = order.id;
+          d.orderId = o.id;
           d.createdDate = o.createdDate;
           this.ordersSvc.saveDetail(d).subscribe(ds => {
+            console.log('save detail', ds);
+            console.log('detail', d);
             this.inventorySvc
               .reduceInventory(ds.productId, ds.quantity)
               .subscribe(dat => {

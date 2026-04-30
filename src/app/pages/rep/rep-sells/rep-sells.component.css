@@ -1,0 +1,131 @@
+.rep-sells-page {
+  padding: 1rem 1.25rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.rep-sells-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.rep-sells-toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.rep-sells-toolbar-actions mat-icon {
+  margin-right: 0.25rem;
+  vertical-align: middle;
+  font-size: 1.125rem;
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.rep-sells-title {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 600;
+}
+
+.rep-sells-state {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 0;
+  color: #64748b;
+}
+
+.rep-sells-error {
+  color: #b71c1c;
+  margin: 0.5rem 0 1rem;
+}
+
+.rep-sells-filters {
+  margin-bottom: 1rem;
+}
+
+.rep-sells-range-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.rep-sells-range-row mat-form-field {
+  min-width: 160px;
+  flex: 1 1 180px;
+}
+
+.rep-sells-presets {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.presets-label {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-right: 0.25rem;
+}
+
+.rep-sells-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+  font-size: 0.95rem;
+}
+
+.summary-total {
+  margin-left: auto;
+}
+
+.rep-sells-charts {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 900px) {
+  .rep-sells-charts {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.chart-card mat-card-content {
+  padding-top: 0.5rem;
+}
+
+.chart-surface {
+  position: relative;
+  height: 280px;
+  width: 100%;
+}
+
+.rep-sells-table-card .table-wrap {
+  overflow: auto;
+  max-height: 420px;
+}
+
+.rep-sells-mat-table {
+  width: 100%;
+}
+
+.rep-sells-mat-table .num {
+  text-align: right;
+}
+
+.table-empty {
+  margin: 0.75rem 0 0;
+  color: #64748b;
+  font-size: 0.9rem;
+}
