@@ -23,7 +23,14 @@
   <mat-tab-group [(selectedIndex)]="tabIndex" class="catalog-tabs" animationDuration="200ms">
     <mat-tab label="Products">
       <div class="tab-panel">
-        @if (!products?.length) {
+        @if (loadingProducts) {
+          <div class="loading-state">
+            <mat-icon class="loading-icon">hourglass_empty</mat-icon>
+            <p class="loading-title">Loading products…</p>
+          </div>
+        }
+
+        @if (!loadingProducts && !products?.length) {
           <div class="empty-state">
             <mat-icon class="empty-icon">inventory_2</mat-icon>
             <p class="empty-title">No products yet</p>

@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { RProductService, IProduct } from '../../../services/reg/r-product.service'
 import { RProductPresentationService, IProductPresentation } from '../../../services/reg/r-product-presentation.service'
 import { Router } from "@angular/router";
+import { finalize } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
     selector: "app-reg-product-list",
@@ -11,10 +13,15 @@ import { Router } from "@angular/router";
 })
 export class RegProductListComponent implements OnInit {
   products: IProduct[];
+  loadingProducts = true;
   productPresentations: IProductPresentation[];
   /** 0 = Products, 1 = Product details */
   tabIndex = 0;
-  constructor(private productSvc: RProductService, private productPresentationSvc: RProductPresentationService, private router: Router) {}
+  constructor(
+    private productSvc: RProductService,
+    private productPresentationSvc: RProductPresentationService,
+     private router: Router, private readonly cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
     this.loadProducts();
@@ -22,7 +29,11 @@ export class RegProductListComponent implements OnInit {
   }
 
   loadProducts() {
-    this.productSvc.getAll().subscribe(products => {
+    this.productSvc.getAll().pipe(finalize(() => {
+      this.loadingProducts = false;
+      this.cdr.detectChanges();
+    }
+    )).subscribe(products => {
       this.products = products;
     });
   }
