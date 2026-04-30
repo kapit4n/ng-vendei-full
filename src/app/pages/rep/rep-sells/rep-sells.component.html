@@ -38,12 +38,28 @@
             <input matInput type="date" [(ngModel)]="rangeEndStr" (ngModelChange)="applyRange()" />
           </mat-form-field>
         </div>
-        <div class="rep-sells-presets">
+        <div class="rep-sells-presets" role="group" aria-label="Quick date range">
           <span class="presets-label">Quick range</span>
-          <button mat-stroked-button type="button" (click)="setPresetDays(7)">Last 7 days</button>
-          <button mat-stroked-button type="button" (click)="setPresetDays(30)">Last 30 days</button>
-          <button mat-stroked-button type="button" (click)="setPresetDays(90)">Last 90 days</button>
-          <button mat-stroked-button type="button" (click)="setYearToDate()">Year to date</button>
+          <button mat-stroked-button type="button" class="preset-btn"
+            [class.preset-active]="activeQuickRangeKey === 'today'"
+            [attr.aria-pressed]="activeQuickRangeKey === 'today' ? 'true' : 'false'"
+            (click)="setPresetToday()">Today</button>
+          <button mat-stroked-button type="button" class="preset-btn"
+            [class.preset-active]="activeQuickRangeKey === '7'"
+            [attr.aria-pressed]="activeQuickRangeKey === '7' ? 'true' : 'false'"
+            (click)="setPresetDays(7)">Last 7 days</button>
+          <button mat-stroked-button type="button" class="preset-btn"
+            [class.preset-active]="activeQuickRangeKey === '30'"
+            [attr.aria-pressed]="activeQuickRangeKey === '30' ? 'true' : 'false'"
+            (click)="setPresetDays(30)">Last 30 days</button>
+          <button mat-stroked-button type="button" class="preset-btn"
+            [class.preset-active]="activeQuickRangeKey === '90'"
+            [attr.aria-pressed]="activeQuickRangeKey === '90' ? 'true' : 'false'"
+            (click)="setPresetDays(90)">Last 90 days</button>
+          <button mat-stroked-button type="button" class="preset-btn"
+            [class.preset-active]="activeQuickRangeKey === 'ytd'"
+            [attr.aria-pressed]="activeQuickRangeKey === 'ytd' ? 'true' : 'false'"
+            (click)="setYearToDate()">Year to date</button>
         </div>
         <div class="rep-sells-summary">
           <span><strong>{{ lineCount }}</strong> line(s) in range</span>

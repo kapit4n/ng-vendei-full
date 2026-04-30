@@ -1,18 +1,51 @@
-<table class="table">
-  <tr>
-    <th>Product</th>
-    <th>Inventory</th>
-    <th>Total Cost</th>
-    <th></th>
-  </tr>
-  @for (product of products; track product) {
-    <tr>
-      <td>{{product.name}}</td>
-      <td>{{product.stock}}</td>
-      <td>{{product.stock * product.cost}}</td>
-      <td>
-        <button class="btn" (click)="openInventory(product.id)">Inv</button> &nbsp;
-      </td>
-    </tr>
-  }
-</table>
+<div class="inv-products-page">
+  <div class="inv-header">
+    <h1 class="inv-title">Inventory</h1>
+    <button mat-stroked-button type="button" (click)="router.navigate(['/main'])">
+      <mat-icon>home</mat-icon>
+      Home
+    </button>
+  </div>
+
+  <mat-card>
+    <mat-card-title>Products stock</mat-card-title>
+    <mat-card-subtitle>Current stock, cost, and inventory value</mat-card-subtitle>
+    <mat-card-content>
+      <div class="table-wrap">
+        <table mat-table [dataSource]="products">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Product</th>
+            <td mat-cell *matCellDef="let p">{{ p.name }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="stock">
+            <th mat-header-cell *matHeaderCellDef class="num">Stock</th>
+            <td mat-cell *matCellDef="let p" class="num">{{ p.stock }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="cost">
+            <th mat-header-cell *matHeaderCellDef class="num">Cost</th>
+            <td mat-cell *matCellDef="let p" class="num">Bs {{ p.cost | number:'1.2-2' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="value">
+            <th mat-header-cell *matHeaderCellDef class="num">Value</th>
+            <td mat-cell *matCellDef="let p" class="num">Bs {{ (p.stock * p.cost) | number:'1.2-2' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let p">
+              <button mat-stroked-button type="button" (click)="openInventory(p.id)">
+                Details
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="['name','stock','cost','value','actions']"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['name','stock','cost','value','actions'];"></tr>
+        </table>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

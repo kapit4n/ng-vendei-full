@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewChild } from "@angular/core";
+import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from "@angular/core";
 import { VOrdersService } from "../../../services/vendei/v-orders.service";
 import { VInventoryService } from "../../../services/vendei/v-inventory.service";
 import { VConfigService } from "src/app/services/vendei/v-config.service";
@@ -41,7 +41,8 @@ export class ShoppingCartComponent implements OnInit {
   constructor(
     private ordersSvc: VOrdersService,
     private inventorySvc: VInventoryService,
-    private config: VConfigService
+    private config: VConfigService,
+    private readonly cdr: ChangeDetectorRef
   ) {
     this.total = 0;
     this.selectedCustomer = Object.assign({}, this.emptyCustomer);
@@ -293,7 +294,13 @@ export class ShoppingCartComponent implements OnInit {
     if (this.printOrderCount) {
       return;
     }
-    this.selectedCustomer = customer;
+    // New object reference so child inputs refresh; dialog close can otherwise
+    // leave the POS view stale until the next zone turn / user event.
+    this.selectedCustomer =
+      customer && typeof customer === "object"
+        ? { ...customer }
+        : Object.assign({}, this.emptyCustomer);
+    this.cdr.detectChanges();
   }
 
   public calTotals() {

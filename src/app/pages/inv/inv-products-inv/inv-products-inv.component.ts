@@ -1,7 +1,8 @@
-import { Component, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { Router, ActivatedRoute } from "@angular/router";
 import { IProductsService } from "../../../services/inv/i-products.service";
 import { IProductsInvService } from "../../../services/inv/i-products-inv.service";
+import { finalize } from "rxjs/operators";
 //import { NgbModal, ModalDismissReasons } from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
@@ -15,12 +16,14 @@ export class InvProductsInvComponent implements OnInit {
   productInvs: any[] = [];
   invItemInfo: any = {};
   closeResult: string;
-
+  loadingProductInvs = true;
   constructor(
     private route: ActivatedRoute,
     //private modalService: NgbModal,
     private productSvc: IProductsService,
-    private productInvSvc: IProductsInvService
+    private productInvSvc: IProductsInvService,
+    private router: Router,
+    private readonly cdr: ChangeDetectorRef
   ) {
     
   }
@@ -47,6 +50,10 @@ export class InvProductsInvComponent implements OnInit {
      */
   }
 
+  goBack(): void {
+    this.router.navigate(["/inv/products"]);
+  }
+
   private getDismissReason(reason: any): string {
     // if (reason === ModalDismissReasons.ESC) {
     //   return "by pressing ESC";
@@ -67,12 +74,23 @@ export class InvProductsInvComponent implements OnInit {
   }
 
   loadProductInvs(id: string) {
-    this.productInvSvc.getByProductId(id).subscribe(invs => {
+    this.productInvSvc.getByProductId(id).pipe(finalize(() => {
+      this.loadingProductInvs = false;
+      this.cdr.detectChanges();
+    })).subscribe(invs => {
       this.productInvs = invs;
     });
   }
 
   saveInvItem() {
+    if (!this.invInfo?.id) {
+      return;
+    }
+    const q = Number(this.invItemInfo.quantity);
+    const p = Number(this.invItemInfo.price);
+    if (!Number.isFinite(q) || q <= 0 || !Number.isFinite(p) || p < 0) {
+      return;
+    }
     this.invItemInfo.totalPrice = this.invItemInfo.quantity * this.invItemInfo.price;
     this.invItemInfo.productId = this.invInfo.id;
 
@@ -85,6 +103,7 @@ export class InvProductsInvComponent implements OnInit {
         console.log(res);
         this.loadInvInfo(this.invInfo.id);
       });
+    this.invItemInfo.quantity = "";
   }
 
   delInvItem(invItem: any) {

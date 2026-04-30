@@ -22,6 +22,9 @@ import {
   toInputDateValue,
 } from '../../../utils/rep-sell-analytics';
 
+/** Quick-range preset that matches the current From/To (mutually exclusive UI). */
+type RepSellsQuickRangeKey = 'today' | '7' | '30' | '90' | 'ytd';
+
 @Component({
   selector: 'app-rep-sells',
   templateUrl: './rep-sells.component.html',
@@ -46,6 +49,9 @@ export class RepSellsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   loading = true;
   loadError: string | null = null;
+
+  /** Which quick-range matches `rangeStartStr` / `rangeEndStr`; cleared when dates are custom. */
+  activeQuickRangeKey: RepSellsQuickRangeKey | null = null;
 
   readonly displayedColumns = ['product', 'quantity', 'price', 'totalPrice', 'createdDate'];
 
@@ -107,6 +113,7 @@ export class RepSellsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.sells = [];
       this.rangeTotal = 0;
       this.lineCount = 0;
+      this.activeQuickRangeKey = null;
       this.tryRefreshCharts();
       return;
     }
@@ -122,6 +129,35 @@ export class RepSellsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.rangeTotal = sumSellTotals(this.filteredSells);
     this.lineCount = this.filteredSells.length;
     this.tryRefreshCharts();
+    this.syncActiveQuickRangeFromDates();
+  }
+
+  /** Keep quick-range highlight in sync with the date inputs (clears when no preset matches). */
+  private syncActiveQuickRangeFromDates(): void {
+    const todayStr = toInputDateValue(new Date());
+    if (this.rangeStartStr === todayStr && this.rangeEndStr === todayStr) {
+      this.activeQuickRangeKey = 'today';
+      return;
+    }
+    const end = new Date();
+    const endStr = toInputDateValue(end);
+    if (this.rangeEndStr !== endStr) {
+      this.activeQuickRangeKey = null;
+      return;
+    }
+    for (const n of [7, 30, 90] as const) {
+      const start = addCalendarDays(end, -(n - 1));
+      if (this.rangeStartStr === toInputDateValue(start)) {
+        this.activeQuickRangeKey = String(n) as RepSellsQuickRangeKey;
+        return;
+      }
+    }
+    const ytdStart = new Date(end.getFullYear(), 0, 1);
+    if (this.rangeStartStr === toInputDateValue(ytdStart)) {
+      this.activeQuickRangeKey = 'ytd';
+      return;
+    }
+    this.activeQuickRangeKey = null;
   }
 
   setPresetDays(days: number): void {
@@ -129,6 +165,14 @@ export class RepSellsComponent implements OnInit, AfterViewInit, OnDestroy {
     const start = addCalendarDays(end, -(days - 1));
     this.rangeEndStr = toInputDateValue(end);
     this.rangeStartStr = toInputDateValue(start);
+    this.applyRange();
+  }
+
+  /** Calendar day containing “now” (local date). */
+  setPresetToday(): void {
+    const d = toInputDateValue(new Date());
+    this.rangeStartStr = d;
+    this.rangeEndStr = d;
     this.applyRange();
   }
 

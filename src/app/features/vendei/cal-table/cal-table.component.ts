@@ -79,7 +79,8 @@ export class CalTableComponent implements OnInit {
       width: "min(92vw, 480px)",
       maxHeight: "90vh",
       data: {
-        selectCustomer: this.selectCustomer.bind(this),
+        // `selectCustomer` is already bound to the POS parent (ShoppingCartComponent).
+        selectCustomer: this.selectCustomer,
       },
     });
   }

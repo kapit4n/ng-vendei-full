@@ -45,10 +45,11 @@ export class CustomersDialogComponent implements OnInit {
   }
 
   pickCustomer(c: any): void {
+    const normalized = this.normalizeCustomer(c);
     if (this.data?.selectCustomer) {
-      this.data.selectCustomer(this.normalizeCustomer(c));
+      this.data.selectCustomer(normalized);
     }
-    this.dialogRef.close(c);
+    this.dialogRef.close(normalized);
   }
 
   saveNewCustomer(): void {
