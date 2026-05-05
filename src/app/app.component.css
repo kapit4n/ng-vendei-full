@@ -88,14 +88,20 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  /* Primary scroll region: long pages (reports, API catalog, etc.) must scroll here
+     when the routed host does not create its own overflow (e.g. plain block layout). */
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   position: relative;
 }
 
-/* Routed view is inserted after <router-outlet> as a sibling inside this wrapper. */
-.app-outlet-wrap > :not(router-outlet) {
+/* Routed view is a sibling of <router-outlet> (see Angular router). */
+.app-outlet-wrap > :not(router-outlet),
+.app-outlet-wrap router-outlet + * {
   flex: 1 1 auto;
   min-height: 0;
   min-width: 0;
+  /* Inner scroll for full-bleed shells (e.g. POS) that manage their own layout. */
   overflow: auto;
 }

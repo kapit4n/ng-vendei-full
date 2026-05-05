@@ -1,0 +1,94 @@
+<div class="backend-api-page">
+  <div class="backend-api-toolbar">
+    <button mat-stroked-button type="button" (click)="goHome()">
+      <mat-icon>arrow_back</mat-icon>
+      Main menu
+    </button>
+    <h1 class="backend-api-title">Backend API endpoints</h1>
+    <button mat-stroked-button type="button" (click)="load()" [disabled]="loading">
+      <mat-icon>refresh</mat-icon>
+      Refresh
+    </button>
+  </div>
+
+  <p class="backend-api-intro">
+    Routes exposed by the inventory server. Data is loaded from
+    <code>GET /api/endpoints</code>. Open
+    <a [href]="swaggerHref" target="_blank" rel="noopener">Swagger UI</a>
+    for interactive documentation when the API is reachable.
+  </p>
+  <p class="backend-api-meta">
+    <span>Angular <code>environment.apiBaseUrl</code>: <strong>{{ clientApiRoot }}</strong></span>
+  </p>
+
+  @if (loading) {
+    <div class="backend-api-state">
+      <mat-progress-spinner diameter="40" mode="indeterminate" aria-label="Loading"></mat-progress-spinner>
+      <span>Loading catalog…</span>
+    </div>
+  }
+
+  @if (!loading && error) {
+    <p class="backend-api-error" role="alert">{{ error }}</p>
+  }
+
+  @if (!loading && catalog) {
+    <mat-card class="server-card">
+      <mat-card-title>Server</mat-card-title>
+      <mat-card-content>
+        <dl class="server-dl">
+          <div class="server-row">
+            <dt>Detected base URL</dt>
+            <dd><code>{{ catalog.serverUrl }}</code></dd>
+          </div>
+          <div class="server-row">
+            <dt>Catalog generated</dt>
+            <dd>{{ catalog.generatedAt | date:'medium' }}</dd>
+          </div>
+        </dl>
+      </mat-card-content>
+    </mat-card>
+
+    @for (group of catalog.groups; track trackGroup($index, group)) {
+      <mat-card class="group-card">
+        <mat-card-title>{{ group.title }}</mat-card-title>
+        <mat-card-content>
+          <div class="table-wrap">
+            <table class="route-table">
+              <thead>
+                <tr>
+                  <th class="col-method">Method</th>
+                  <th class="col-path">Path</th>
+                  <th>Description</th>
+                  <th class="col-copy"></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (r of group.routes; track r.path + r.method) {
+                  <tr>
+                    <td class="method-cell">
+                      <span class="method-pill" [class.method-pill--mut]="r.method !== 'GET'">{{ r.method }}</span>
+                    </td>
+                    <td><code class="path-code">{{ r.path }}</code></td>
+                    <td class="desc-cell">{{ r.description }}</td>
+                    <td>
+                      <button
+                        mat-icon-button
+                        type="button"
+                        matTooltip="Copy full URL"
+                        [cdkCopyToClipboard]="fullUrl(r.path)"
+                        aria-label="Copy full URL"
+                        >
+                        <mat-icon>content_copy</mat-icon>
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+  }
+</div>

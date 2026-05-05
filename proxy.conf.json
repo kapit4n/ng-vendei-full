@@ -1,4 +1,8 @@
 {
+  "/api": {
+    "target": "http://127.0.0.1:3000",
+    "secure": false
+  },
   "/uploads": {
     "target": "http://127.0.0.1:3000",
     "secure": false
@@ -40,6 +44,10 @@
     "secure": false
   },
   "/purchase-items": {
+    "target": "http://127.0.0.1:3000",
+    "secure": false
+  },
+  "/inventory-lots": {
     "target": "http://127.0.0.1:3000",
     "secure": false
   }

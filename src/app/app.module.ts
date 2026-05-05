@@ -25,6 +25,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { ClipboardModule } from '@angular/cdk/clipboard';
 
 
 import { PageNotFoundComponent } from './pages/vendei/page-not-found/page-not-found.component';
@@ -53,6 +54,7 @@ import { RepSellsComponent } from "./pages/rep/rep-sells/rep-sells.component";
 import { RepSellsByOrderComponent } from "./pages/rep/rep-sells-by-order/rep-sells-by-order.component";
 import { RepSellsByProductComponent } from "./pages/rep/rep-sells-by-product/rep-sells-by-product.component";
 import { RepOrdersComponent } from "./pages/rep/rep-orders/rep-orders.component";
+import { BackendApiPageComponent } from "./pages/tools/backend-api-page/backend-api-page.component";
 
 
 import { ProductListComponent } from './features/vendei/product-list/product-list.component';
@@ -90,6 +92,11 @@ const appRoutes: Routes = [
     path: "main",
     component: MainComponent,
     data: { title: "Main" }
+  },
+  {
+    path: "tools/backend-api",
+    component: BackendApiPageComponent,
+    data: { title: "Backend API" }
   },
   {
     path: "customers",
@@ -220,6 +227,7 @@ const appRoutes: Routes = [
     RepSellsByOrderComponent,
     RepSellsByProductComponent,
     MainComponent,
+    BackendApiPageComponent,
   ],
   imports: [
     RouterModule.forRoot(appRoutes),
@@ -240,6 +248,7 @@ const appRoutes: Routes = [
     MatDialogModule,
     MatProgressSpinnerModule,
     MatSlideToggleModule,
+    ClipboardModule,
     FormsModule,
     ReactiveFormsModule,
   ],

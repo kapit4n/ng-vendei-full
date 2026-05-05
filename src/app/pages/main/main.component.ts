@@ -110,5 +110,19 @@ export class MainComponent {
         },
       ],
     },
+    {
+      id: 'tools',
+      label: 'Tools',
+      subtitle: 'Integration and diagnostics',
+      matIcon: 'build',
+      tiles: [
+        {
+          title: 'Backend API',
+          description: 'HTTP routes served by inventory-nod',
+          path: '/tools/backend-api',
+          matIcon: 'hub',
+        },
+      ],
+    },
   ];
 }
