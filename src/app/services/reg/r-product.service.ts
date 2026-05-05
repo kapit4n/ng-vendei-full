@@ -20,6 +20,10 @@ export interface IProduct {
   UnitOfMeasures?: IUnitOfMeasure[];
   /** IDs to send when saving (optional). */
   unitOfMeasureIds?: (string | number)[];
+  /** When true, receiving stock creates dated lots (FEFO on sale). */
+  trackExpiry?: boolean;
+  /** If set and trackExpiry, receive can omit expiry (today + N days in UTC on server). */
+  defaultShelfLifeDays?: number | null;
 }
 
 @Injectable({

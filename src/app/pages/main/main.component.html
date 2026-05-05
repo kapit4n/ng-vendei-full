@@ -1,85 +1,44 @@
-<div class="box">
-    <div class="container">
-        <div class="card" style="width: 18rem; display: inline-block; margin: 10px;">
-            <img class="card-img-top" src="assets/general/vendei_shopping_cart.png" alt="Cart" style="width: 18rem; height: 10rem;" />
-            <div class="card-body">
-                <h5 class="card-title">Shopping cart</h5>
-                <p class="card-text">Sell products</p>
-                <a href="/" class="btn btn-primary">Go</a>
-            </div>
-        </div>
-
-        <div class="card" style="width: 18rem; display: inline-block; margin: 10px;">
-            <img class="card-img-top" src="assets/general/categories.png" alt="Categories" style="width: 18rem; height: 10rem;" />
-            <div class="card-body">
-                <h5 class="card-title">Categories</h5>
-                <p class="card-text">Register, Edit Categories</p>
-                <a href="/reg/categories" class="btn btn-primary">Go</a>
-            </div>
-        </div>
-
-        <div class="card" style="width: 18rem; display: inline-block; margin: 10px;">
-            <img class="card-img-top" src="assets/general/categories.png" alt="Units of measure" style="width: 18rem; height: 10rem;" />
-            <div class="card-body">
-                <h5 class="card-title">Units of measure</h5>
-                <p class="card-text">Register units (kg, box, …) and use them on products</p>
-                <a href="/reg/unit-of-measures" class="btn btn-primary">Go</a>
-            </div>
-        </div>
-
-        <div class="card" style="width: 18rem; display: inline-block; margin: 10px;">
-            <img class="card-img-top" src="assets/general/clothing.jpg" alt="Reports" style="width: 18rem; height: 10rem;" />
-            <div class="card-body">
-                <h5 class="card-title">Products</h5>
-                <p class="card-text">Register, Edit Products</p>
-                <a href="/reg/products" class="btn btn-primary">Go</a>
-            </div>
-        </div>
-
-        <div class="card" style="width: 18rem; display: inline-block; margin: 10px;">
-            <img class="card-img-top" src="assets/general/customers.jpg" alt="Reports" style="width: 18rem; height: 10rem;" />
-            <div class="card-body">
-                <h5 class="card-title">Customers</h5>
-                <p class="card-text">Register, Edit Customers</p>
-                <a href="/reg/customers" class="btn btn-primary">Go</a>
-            </div>
-        </div>
-
-        <div class="card" style="width: 18rem; display: inline-block; margin: 10px;">
-            <img class="card-img-top" src="assets/general/vendors.jpg" alt="Reports" style="width: 18rem; height: 10rem;" />
-            <div class="card-body">
-                <h5 class="card-title">Vendors</h5>
-                <p class="card-text">Register, Edit Vendors</p>
-                <a href="/reg/vendors" class="btn btn-primary">Go</a>
-            </div>
-        </div>
-
-        <div class="card" style="width: 18rem; display: inline-block; margin: 10px;">
-            <img class="card-img-top" src="assets/general/reports.png" alt="Reports" style="width: 18rem; height: 10rem;" />
-            <div class="card-body">
-                <h5 class="card-title">Reports</h5>
-                <p class="card-text">Product sell reports</p>
-                <a href="/rep/products" class="btn btn-primary">Go</a>
-            </div>
-        </div>
-
-        <div class="card" style="width: 18rem; display: inline-block; margin: 10px;">
-            <img class="card-img-top" src="assets/general/sells.png" alt="Reports" style="width: 18rem; height: 10rem;" />
-            <div class="card-body">
-                <h5 class="card-title">Report</h5>
-                <p class="card-text">Report of sells</p>
-                <a href="/rep/sells" class="btn btn-primary">GO</a>
-            </div>
-        </div>
-
-        <div class="card" style="width: 18rem; display: inline-block; margin: 10px;">
-            <img class="card-img-top" src="assets/general/inventory.jpg" alt="Reports" style="width: 18rem; height: 10rem;" />
-            <div class="card-body">
-                <h5 class="card-title">Inventory</h5>
-                <p class="card-text">Inventory of products</p>
-                <a href="/inv/products" class="btn btn-primary">GO</a>
-            </div>
-        </div>
-
+<div class="main-hub">
+  <header class="main-hub__hero">
+    <div class="main-hub__hero-inner">
+      <h1 class="main-hub__title">Vendei</h1>
+      <p class="main-hub__tagline">Choose a module to open the workspace.</p>
     </div>
+  </header>
+
+  <div class="main-hub__body">
+    @for (section of hubSections; track section.id) {
+      <section class="hub-section" [attr.aria-labelledby]="'hub-section-' + section.id">
+        <div class="hub-section__head">
+          <span class="hub-section__icon-wrap" aria-hidden="true">
+            <mat-icon class="hub-section__icon">{{ section.matIcon }}</mat-icon>
+          </span>
+          <div class="hub-section__titles">
+            <h2 class="hub-section__label" [id]="'hub-section-' + section.id">{{ section.label }}</h2>
+            <p class="hub-section__subtitle">{{ section.subtitle }}</p>
+          </div>
+        </div>
+
+        <div class="hub-grid">
+          @for (tile of section.tiles; track tile.path) {
+            <a class="hub-tile" [routerLink]="tile.path">
+              <mat-card class="hub-tile__card" appearance="outlined">
+                <mat-card-content class="hub-tile__content">
+                  <div class="hub-tile__icon-ring" aria-hidden="true">
+                    <mat-icon>{{ tile.matIcon }}</mat-icon>
+                  </div>
+                  <h3 class="hub-tile__title">{{ tile.title }}</h3>
+                  <p class="hub-tile__desc">{{ tile.description }}</p>
+                  <span class="hub-tile__cta">
+                    Open
+                    <mat-icon class="hub-tile__chevron">chevron_right</mat-icon>
+                  </span>
+                </mat-card-content>
+              </mat-card>
+            </a>
+          }
+        </div>
+      </section>
+    }
+  </div>
 </div>

@@ -24,6 +24,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatTableModule } from '@angular/material/table';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 
 import { PageNotFoundComponent } from './pages/vendei/page-not-found/page-not-found.component';
@@ -238,6 +239,7 @@ const appRoutes: Routes = [
     MatTableModule,
     MatDialogModule,
     MatProgressSpinnerModule,
+    MatSlideToggleModule,
     FormsModule,
     ReactiveFormsModule,
   ],

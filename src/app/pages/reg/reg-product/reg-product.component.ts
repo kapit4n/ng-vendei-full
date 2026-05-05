@@ -39,7 +39,11 @@ export class RegProductComponent implements OnInit, OnDestroy {
     private categorySvc: RCategoryService, private route: ActivatedRoute,
     private uomSvc: RUnitOfMeasureService,
     private cdr: ChangeDetectorRef) {
-    this.productInfo = { unitOfMeasureIds: [] } as IProduct;
+    this.productInfo = {
+      unitOfMeasureIds: [],
+      trackExpiry: false,
+      defaultShelfLifeDays: null,
+    } as IProduct;
     this.categories = [];
   }
 
@@ -159,10 +163,16 @@ export class RegProductComponent implements OnInit, OnDestroy {
             (rec['unitOfMeasures'] as IUnitOfMeasure[] | undefined) ||
             (rec['UnitOfMeasures'] as IUnitOfMeasure[] | undefined);
           const uomList = Array.isArray(linked) ? linked : [];
+          const shelfRaw = rec['defaultShelfLifeDays'];
+          const shelfNum = Number(shelfRaw);
+          const defaultShelfLifeDays =
+            shelfRaw != null && Number.isFinite(shelfNum) && shelfNum >= 0 ? Math.floor(shelfNum) : null;
           this.productInfo = {
             ...normalized,
             categoryId: normalized.categoryId != null ? String(normalized.categoryId) : '',
             unitOfMeasureIds: uomList.map(u => String(u.id)),
+            trackExpiry: Boolean(rec['trackExpiry']),
+            defaultShelfLifeDays,
           };
         } else if (!id && this.categories.length && (this.productInfo.categoryId == null || this.productInfo.categoryId === '')) {
           this.productInfo.categoryId = String(this.categories[0].id);
@@ -211,6 +221,15 @@ export class RegProductComponent implements OnInit, OnDestroy {
     };
     if (p.vendorId != null && String(p.vendorId).trim() !== '') {
       payload.vendorId = Number(p.vendorId);
+    }
+
+    payload.trackExpiry = Boolean(this.productInfo.trackExpiry);
+    const shelfRaw = this.productInfo.defaultShelfLifeDays;
+    const shelfNum = Number(shelfRaw);
+    if (payload.trackExpiry && shelfRaw != null && shelfRaw !== ('' as unknown) && Number.isFinite(shelfNum) && shelfNum >= 0) {
+      payload.defaultShelfLifeDays = Math.floor(shelfNum);
+    } else {
+      payload.defaultShelfLifeDays = null;
     }
 
     const onErr = () => {

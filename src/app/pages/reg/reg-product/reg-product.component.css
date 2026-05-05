@@ -10,6 +10,23 @@
   box-shadow: 0 4px 24px rgba(15, 23, 42, 0.08);
 }
 
+.expiry-block {
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.expiry-hint {
+  margin: 0.35rem 0 0.75rem;
+  font-size: 0.8125rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.shelf-life-field {
+  margin-top: 0.5rem;
+}
+
 .form-error {
   margin: 0 0 1rem;
   padding: 0.65rem 0.85rem;

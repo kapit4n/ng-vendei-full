@@ -3,6 +3,7 @@ import { Router, ActivatedRoute } from "@angular/router";
 import { IProductsService } from "../../../services/inv/i-products.service";
 import { IProductsInvService } from "../../../services/inv/i-products-inv.service";
 import { finalize } from "rxjs/operators";
+import { addUtcDaysFromToday, earliestOpenLotExpiry } from "../../../utils/inv-expiry";
 //import { NgbModal, ModalDismissReasons } from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
@@ -17,6 +18,7 @@ export class InvProductsInvComponent implements OnInit {
   invItemInfo: any = {};
   closeResult: string;
   loadingProductInvs = true;
+  receiveError = '';
   constructor(
     private route: ActivatedRoute,
     //private modalService: NgbModal,
@@ -67,10 +69,49 @@ export class InvProductsInvComponent implements OnInit {
   }
 
   loadInvInfo(id: string) {
-    this.productSvc.getById(id).subscribe(inv => {
+    this.productSvc.getById(id, { includeLots: true }).subscribe(inv => {
       this.invInfo = inv;
       this.invItemInfo.price = this.invInfo.cost;
     });
+  }
+
+  get tracksExpiry(): boolean {
+    return !!this.invInfo?.trackExpiry;
+  }
+
+  get inventoryLots(): any[] {
+    const raw = this.invInfo?.inventoryLots;
+    return Array.isArray(raw) ? raw : [];
+  }
+
+  /** Next expiry among lots still open (qty &gt; 0). */
+  get nextLotExpiry(): string | null {
+    return earliestOpenLotExpiry(this.invInfo?.inventoryLots);
+  }
+
+  private resolvedExpiryForReceipt(): string | undefined {
+    if (!this.tracksExpiry) {
+      return undefined;
+    }
+    const manual = String(this.invItemInfo.expiryDate || '').trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(manual)) {
+      return manual;
+    }
+    if (this.hasDefaultShelfLifeOnProduct()) {
+      const days = Math.floor(Number(this.invInfo.defaultShelfLifeDays));
+      const s = addUtcDaysFromToday(days);
+      return s || undefined;
+    }
+    return undefined;
+  }
+
+  private hasValidExpiryInput(): boolean {
+    return /^\d{4}-\d{2}-\d{2}$/.test(String(this.invItemInfo.expiryDate || '').trim());
+  }
+
+  private hasDefaultShelfLifeOnProduct(): boolean {
+    const n = Number(this.invInfo?.defaultShelfLifeDays);
+    return Number.isFinite(n) && n >= 0;
   }
 
   loadProductInvs(id: string) {
@@ -83,6 +124,7 @@ export class InvProductsInvComponent implements OnInit {
   }
 
   saveInvItem() {
+    this.receiveError = '';
     if (!this.invInfo?.id) {
       return;
     }
@@ -91,19 +133,86 @@ export class InvProductsInvComponent implements OnInit {
     if (!Number.isFinite(q) || q <= 0 || !Number.isFinite(p) || p < 0) {
       return;
     }
-    this.invItemInfo.totalPrice = this.invItemInfo.quantity * this.invItemInfo.price;
-    this.invItemInfo.productId = this.invInfo.id;
 
-    this.productInvSvc.save(this.invItemInfo).subscribe(product => {
-      this.loadProductInvs(this.invInfo.id);
+    /** First receipt with an expiry date: turn on tracking so lots and FEFO apply without leaving Inventory. */
+    if (!this.invInfo.trackExpiry && this.hasValidExpiryInput()) {
+      this.productSvc
+        .update({ id: this.invInfo.id, trackExpiry: true } as any)
+        .subscribe({
+          next: (u: any) => {
+            this.invInfo = { ...this.invInfo, ...(u || {}), trackExpiry: true };
+            this.runReceivePurchase();
+          },
+          error: () => {
+            this.receiveError =
+              'Could not enable expiry tracking. Try again or turn on "Track expiry" under Register → Products.';
+            this.cdr.detectChanges();
+          },
+        });
+      return;
+    }
+
+    this.runReceivePurchase();
+  }
+
+  private runReceivePurchase(): void {
+    if (this.tracksExpiry && !this.hasDefaultShelfLifeOnProduct() && !this.hasValidExpiryInput()) {
+      this.receiveError =
+        'Enter an expiry date, or set default shelf life (days) on the product under Register → Products.';
+      this.cdr.detectChanges();
+      return;
+    }
+
+    const qty = Number(this.invItemInfo.quantity);
+    const pCost = Number(this.invItemInfo.price);
+    const totalPrice = qty * pCost;
+    const productId = String(this.invInfo.id);
+    const resolvedEx = this.tracksExpiry ? this.resolvedExpiryForReceipt() : undefined;
+    const batchTrim = String(this.invItemInfo.batchCode || '').trim();
+
+    const purchasePayload: Record<string, unknown> = {
+      quantity: qty,
+      price: pCost,
+      totalPrice,
+      productId: Number(this.invInfo.id),
+    };
+    if (batchTrim) {
+      purchasePayload.batchCode = batchTrim;
+    }
+    if (this.tracksExpiry && resolvedEx) {
+      purchasePayload.expiryDate = resolvedEx;
+    }
+
+    const addOpts =
+      this.tracksExpiry
+        ? { expiryDate: resolvedEx, batchCode: batchTrim || undefined }
+        : undefined;
+
+    this.productInvSvc.save(purchasePayload as any).subscribe({
+      next: () => {
+        this.productSvc.addToInventory(productId, qty, addOpts).subscribe({
+          next: () => {
+            this.loadProductInvs(productId);
+            this.loadInvInfo(productId);
+            this.invItemInfo.quantity = '';
+            this.invItemInfo.expiryDate = '';
+            this.invItemInfo.batchCode = '';
+            this.cdr.detectChanges();
+          },
+          error: () => {
+            this.receiveError =
+              'Purchase was saved but stock could not be increased (check expiry / server). Adjust inventory if needed.';
+            this.loadProductInvs(productId);
+            this.loadInvInfo(productId);
+            this.cdr.detectChanges();
+          },
+        });
+      },
+      error: () => {
+        this.receiveError = 'Could not save purchase line. Try again.';
+        this.cdr.detectChanges();
+      },
     });
-    this.productSvc
-      .addToInventory(this.invInfo.id, Number(this.invItemInfo.quantity))
-      .subscribe(res => {
-        console.log(res);
-        this.loadInvInfo(this.invInfo.id);
-      });
-    this.invItemInfo.quantity = "";
   }
 
   delInvItem(invItem: any) {

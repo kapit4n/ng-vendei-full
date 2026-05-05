@@ -1,24 +1,198 @@
-<div class="container">
-  <button class="btn" (click)="openSells()"><i class="fa fa-cart-arrow-down fa-lg"></i></button>
-  <button class="btn" (click)="openCart()"><i class="fa fa-shopping-cart fa-lg"></i></button>
-  <table class="table">
-    <tr>
-      <th>Product</th>
-      <th>Quantity Selled</th>
-      <th>Total Selled</th>
-      <th></th>
-    </tr>
-    @for (product of products; track product) {
-      <tr>
-        <td>{{product.name}}</td>
-        <td>{{product.quantitySelled}}</td>
-        <td>{{product.totalSelled}}</td>
-        <td>
-          @if (false) {
-            <button class="btn" (click)="openProductRep(product.id)"><i class="fa fa-folder"></i></button>
-            } &nbsp;
-          </td>
-        </tr>
-      }
-    </table>
+<div class="rep-products-page">
+  <div class="rep-products-toolbar">
+    <div class="rep-products-toolbar-actions">
+      <button mat-stroked-button type="button" (click)="openSells()">
+        <mat-icon>trending_up</mat-icon>
+        Sales analytics
+      </button>
+      <button mat-stroked-button type="button" (click)="openCart()">
+        <mat-icon>shopping_cart</mat-icon>
+        POS
+      </button>
+    </div>
+    <h1 class="rep-products-title">Product sales report</h1>
   </div>
+
+  <p class="rep-products-scope">
+    Figures are <strong>lifetime totals</strong> stored on each product (units and revenue accumulated at checkout).
+    Use <a routerLink="/rep/sells">Sales analytics</a> for revenue by date range.
+  </p>
+
+  @if (loading) {
+    <div class="rep-products-state">
+      <mat-progress-spinner diameter="40" mode="indeterminate" aria-label="Loading"></mat-progress-spinner>
+      <span>Loading products…</span>
+    </div>
+  }
+
+  @if (!loading && loadError) {
+    <p class="rep-products-error">{{ loadError }}</p>
+  }
+
+  @if (!loading && summary) {
+    <div class="kpi-grid">
+      <mat-card class="kpi-card">
+        <mat-card-title>Total revenue</mat-card-title>
+        <mat-card-content>
+          <span class="kpi-value">Bs {{ summary.totalRevenue | number:'1.2-2' }}</span>
+          <span class="kpi-hint">All products, all time</span>
+        </mat-card-content>
+      </mat-card>
+      <mat-card class="kpi-card">
+        <mat-card-title>Units sold</mat-card-title>
+        <mat-card-content>
+          <span class="kpi-value">{{ summary.totalUnits | number:'1.0-2' }}</span>
+          <span class="kpi-hint">Recorded quantity</span>
+        </mat-card-content>
+      </mat-card>
+      <mat-card class="kpi-card">
+        <mat-card-title>Avg. selling price</mat-card-title>
+        <mat-card-content>
+          <span class="kpi-value">Bs {{ summary.avgSellingPrice | number:'1.2-2' }}</span>
+          <span class="kpi-hint">Per unit (where units &gt; 0)</span>
+        </mat-card-content>
+      </mat-card>
+      <mat-card class="kpi-card">
+        <mat-card-title>Est. gross margin</mat-card-title>
+        <mat-card-content>
+          <span class="kpi-value">Bs {{ summary.estTotalGrossMargin | number:'1.2-2' }}</span>
+          <span class="kpi-hint">Revenue − cost × units (cost from catalog)</span>
+        </mat-card-content>
+      </mat-card>
+      <mat-card class="kpi-card">
+        <mat-card-title>Active SKUs</mat-card-title>
+        <mat-card-content>
+          <span class="kpi-value">{{ summary.skuWithSales }} / {{ summary.skuCount }}</span>
+          <span class="kpi-hint">With any recorded sales</span>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <mat-card class="insight-card">
+      <mat-card-title>Management snapshot</mat-card-title>
+      <mat-card-content>
+        @if (summary.totalRevenue > 0) {
+          <ul class="insight-list">
+            <li>
+              <strong>Concentration:</strong>
+              the top {{ summary.pareto80Count }} product(s) — about
+              {{ summary.skuCount ? ((100 * summary.pareto80Count / summary.skuCount) | number:'1.0-0') : 0 }}% of SKUs —
+              account for roughly <strong>80%</strong> of lifetime revenue (Pareto-style breakdown).
+            </li>
+            <li>
+              <strong>Top 3 share:</strong>
+              the three best-selling lines represent
+              <strong>{{ summary.topThreeRevenueSharePct | number:'1.0-1' }}%</strong> of total revenue.
+            </li>
+          </ul>
+        } @else {
+          <p class="insight-empty">No sales recorded yet. Revenue and share metrics will appear after tickets update product totals at checkout.</p>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    @if (slowMovers.length) {
+      <mat-card class="slow-card">
+        <mat-card-title>Inventory without sales</mat-card-title>
+        <mat-card-subtitle>
+          Products with stock on hand but no lifetime revenue yet — review ordering and shelf space.
+        </mat-card-subtitle>
+        <mat-card-content>
+          <div class="table-wrap">
+            <table class="data-table data-table--compact">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th class="num">Stock</th>
+                  <th>Code</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (r of slowMovers; track r.id) {
+                  <tr>
+                    <td>{{ r.name }}</td>
+                    <td class="num">{{ r.stock | number:'1.0-2' }}</td>
+                    <td><code class="code-pill">{{ r.code || '—' }}</code></td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+
+    @if (summary.totalRevenue > 0) {
+      <mat-card class="chart-card">
+        <mat-card-title>Top 10 products by revenue</mat-card-title>
+        <mat-card-subtitle>Lifetime revenue (Bs)</mat-card-subtitle>
+        <mat-card-content>
+          <div class="chart-surface">
+            <canvas #topProductsCanvas aria-label="Top products by revenue"></canvas>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+
+    <mat-card class="table-card">
+      <mat-card-title>Full breakdown</mat-card-title>
+      <mat-card-content>
+        <div class="table-toolbar">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="sort-field">
+            <mat-label>Sort by</mat-label>
+            <mat-select [(ngModel)]="sortKey" (ngModelChange)="onSortChange()" name="sortKey">
+              <mat-option value="revenue-desc">Revenue (high first)</mat-option>
+              <mat-option value="units-desc">Units sold</mat-option>
+              <mat-option value="margin-desc">Est. gross margin</mat-option>
+              <mat-option value="name-asc">Name A–Z</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="table-wrap">
+          <table mat-table [dataSource]="tableRows" class="rep-products-mat-table">
+            <ng-container matColumnDef="rank">
+              <th mat-header-cell *matHeaderCellDef class="col-narrow num">#</th>
+              <td mat-cell *matCellDef="let row; let i = index" class="col-narrow num">{{ tableRank(i) }}</td>
+            </ng-container>
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef>Product</th>
+              <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+            </ng-container>
+            <ng-container matColumnDef="code">
+              <th mat-header-cell *matHeaderCellDef>Code</th>
+              <td mat-cell *matCellDef="let row"><code class="code-muted">{{ row.code || '—' }}</code></td>
+            </ng-container>
+            <ng-container matColumnDef="units">
+              <th mat-header-cell *matHeaderCellDef class="num">Units</th>
+              <td mat-cell *matCellDef="let row" class="num">{{ row.units | number:'1.0-2' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="revenue">
+              <th mat-header-cell *matHeaderCellDef class="num">Revenue</th>
+              <td mat-cell *matCellDef="let row" class="num">Bs {{ row.revenue | number:'1.2-2' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="share">
+              <th mat-header-cell *matHeaderCellDef class="num">Share</th>
+              <td mat-cell *matCellDef="let row" class="num">{{ row.shareOfRevenuePct | number:'1.1-1' }}%</td>
+            </ng-container>
+            <ng-container matColumnDef="avgPrice">
+              <th mat-header-cell *matHeaderCellDef class="num">Avg / unit</th>
+              <td mat-cell *matCellDef="let row" class="num">Bs {{ row.avgUnitPrice | number:'1.2-2' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="estMargin">
+              <th mat-header-cell *matHeaderCellDef class="num">Est. margin</th>
+              <td mat-cell *matCellDef="let row" class="num">Bs {{ row.estGrossMargin | number:'1.2-2' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="stock">
+              <th mat-header-cell *matHeaderCellDef class="num">Stock</th>
+              <td mat-cell *matCellDef="let row" class="num">{{ row.stock | number:'1.0-2' }}</td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns; trackBy: trackRow"></tr>
+          </table>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

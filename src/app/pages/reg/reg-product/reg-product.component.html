@@ -63,6 +63,31 @@
             <mat-label>Description</mat-label>
             <textarea matInput rows="4" [(ngModel)]="productInfo.description" name="description"></textarea>
           </mat-form-field>
+
+          <div class="expiry-block">
+            <mat-slide-toggle [(ngModel)]="productInfo.trackExpiry" name="trackExpiry" color="primary">
+              Track expiry (perishable)
+            </mat-slide-toggle>
+            <p class="expiry-hint">
+              When enabled, each stock receipt stores an expiry date; sales use earliest expiry first (FEFO).
+            </p>
+            @if (productInfo.trackExpiry) {
+              <mat-form-field appearance="outline" class="full-width shelf-life-field" subscriptSizing="dynamic">
+                <mat-label>Default shelf life (days)</mat-label>
+                <input
+                  matInput
+                  type="number"
+                  min="0"
+                  step="1"
+                  [(ngModel)]="productInfo.defaultShelfLifeDays"
+                  name="defaultShelfLifeDays"
+                  autocomplete="off"
+                  placeholder="Optional"
+                  />
+                <mat-hint>If set, inventory receive can omit expiry (server uses today + this many days).</mat-hint>
+              </mat-form-field>
+            }
+          </div>
         </div>
       </div>
     </mat-card-content>

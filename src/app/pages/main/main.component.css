@@ -1,28 +1,204 @@
-body {
-  background: #eee;
+:host {
+  display: block;
+  min-height: 100%;
+  background: linear-gradient(165deg, #f1f5f9 0%, #e8eef5 38%, #f8fafc 100%);
 }
-span {
-  font-size: 15px;
+
+.main-hub {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 1.25rem 2.5rem;
+  box-sizing: border-box;
 }
-a {
+
+.main-hub__hero {
+  padding: 1.75rem 0 1.25rem;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+  margin-bottom: 1.5rem;
+}
+
+.main-hub__hero-inner {
+  text-align: center;
+}
+
+.main-hub__title {
+  margin: 0 0 0.35rem;
+  font-size: clamp(1.65rem, 3.5vw, 2.15rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: #0f172a;
+}
+
+.main-hub__tagline {
+  margin: 0;
+  font-size: 1rem;
+  color: #64748b;
+  font-weight: 400;
+  max-width: 32rem;
+  margin-inline: auto;
+  line-height: 1.45;
+}
+
+.main-hub__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2.25rem;
+}
+
+.hub-section__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.hub-section__icon-wrap {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #3949ab 0%, #5c6bc0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(57, 73, 171, 0.35);
+}
+
+.hub-section__icon {
+  color: #fff;
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+.hub-section__titles {
+  min-width: 0;
+}
+
+.hub-section__label {
+  margin: 0 0 0.2rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+}
+
+.hub-section__subtitle {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.hub-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.hub-tile {
   text-decoration: none;
-  color: #0062cc;
-  border-bottom: 2px solid #0062cc;
-}
-.box {
-  padding: 60px 0px;
-}
-
-.box-part {
-  background: #fff;
-  border-radius: 0;
-  padding: 60px 10px;
-  margin: 30px 0px;
-}
-.text {
-  margin: 20px 0px;
+  color: inherit;
+  border-radius: 14px;
+  outline: none;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
-.fa {
-  color: #4183d7;
+.hub-tile:hover .hub-tile__card,
+.hub-tile:focus-visible .hub-tile__card {
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+  border-color: rgba(57, 73, 171, 0.35) !important;
+}
+
+.hub-tile:focus-visible {
+  box-shadow: 0 0 0 3px rgba(57, 73, 171, 0.35);
+  border-radius: 16px;
+}
+
+.hub-tile:hover {
+  transform: translateY(-3px);
+}
+
+.hub-tile__card {
+  height: 100%;
+  border-radius: 14px !important;
+  transition: box-shadow 0.18s ease, border-color 0.18s ease;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+}
+
+.hub-tile__content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 1.15rem 1.2rem 1.1rem !important;
+  min-height: 168px;
+  box-sizing: border-box;
+}
+
+.hub-tile__icon-ring {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: rgba(57, 73, 171, 0.1);
+  color: #3949ab;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.85rem;
+}
+
+.hub-tile__icon-ring mat-icon {
+  font-size: 26px;
+  width: 26px;
+  height: 26px;
+}
+
+.hub-tile__title {
+  margin: 0 0 0.4rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #0f172a;
+  letter-spacing: -0.015em;
+}
+
+.hub-tile__desc {
+  margin: 0 0 auto;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: #64748b;
+  flex: 1;
+}
+
+.hub-tile__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  margin-top: 0.85rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #3949ab;
+  letter-spacing: 0.02em;
+}
+
+.hub-tile__chevron {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  transition: transform 0.18s ease;
+}
+
+.hub-tile:hover .hub-tile__chevron,
+.hub-tile:focus-visible .hub-tile__chevron {
+  transform: translateX(3px);
+}
+
+@media (min-width: 900px) {
+  .main-hub__hero {
+    padding-top: 2.25rem;
+  }
+
+  .hub-grid {
+    gap: 1.1rem;
+  }
 }

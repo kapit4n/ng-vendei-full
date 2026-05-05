@@ -72,6 +72,17 @@
               <dt>Category</dt>
               <dd>{{ displayCategory() }}</dd>
             </div>
+            @if (product.trackExpiry) {
+              <div class="meta-row">
+                <dt>Perishable</dt>
+                <dd>
+                  Expiry tracked (FEFO)
+                  @if (product.defaultShelfLifeDays != null) {
+                    <span class="shelf-note"> — default shelf life {{ product.defaultShelfLifeDays }} day(s) on receive</span>
+                  }
+                </dd>
+              </div>
+            }
             @if (product.description) {
               <div class="meta-row meta-row--block">
                 <dt>Description</dt>

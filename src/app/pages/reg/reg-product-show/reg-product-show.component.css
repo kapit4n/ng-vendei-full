@@ -154,6 +154,11 @@
   color: #1e293b;
 }
 
+.shelf-note {
+  color: #64748b;
+  font-weight: 400;
+}
+
 .meta-row--block {
   grid-template-columns: 1fr;
 }

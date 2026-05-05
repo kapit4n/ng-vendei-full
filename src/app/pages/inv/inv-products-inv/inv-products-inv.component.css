@@ -48,6 +48,35 @@
   font-weight: 600;
 }
 
+.meta-value--tag {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #0d9488;
+}
+
+.receive-error {
+  margin: 0 0 0.75rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: 8px;
+  background: rgba(211, 47, 47, 0.08);
+  color: #b71c1c;
+  font-size: 0.875rem;
+}
+
+.add-field-date {
+  flex: 1 1 200px;
+}
+
+.lots-card {
+  margin-bottom: 1rem;
+}
+
+.empty-lots {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
 .table-wrap {
   overflow: auto;
 }

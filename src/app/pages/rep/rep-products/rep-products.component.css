@@ -1,0 +1,209 @@
+.rep-products-page {
+  padding: 1rem 1.25rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.rep-products-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.rep-products-toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.rep-products-toolbar-actions mat-icon {
+  margin-right: 0.25rem;
+  vertical-align: middle;
+  font-size: 1.125rem;
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.rep-products-title {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 600;
+}
+
+.rep-products-scope {
+  margin: 0 0 1rem;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: #64748b;
+  max-width: 52rem;
+}
+
+.rep-products-scope a {
+  color: #3949ab;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.rep-products-scope a:hover {
+  text-decoration: underline;
+}
+
+.rep-products-state {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 0;
+  color: #64748b;
+}
+
+.rep-products-error {
+  color: #b71c1c;
+  margin: 0.5rem 0 1rem;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.kpi-card mat-card-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 0.35rem;
+}
+
+.kpi-card mat-card-content {
+  padding-bottom: 12px !important;
+}
+
+.kpi-value {
+  display: block;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+}
+
+.kpi-hint {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  line-height: 1.3;
+}
+
+.insight-card {
+  margin-bottom: 1rem;
+}
+
+.insight-card mat-card-title {
+  font-size: 1rem;
+}
+
+.insight-list {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: #334155;
+  line-height: 1.55;
+  font-size: 0.9rem;
+}
+
+.insight-list li + li {
+  margin-top: 0.5rem;
+}
+
+.insight-empty {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.slow-card {
+  margin-bottom: 1rem;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.data-table th,
+.data-table td {
+  padding: 0.5rem 0.65rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.data-table--compact th,
+.data-table--compact td {
+  padding: 0.35rem 0.5rem;
+}
+
+.data-table .num {
+  text-align: right;
+}
+
+.code-pill {
+  font-size: 0.75rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  background: rgba(15, 23, 42, 0.06);
+}
+
+.chart-card {
+  margin-bottom: 1rem;
+}
+
+.chart-surface {
+  position: relative;
+  min-height: 280px;
+  height: min(420px, 55vh);
+}
+
+.chart-surface canvas {
+  max-height: 100%;
+}
+
+.table-card mat-card-title {
+  font-size: 1rem;
+}
+
+.table-toolbar {
+  margin-bottom: 0.75rem;
+}
+
+.sort-field {
+  width: 100%;
+  max-width: 280px;
+}
+
+.table-wrap {
+  overflow: auto;
+}
+
+.rep-products-mat-table {
+  width: 100%;
+  min-width: 720px;
+}
+
+.rep-products-mat-table .num {
+  text-align: right;
+}
+
+.col-narrow {
+  width: 3rem;
+}
+
+.code-muted {
+  font-size: 0.8125rem;
+  color: #64748b;
+}
