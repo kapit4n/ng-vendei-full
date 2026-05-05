@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from "@angular/core";
 import { forkJoin } from "rxjs";
 import { VProductsService } from "../../../services/vendei/v-products.service";
 import { VCategoriesService } from "../../../services/vendei/v-categories.service";
@@ -6,6 +6,11 @@ import { VConfigService } from "../../../services/vendei/v-config.service";
 import { Router } from "@angular/router";
 import { roundToCents } from "src/app/utils/money";
 import { resolvePresentationImageUrl } from "src/app/utils/product-image-url";
+import {
+  productLabelFromFields,
+  productLabelFromFullName,
+  productTitleFromFullName,
+} from "src/app/utils/product-display-text";
 
 @Component({
     selector: "app-product-list",
@@ -18,6 +23,9 @@ export class ProductListComponent implements OnInit {
   selectedProducts: any[];
   @Input() recalTotal: Function;
   @Input() printOrderCount: number;
+
+  @ViewChild("quickCodeInput", { static: false })
+  quickCodeInput?: ElementRef<HTMLInputElement>;
 
   products = [];
   productCode = "";
@@ -164,6 +172,14 @@ export class ProductListComponent implements OnInit {
     this.router.navigate(["/main"]);
   }
 
+  openCategoriesManage(): void {
+    this.router.navigate(["/reg/categories"]);
+  }
+
+  focusQuickCode(): void {
+    setTimeout(() => this.quickCodeInput?.nativeElement?.focus(), 0);
+  }
+
   /** Presentation image, else parent product image, else placeholder. */
   productCardImageUrl(product: any): string {
     return resolvePresentationImageUrl(product?.img, product?.Product?.img);
@@ -171,5 +187,14 @@ export class ProductListComponent implements OnInit {
 
   displayProductName(product: any): string {
     return product?.Product?.name || product?.name || "Product";
+  }
+
+  productCardTitle(product: any): string {
+    return productTitleFromFullName(this.displayProductName(product));
+  }
+
+  productCardLabel(product: any): string | null {
+    const full = this.displayProductName(product);
+    return productLabelFromFullName(full) ?? productLabelFromFields(product);
   }
 }

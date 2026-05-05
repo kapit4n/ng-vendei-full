@@ -19,8 +19,14 @@
 
     <div class="selected-list" #toPrint id="toPrint">
       <div class="selected-list-header">
-        <mat-icon class="header-icon">receipt_long</mat-icon>
-        <span class="header-title">Current ticket</span>
+        <div class="selected-list-header-main">
+          <mat-icon class="header-icon">receipt_long</mat-icon>
+          <span class="header-title">Current ticket</span>
+        </div>
+        <button mat-button type="button" class="cart-clear-btn" (click)="clearTicket()"
+          [disabled]="printOrderCount !== 0">
+          Clear
+        </button>
       </div>
 
       <div class="selected-list-body">
@@ -60,7 +66,7 @@
             </div>
           }
           @if (total > 0 && !isOrderPaid) {
-            <p class="cart-payment-hint">Use el panel de cobro abajo para registrar pagos.</p>
+            <p class="cart-payment-hint">Use the payment panel below to record payments.</p>
           }
         </div>
       }
@@ -74,6 +80,15 @@
         [payIt]="payIt.bind(this)" [removeItem]="removeItem.bind(this)" [printOrderCount]="printOrderCount"
         [finalizeOrder]="submitOrder.bind(this)"></app-cal-table>
     }
+
+    <footer class="pos-cart-footer">
+      <span class="pos-footer-cashier">Cashier: Administrator</span>
+      <button mat-button type="button" class="pos-footer-more" (click)="openPosMore()">
+        More
+      </button>
+      <span class="pos-footer-version">POS v{{ posVersion }}</span>
+      <span class="pos-footer-online" title="Connected">Online</span>
+    </footer>
   </div>
 
   <div class="product-list">

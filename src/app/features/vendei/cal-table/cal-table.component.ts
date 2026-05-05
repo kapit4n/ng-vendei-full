@@ -138,6 +138,19 @@ export class CalTableComponent implements OnInit {
     return payI?.payType === PaymentType.PAYQR;
   }
 
+  /** Shown on the client card; omits a numeric ID when the walk-in placeholder has none. */
+  customerIdDisplay(): string {
+    const c = this.selectedCustomer;
+    if (!c) {
+      return "—";
+    }
+    const raw = c.ci ?? c.code;
+    if (raw != null && raw !== "") {
+      return String(raw);
+    }
+    return "—";
+  }
+
   private makePayLine(value: number): { name: string; value: number } {
     const v = roundToCents(value);
     return { name: v.toFixed(2), value: v };

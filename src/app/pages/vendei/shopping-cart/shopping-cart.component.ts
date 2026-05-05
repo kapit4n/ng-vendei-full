@@ -1,9 +1,13 @@
 import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from "@angular/core";
+import { Router } from "@angular/router";
 import { VOrdersService } from "../../../services/vendei/v-orders.service";
 import { VInventoryService } from "../../../services/vendei/v-inventory.service";
 import { VConfigService } from "src/app/services/vendei/v-config.service";
 import { roundToCents, isOrderReadyToSubmit, orderAmountDue } from "src/app/utils/money";
 import { PaymentType } from "src/app/features/vendei/payment-types";
+
+/** Shown in POS footer; align with product branding rather than package.json patch noise. */
+const POS_DISPLAY_VERSION = "1.0.0";
 
 @Component({
     selector: "app-shopping-cart",
@@ -19,7 +23,10 @@ export class ShoppingCartComponent implements OnInit {
   printIt = false;
 
   total: number;
-  emptyCustomer = { id: 1, name: "Anonymous", ci: 1234567 };
+  /** Anonymous walk-in; omit document so the UI can show a placeholder ID line. */
+  emptyCustomer = { id: 1, name: "Anonymous", ci: null as number | null, code: null as string | null };
+
+  readonly posVersion = POS_DISPLAY_VERSION;
 
   selectedProducts = [];
   selectedCustomer: any;
@@ -42,7 +49,8 @@ export class ShoppingCartComponent implements OnInit {
     private ordersSvc: VOrdersService,
     private inventorySvc: VInventoryService,
     private config: VConfigService,
-    private readonly cdr: ChangeDetectorRef
+    private readonly cdr: ChangeDetectorRef,
+    private readonly router: Router
   ) {
     this.total = 0;
     this.selectedCustomer = Object.assign({}, this.emptyCustomer);
@@ -288,6 +296,20 @@ export class ShoppingCartComponent implements OnInit {
     this.totalReturn = 0;
     this.toReturn = 0;
     this.printOrderCount = 0;
+  }
+
+  /** Clears the ticket (lines + payments + customer to anonymous). Blocked while print flow locks the sale. */
+  clearTicket(): void {
+    if (this.printOrderCount) {
+      return;
+    }
+    this.clearItems();
+    this.recalTotal();
+    this.cdr.markForCheck();
+  }
+
+  openPosMore(): void {
+    this.router.navigate(["/main"]);
   }
 
   public selectCustomer(customer: any) {

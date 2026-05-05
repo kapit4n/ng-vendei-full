@@ -2,6 +2,11 @@ import { Component, OnInit, Input, Inject } from "@angular/core";
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { roundToCents } from "src/app/utils/money";
 import { resolvePresentationImageUrl } from "src/app/utils/product-image-url";
+import {
+  productLabelFromFields,
+  productLabelFromFullName,
+  productTitleFromFullName,
+} from "src/app/utils/product-display-text";
 
 export interface DialogData {
   id: string;
@@ -59,6 +64,16 @@ export class SelectedListComponent implements OnInit {
 
   lineDisplayName(product: any): string {
     return product?.Product?.name || product?.name || "Item";
+  }
+
+  /** Same title/label split as the product grid (e.g. `Red Apple` + `(1 lb)`). */
+  lineTitle(product: any): string {
+    return productTitleFromFullName(this.lineDisplayName(product));
+  }
+
+  lineLabel(product: any): string | null {
+    const full = this.lineDisplayName(product);
+    return productLabelFromFullName(full) ?? productLabelFromFields(product);
   }
 
   lineImageUrl(product: any): string {

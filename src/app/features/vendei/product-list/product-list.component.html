@@ -10,33 +10,50 @@
         <mat-label>Search products</mat-label>
         <mat-icon matPrefix class="search-prefix">search</mat-icon>
         <input matInput type="search" autocomplete="off" [ngModel]="searchQuery"
-          (ngModelChange)="onSearchChange($event)" placeholder="Name or code" [ngModelOptions]="{ standalone: true }" />
+          (ngModelChange)="onSearchChange($event)"
+          placeholder="Search products by name or scan barcode…" [ngModelOptions]="{ standalone: true }" />
         @if (searchQuery) {
           <button mat-icon-button matSuffix type="button" (click)="clearSearch()"
             aria-label="Clear search">
             <mat-icon>close</mat-icon>
           </button>
+        } @else {
+          <mat-icon matSuffix class="search-suffix-barcode" aria-hidden="true">qr_code_scanner</mat-icon>
         }
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="search-field-code" subscriptSizing="dynamic">
-        <mat-label>Quick add by code</mat-label>
-        <mat-icon matPrefix class="search-prefix">qr_code_2</mat-icon>
-        <input matInput type="text" autocomplete="off" [(ngModel)]="productCode"
-          (keyup.enter)="addByCodeField()" placeholder="Exact code · Enter" [ngModelOptions]="{ standalone: true }" />
-        @if (productCode) {
-          <button mat-icon-button matSuffix type="button" (click)="productCode = ''"
-            aria-label="Clear code">
-            <mat-icon>close</mat-icon>
-          </button>
-        }
-      </mat-form-field>
+      <div class="quick-code-group">
+        <button mat-stroked-button type="button" class="quick-code-btn" (click)="focusQuickCode()"
+          matTooltip="Focus barcode / product code field">
+          <mat-icon>bolt</mat-icon>
+          Quick add by code
+        </button>
+        <mat-form-field appearance="outline" class="search-field-code" subscriptSizing="dynamic">
+          <mat-label>Code</mat-label>
+          <mat-icon matPrefix class="search-prefix">qr_code_2</mat-icon>
+          <input #quickCodeInput matInput type="text" autocomplete="off" [(ngModel)]="productCode"
+            (keyup.enter)="addByCodeField()" placeholder="Exact code · Enter"
+            [ngModelOptions]="{ standalone: true }" />
+          @if (productCode) {
+            <button mat-icon-button matSuffix type="button" (click)="productCode = ''"
+              aria-label="Clear code">
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+        </mat-form-field>
+      </div>
     </div>
   </div>
 
   @if (categories.length) {
     <div class="category-chips">
-      <span class="category-chips-label">Category</span>
+      <div class="category-chips-header">
+        <span class="category-chips-label">Categories</span>
+        <button mat-stroked-button type="button" class="category-manage-btn" (click)="openCategoriesManage()">
+          <mat-icon>settings</mat-icon>
+          Manage
+        </button>
+      </div>
       <div class="category-chips-row">
         @for (cat of categories; track cat.id) {
           <button type="button" mat-stroked-button class="chip"
@@ -51,6 +68,7 @@
   @if (originalP.length) {
     <div class="search-meta">
       <span class="search-meta-count">Showing {{ products.length }} of {{ originalP.length }} products</span>
+      <span class="search-meta-view" aria-hidden="true">Grid</span>
     </div>
   }
 
@@ -69,11 +87,15 @@
     @for (product of products; track productRowTrack($index, product)) {
       <button type="button" class="product-list-item-t" (click)="addProduct(product)"
         [attr.aria-label]="'Add ' + displayProductName(product)">
-        <div class="product-card-image" [style.background-image]="'url(' + productCardImageUrl(product) + ')'"></div>
-        <div class="product-card-overlay"></div>
+        <div class="product-card-media">
+          <div class="product-card-image" [style.background-image]="'url(' + productCardImageUrl(product) + ')'"></div>
+        </div>
         <div class="product-card-body">
           <span class="product-card-price">Bs {{ product.currentPrice | number:'1.2-2' }}</span>
-          <span class="product-card-name">{{ displayProductName(product) }}</span>
+          <span class="product-card-name">{{ productCardTitle(product) }}</span>
+          @if (productCardLabel(product); as label) {
+            <span class="product-card-label">{{ label }}</span>
+          }
         </div>
       </button>
     }

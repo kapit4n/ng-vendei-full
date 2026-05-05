@@ -7,7 +7,12 @@
         </div>
         <div class="line-main">
           <div class="line-title-row">
-            <span class="line-name">{{ lineDisplayName(product) }}</span>
+            <div class="line-name-stack">
+              <span class="line-name">{{ lineTitle(product) }}</span>
+              @if (lineLabel(product); as lab) {
+                <span class="line-label">{{ lab }}</span>
+              }
+            </div>
             @if (printOrderCount != 1) {
               <div class="line-actions">
                 <button type="button" mat-icon-button class="line-btn" (click)="removeProduct(product); $event.stopPropagation()"
@@ -32,8 +37,8 @@
 } @else {
   <div class="cart-empty">
     <mat-icon class="cart-empty-icon">shopping_cart</mat-icon>
-    <p>No items yet</p>
-    <p class="cart-empty-hint">Tap a product to add it to the ticket</p>
+    <p class="cart-empty-title">No items yet</p>
+    <p class="cart-empty-hint">Scan or search for a product to add to the ticket.</p>
   </div>
 }
 

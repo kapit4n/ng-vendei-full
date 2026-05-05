@@ -1,11 +1,11 @@
 <div class="payment-panel">
-  <section class="payment-sidebar" aria-label="Cliente y pagos registrados">
+  <section class="payment-sidebar" aria-label="Customer and recorded payments">
     @if (payedItems.length > 0) {
       <div class="payment-chips">
-        <span class="payment-chips-label" i18n>Pagos</span>
+        <span class="payment-chips-label" i18n>Payments</span>
         @for (payI of payedItems; track payI.id) {
           <button type="button" class="chip-amount" (click)="removeItem(payI)"
-            [attr.aria-label]="'Quitar pago'"
+            [attr.aria-label]="'Remove payment'"
             [class.chip-amount--qr]="isQrPayment(payI)"
             [class.chip-amount--cash]="!isQrPayment(payI)">
             @if (isQrPayment(payI)) {
@@ -14,7 +14,7 @@
             }
             @if (!isQrPayment(payI)) {
               <mat-icon class="chip-ico">payments</mat-icon>
-              <span class="chip-label">Efectivo</span>
+              <span class="chip-label">Cash</span>
             }
             <span class="chip-value">Bs {{ payI.value | number:'1.2-2' }}</span>
           </button>
@@ -24,7 +24,7 @@
 
     @if (returnItems.length > 0) {
       <div class="payment-chips">
-        <span class="payment-chips-label" i18n>Cambio</span>
+        <span class="payment-chips-label" i18n>Change</span>
         @for (payI of returnItems; track payI.id) {
           <button type="button" class="chip-amount chip-amount--return" (click)="removeItem(payI)">
             <mat-icon class="chip-ico">undo</mat-icon>
@@ -36,7 +36,7 @@
 
     @if (discountItems.length > 0) {
       <div class="discount-line">
-        <span class="payment-chips-label">Descuento</span>
+        <span class="payment-chips-label">Discount</span>
         <span class="discount-tags">
           @for (payI of discountItems; track payI.id) {
             <button type="button" class="discount-tag" (click)="removeItem(payI)">
@@ -48,34 +48,40 @@
     }
 
     <div class="customer-card">
-      <div class="customer-card-label">Cliente AAA</div>
+      <div class="customer-card-top">
+        <div class="customer-card-label">Client</div>
+        <button type="button" mat-icon-button class="customer-edit-btn" (click)="openDialog()"
+          [disabled]="isPrintLocked" aria-label="Select or edit customer">
+          <mat-icon>edit</mat-icon>
+        </button>
+      </div>
       <div class="customer-card-name">{{ selectedCustomer?.name || '—' }}</div>
-      <div class="customer-card-ci">CI: {{ selectedCustomer?.ci ?? selectedCustomer?.code ?? '—' }}</div>
+      <div class="customer-card-ci">ID: {{ customerIdDisplay() }}</div>
       <button mat-stroked-button color="primary" class="customer-select-btn" type="button" (click)="openDialog()"
         [disabled]="isPrintLocked">
-        <mat-icon>person_search</mat-icon>
-        Elegir o crear cliente
+        <mat-icon>person_add</mat-icon>
+        Select or create client
       </button>
     </div>
   </section>
 
-  <section class="payment-main" aria-label="Cobro">
+  <section class="payment-main" aria-label="Checkout">
     @if (orderTotal > 0) {
       <div class="due-banner">
         <div class="due-banner-row">
-          <span class="due-label">Total ticket</span>
+          <span class="due-label">Ticket total</span>
           <span class="due-amount">Bs {{ orderTotal | number:'1.2-2' }}</span>
         </div>
         @if (amountDue > 0) {
           <div class="due-banner-row due-banner-row--accent">
-            <span class="due-label">Pendiente</span>
+            <span class="due-label">Due</span>
             <span class="due-amount">Bs {{ amountDue | number:'1.2-2' }}</span>
           </div>
         }
         @if (orderTotal > 0 && amountDue <= 0) {
           <div class="due-banner-row due-banner-row--ok">
             <mat-icon class="due-ok-icon">check_circle</mat-icon>
-            <span>Cobro cubierto — puede guardar el pedido o registrar cambio si aplica</span>
+            <span>Amount covered — you can submit the order or record change if needed.</span>
           </div>
         }
         @if (readyToSubmit) {
@@ -91,17 +97,17 @@
     }
 
     <div class="payment-standard">
-      <div class="section-label">Registrar pagos</div>
+      <div class="section-label">Payment</div>
       <p class="section-lead">
-        Elija <strong>efectivo</strong> o <strong>QR</strong>, luego añada cada monto (teclas rápidas o campo).
-        Las líneas aparecen a la izquierda; pulse una para quitarla.
+        Choose <strong>Cash</strong> or <strong>QR</strong>, then add each amount (quick keys or field).
+        Lines appear on the left; tap one to remove it.
       </p>
 
-      <div class="method-toggle" role="group" aria-label="Medio de pago">
+      <div class="method-toggle" role="group" aria-label="Payment method">
         <button type="button" class="method-btn" [class.method-btn--active]="incomingMethod === 'cash'"
           (click)="setIncomingMethod('cash')" [disabled]="isPrintLocked">
           <mat-icon>payments</mat-icon>
-          Efectivo
+          Cash
         </button>
         <button type="button" class="method-btn" [class.method-btn--active]="incomingMethod === 'qr'"
           (click)="setIncomingMethod('qr')" [disabled]="isPrintLocked">
@@ -112,9 +118,9 @@
 
       <div class="custom-amount-block">
         <mat-form-field appearance="outline" class="custom-amount-field" subscriptSizing="dynamic">
-          <mat-label>Monto (Bs)</mat-label>
+          <mat-label>Amount (Bs)</mat-label>
           <input matInput type="text" inputmode="decimal" [(ngModel)]="customAmountStr"
-            [ngModelOptions]="{ standalone: true }" placeholder="Ej. 12,50"
+            [ngModelOptions]="{ standalone: true }" placeholder="e.g. 12.50"
             (keyup.enter)="registerIncomingAmount()" />
         </mat-form-field>
         <div class="custom-amount-actions">
@@ -125,13 +131,13 @@
           @if (amountDue > 0 && orderTotal > 0) {
             <button mat-stroked-button color="primary" type="button" (click)="registerPendingDue()"
               [disabled]="isPrintLocked">
-              Pagar pendiente (Bs {{ amountDue | number:'1.2-2' }})
+              Pay balance (Bs {{ amountDue | number:'1.2-2' }})
             </button>
           }
         </div>
       </div>
 
-      <div class="quick-amounts" aria-label="Montos rápidos">
+      <div class="quick-amounts" aria-label="Quick amounts">
         @for (v of quickAmounts; track v) {
           <button type="button" mat-stroked-button class="quick-btn" (click)="addQuickAmount(v)"
             [disabled]="isPrintLocked">
@@ -150,8 +156,8 @@
           </button>
           @if (!readyToSubmit) {
             <p class="checkout-hint">
-              Submit enables when <strong>Pending</strong> reaches Bs 0.00 (after discounts and registered payments).
-              Current pending: Bs {{ amountDue | number:'1.2-2' }}.
+              Submit enables when <strong>Due</strong> reaches Bs 0.00 (after discounts and recorded payments).
+              Current due: Bs {{ amountDue | number:'1.2-2' }}.
             </p>
           }
         </div>
@@ -159,30 +165,30 @@
     </div>
 
     <details class="payment-adjustments">
-      <summary class="adjustments-summary">Descuento o cambio (opcional)</summary>
+      <summary class="adjustments-summary">Discount or change (optional)</summary>
       <div class="adjustment-rows">
         <div class="adjustment-row">
           <mat-form-field appearance="outline" class="adjust-field" subscriptSizing="dynamic">
-            <mat-label>Descuento (Bs)</mat-label>
+            <mat-label>Discount (Bs)</mat-label>
             <input matInput type="text" inputmode="decimal" [(ngModel)]="discountAmountStr"
               [ngModelOptions]="{ standalone: true }" (keyup.enter)="registerDiscountAmount()" />
           </mat-form-field>
           <button mat-stroked-button type="button" color="primary" (click)="registerDiscountAmount()"
             [disabled]="isPrintLocked">
-            Registrar descuento
+            Apply discount
           </button>
         </div>
         <div class="adjustment-row">
           <mat-form-field appearance="outline" class="adjust-field" subscriptSizing="dynamic">
-            <mat-label>Cambio devuelto (Bs)</mat-label>
+            <mat-label>Change given (Bs)</mat-label>
             <input matInput type="text" inputmode="decimal" [(ngModel)]="changeAmountStr"
               [ngModelOptions]="{ standalone: true }" (keyup.enter)="registerChangeAmount()" />
           </mat-form-field>
           <button mat-stroked-button type="button" (click)="registerChangeAmount()" [disabled]="isPrintLocked">
-            Registrar cambio
+            Record change
           </button>
         </div>
-        <p class="adjustment-hint">Use el cambio cuando el cliente ya cubrió el total y recibe vuelto en efectivo.</p>
+        <p class="adjustment-hint">Record change when the customer paid over the total and receives cash back.</p>
       </div>
     </details>
   </section>

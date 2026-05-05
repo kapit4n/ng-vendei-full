@@ -41,8 +41,9 @@
 }
 
 .search-field-code {
-    flex: 0 1 220px;
-    min-width: 0;
+    flex: 1 1 160px;
+    min-width: 120px;
+    max-width: 260px;
 }
 
 .search-prefix {
@@ -50,19 +51,68 @@
     color: rgba(0, 0, 0, 0.45);
 }
 
+.search-suffix-barcode {
+    color: rgba(57, 73, 171, 0.55);
+    font-size: 22px !important;
+    width: 22px !important;
+    height: 22px !important;
+    margin-right: 4px;
+}
+
+.quick-code-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.5rem;
+    flex: 0 1 auto;
+    min-width: 0;
+}
+
+.quick-code-btn mat-icon {
+    margin-right: 4px;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+}
+
+.quick-code-btn {
+    margin-top: 0.35rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
 .category-chips {
     flex-shrink: 0;
     margin-top: 0.25rem;
 }
 
-.category-chips-label {
-    display: block;
-    font-size: 0.7rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: rgba(15, 23, 42, 0.55);
+.category-chips-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
     margin-bottom: 0.35rem;
+}
+
+.category-chips-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: rgba(15, 23, 42, 0.55);
+}
+
+.category-manage-btn {
+    font-size: 0.75rem !important;
+    min-height: 32px;
+    line-height: 1.2;
+}
+
+.category-manage-btn mat-icon {
+    font-size: 18px !important;
+    width: 18px !important;
+    height: 18px !important;
+    margin-right: 4px;
 }
 
 .category-chips-row {
@@ -78,15 +128,20 @@
     padding: 0 0.65rem;
 }
 
-.category-chips .chip-active {
-    border-color: #3949ab;
-    background: rgba(57, 73, 171, 0.08);
+.category-chips .chip.chip-active {
+    border-color: #1e3a8a !important;
+    background: #1e40af !important;
+    color: #fff !important;
     font-weight: 600;
 }
 
 .search-meta {
     flex-shrink: 0;
     margin-top: 0.35rem;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
 }
 
 .search-meta-count {
@@ -94,8 +149,16 @@
     color: rgba(15, 23, 42, 0.55);
 }
 
+.search-meta-view {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(15, 23, 42, 0.45);
+}
+
 .product-cards-empty {
-    flex: 1 1 100%;
+    grid-column: 1 / -1;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -126,6 +189,8 @@
 }
 
 .product-cards-box {
+    --card-radius: 10px;
+    --card-price-emphasis: #b45309;
     flex: 1;
     min-height: 0;
     overflow-y: auto;
@@ -138,38 +203,61 @@
     background: linear-gradient(180deg, #fafbfd 0%, #f0f3f8 100%);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
     box-sizing: border-box;
-    display: flex;
-    flex-wrap: wrap;
-    align-content: flex-start;
-    justify-content: flex-start;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
     gap: 12px;
+    align-content: start;
+}
+
+@media (min-width: 1400px) {
+    .product-cards-box {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .product-cards-box {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 10px;
+        padding: 0.5rem;
+    }
 }
 
 .product-list-item-t {
-    position: relative;
-    width: 168px;
-    height: 196px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
     padding: 0;
     margin: 0;
     border: 1px solid rgba(15, 23, 42, 0.12);
-    border-radius: 12px;
+    border-radius: var(--card-radius);
     overflow: hidden;
     cursor: pointer;
     text-align: left;
     background: #fff;
     box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
     transition: transform 0.15s ease, box-shadow 0.15s ease;
-    flex: 0 0 auto;
 }
 
 .product-list-item-t:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.14);
 }
 
 .product-list-item-t:active {
     transform: translateY(0);
     box-shadow: 0 2px 6px rgba(15, 23, 42, 0.1);
+}
+
+/* Image on top — square tile, full bleed in the media band only */
+.product-card-media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    flex-shrink: 0;
+    background: #e8edf3;
+    overflow: hidden;
 }
 
 .product-card-image {
@@ -180,44 +268,52 @@
     background-repeat: no-repeat;
 }
 
-.product-card-overlay {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 52%;
-    background: linear-gradient(to top, rgba(15, 23, 42, 0.82) 0%, rgba(15, 23, 42, 0.2) 55%, transparent 100%);
-    pointer-events: none;
-}
-
+/* Price, name, measure below the image — solid panel for readability */
 .product-card-body {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    padding: 10px 12px 12px;
+    flex: 1 1 auto;
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
     gap: 4px;
-    z-index: 1;
+    width: 100%;
+    padding: 10px 12px 12px;
+    text-align: left;
+    box-sizing: border-box;
+    background: #fff;
+    border-top: 1px solid rgba(15, 23, 42, 0.06);
+    min-height: 5.5rem;
 }
 
 .product-card-price {
-    font-size: 1rem;
-    font-weight: 700;
-    color: #fef08a;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+    font-size: 1.125rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+    color: var(--card-price-emphasis);
+    line-height: 1.2;
 }
 
 .product-card-name {
-    font-size: 0.8rem;
-    font-weight: 600;
-    line-height: 1.25;
-    color: #f8fafc;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: #0f172a;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+}
+
+.product-card-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.25;
+    color: #64748b;
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .items-container {

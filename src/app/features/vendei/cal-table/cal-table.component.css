@@ -124,13 +124,29 @@
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
 }
 
+.customer-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
 .customer-card-label {
   font-size: 0.65rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: #94a3b8;
-  margin-bottom: 4px;
+  margin-bottom: 0;
+}
+
+.customer-edit-btn {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  margin: -4px -4px 0 0;
+  color: #64748b;
 }
 
 .customer-card-name {
