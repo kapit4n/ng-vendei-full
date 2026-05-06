@@ -10,12 +10,12 @@ import { PaymentType } from "src/app/features/vendei/payment-types";
  * Quick amounts + “pay balance” cover the common case without mode switching.
  */
 @Component({
-  selector: "app-cal-table",
-  templateUrl: "./cal-table.component.html",
-  styleUrls: ["./cal-table.component.css"],
+  selector: "app-pos-payment-panel",
+  templateUrl: "./pos-payment-panel.component.html",
+  styleUrls: ["./pos-payment-panel.component.css"],
   standalone: false,
 })
-export class CalTableComponent implements OnInit {
+export class PosPaymentPanelComponent implements OnInit {
   @Input()
   orderTotal = 0;
 
@@ -79,7 +79,7 @@ export class CalTableComponent implements OnInit {
       width: "min(92vw, 480px)",
       maxHeight: "90vh",
       data: {
-        // `selectCustomer` is already bound to the POS parent (ShoppingCartComponent).
+        // `selectCustomer` is already bound to the POS parent (PosCheckoutComponent).
         selectCustomer: this.selectCustomer,
       },
     });

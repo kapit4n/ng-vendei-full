@@ -1,23 +1,23 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SelectedListComponent } from './selected-list.component';
+import { PosTicketLinesComponent } from './pos-ticket-lines.component';
 import { MatIconModule } from "@angular/material/icon";
 import { MatListModule } from "@angular/material/list";
 import { MatDialogModule } from "@angular/material/dialog";
 
-describe('SelectedListComponent', () => {
-  let component: SelectedListComponent;
-  let fixture: ComponentFixture<SelectedListComponent>;
+describe('PosTicketLinesComponent', () => {
+  let component: PosTicketLinesComponent;
+  let fixture: ComponentFixture<PosTicketLinesComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [SelectedListComponent],
+      declarations: [PosTicketLinesComponent],
       imports: [MatIconModule, MatListModule, MatDialogModule]
     }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SelectedListComponent);
+    fixture = TestBed.createComponent(PosTicketLinesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

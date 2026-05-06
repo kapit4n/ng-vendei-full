@@ -13,12 +13,12 @@ import {
 } from "src/app/utils/product-display-text";
 
 @Component({
-    selector: "app-product-list",
-    templateUrl: "./product-list.component.html",
-    styleUrls: ["./product-list.component.css"],
+    selector: "app-pos-catalog",
+    templateUrl: "./pos-catalog.component.html",
+    styleUrls: ["./pos-catalog.component.css"],
     standalone: false
 })
-export class ProductListComponent implements OnInit {
+export class PosCatalogComponent implements OnInit {
   @Input()
   selectedProducts: any[];
   @Input() recalTotal: Function;

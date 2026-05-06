@@ -30,9 +30,9 @@
       </div>
 
       <div class="selected-list-body">
-        <app-selected-list [selectedProducts]="selectedProducts" [removeProduct]="removeProduct.bind(this)"
+        <app-pos-ticket-lines [selectedProducts]="selectedProducts" [removeProduct]="removeProduct.bind(this)"
           [recalTotal]="recalTotal.bind(this)" [printOrderCount]="printOrderCount">
-        </app-selected-list>
+        </app-pos-ticket-lines>
       </div>
 
       @if (total > 0 || totalPayed > 0) {
@@ -73,12 +73,12 @@
     </div>
 
     @if (displayCal) {
-      <app-cal-table class="cal-table" [selectCustomer]="selectCustomer.bind(this)"
+      <app-pos-payment-panel class="cal-table" [selectCustomer]="selectCustomer.bind(this)"
         [selectedCustomer]="selectedCustomer" [orderTotal]="total" [payedItems]="payedItems"
         [discountItems]="discountItems" [returnItems]="returnItems" [totalPayed]="totalPayed"
         [totalDiscount]="totalDiscount" [totalReturn]="totalReturn" [calTotals]="calTotals.bind(this)"
         [payIt]="payIt.bind(this)" [removeItem]="removeItem.bind(this)" [printOrderCount]="printOrderCount"
-        [finalizeOrder]="submitOrder.bind(this)"></app-cal-table>
+        [finalizeOrder]="submitOrder.bind(this)"></app-pos-payment-panel>
     }
 
     <footer class="pos-cart-footer">
@@ -92,7 +92,7 @@
   </div>
 
   <div class="product-list">
-    <app-product-list [selectedProducts]="selectedProducts" [recalTotal]="recalTotal.bind(this)"
-      [printOrderCount]="printOrderCount"></app-product-list>
+    <app-pos-catalog [selectedProducts]="selectedProducts" [recalTotal]="recalTotal.bind(this)"
+      [printOrderCount]="printOrderCount"></app-pos-catalog>
   </div>
 </div>

@@ -1,22 +1,22 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CalTableComponent } from './cal-table.component';
+import { PosPaymentPanelComponent } from './pos-payment-panel.component';
 import { MatIconModule } from "@angular/material/icon";
 
-describe('CalTableComponent', () => {
-  let component: CalTableComponent;
-  let fixture: ComponentFixture<CalTableComponent>;
+describe('PosPaymentPanelComponent', () => {
+  let component: PosPaymentPanelComponent;
+  let fixture: ComponentFixture<PosPaymentPanelComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CalTableComponent ],
+      declarations: [ PosPaymentPanelComponent ],
       imports: [ MatIconModule ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CalTableComponent);
+    fixture = TestBed.createComponent(PosPaymentPanelComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

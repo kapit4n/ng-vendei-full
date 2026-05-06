@@ -48,7 +48,7 @@
   box-sizing: border-box;
 }
 
-.product-list > app-product-list {
+.product-list > app-pos-catalog {
   flex: 1 1 0;
   min-height: 0;
   overflow: hidden;

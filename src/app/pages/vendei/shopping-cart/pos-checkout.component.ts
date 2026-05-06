@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from "@angular/core";
 import { Router } from "@angular/router";
+import { concatMap, from } from "rxjs";
 import { VOrdersService } from "../../../services/vendei/v-orders.service";
 import { VInventoryService } from "../../../services/vendei/v-inventory.service";
 import { VConfigService } from "src/app/services/vendei/v-config.service";
@@ -10,12 +11,12 @@ import { PaymentType } from "src/app/features/vendei/payment-types";
 const POS_DISPLAY_VERSION = "1.0.0";
 
 @Component({
-    selector: "app-shopping-cart",
-    templateUrl: "./shopping-cart.component.html",
-    styleUrls: ["./shopping-cart.component.css"],
+    selector: "app-pos-checkout",
+    templateUrl: "./pos-checkout.component.html",
+    styleUrls: ["./pos-checkout.component.css"],
     standalone: false
 })
-export class ShoppingCartComponent implements OnInit {
+export class PosCheckoutComponent implements OnInit {
 
   // config
   displayCal = true;
@@ -248,37 +249,37 @@ export class ShoppingCartComponent implements OnInit {
       detail.orderId = "0";
       details.push(detail);
     });
-    let orderAux = {} as any;
     setTimeout(() => {
-      this.ordersSvc.save(order).subscribe(o => {
-        console.log('save order', o);
-        console.log('order', order);
-        details.forEach(d => {
-          d.orderId = o.id;
-          d.createdDate = o.createdDate;
-          this.ordersSvc.saveDetail(d).subscribe(ds => {
-            console.log('save detail', ds);
-            console.log('detail', d);
-            this.inventorySvc
-              .reduceInventory(ds.productId, ds.quantity)
-              .subscribe(dat => {
-                console.log(dat);
-              });
-
-            this.inventorySvc
-              .updateTotalSelled(ds.productId, ds.totalPrice)
-              .subscribe(dat => {
-                console.log(dat);
-              });
-
-            this.inventorySvc
-              .updateQuantitySelled(ds.productId, ds.quantity)
-              .subscribe(dat => {
-                console.log(dat);
-              });
-          });
+      this.ordersSvc
+        .save(order)
+        .pipe(
+          concatMap((o: any) => {
+            details.forEach((d: any) => {
+              d.orderId = o.id;
+              d.createdDate = o.createdDate;
+            });
+            return from(details).pipe(
+              concatMap((d: any) =>
+                this.ordersSvc.saveDetail(d).pipe(
+                  concatMap(() =>
+                    this.inventorySvc.reduceInventory(String(d.productId), d.quantity).pipe(
+                      concatMap(() =>
+                        this.inventorySvc.updateTotalSelled(String(d.productId), d.totalPrice)
+                      ),
+                      concatMap(() =>
+                        this.inventorySvc.updateQuantitySelled(String(d.productId), d.quantity)
+                      )
+                    )
+                  )
+                )
+              )
+            );
+          })
+        )
+        .subscribe({
+          next: () => {},
+          error: (err) => console.error("submitOrder inventory pipeline", err),
         });
-      });
     }, 800);
     this.clearItems();
   }

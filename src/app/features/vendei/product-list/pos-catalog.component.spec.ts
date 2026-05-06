@@ -1,18 +1,18 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ProductListComponent } from './product-list.component';
+import { PosCatalogComponent } from './pos-catalog.component';
 import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
 import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http"; 
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 
-describe('ProductListComponent', () => {
-  let component: ProductListComponent;
-  let fixture: ComponentFixture<ProductListComponent>;
+describe('PosCatalogComponent', () => {
+  let component: PosCatalogComponent;
+  let fixture: ComponentFixture<PosCatalogComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-    declarations: [ProductListComponent],
+    declarations: [PosCatalogComponent],
     imports: [MatIconModule,
         MatInputModule,
         BrowserAnimationsModule],
@@ -21,7 +21,7 @@ describe('ProductListComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ProductListComponent);
+    fixture = TestBed.createComponent(PosCatalogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

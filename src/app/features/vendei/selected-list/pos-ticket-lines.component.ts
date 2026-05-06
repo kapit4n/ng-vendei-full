@@ -17,12 +17,12 @@ export interface DialogData {
 }
 
 @Component({
-    selector: "app-selected-list",
-    templateUrl: "./selected-list.component.html",
-    styleUrls: ["./selected-list.component.css"],
+    selector: "app-pos-ticket-lines",
+    templateUrl: "./pos-ticket-lines.component.html",
+    styleUrls: ["./pos-ticket-lines.component.css"],
     standalone: false
 })
-export class SelectedListComponent implements OnInit {
+export class PosTicketLinesComponent implements OnInit {
   pResult: any;
   name: string = "Luis";
   @Input() selectedProducts: any[];
@@ -34,7 +34,7 @@ export class SelectedListComponent implements OnInit {
   constructor(public dialog: MatDialog) {}
 
   openDialog(product: any): void {
-    const dialogRef = this.dialog.open(SelectedProductEditDialog, {
+    const dialogRef = this.dialog.open(PosTicketLineEditDialog, {
       width: "250px",
       height: "250px",
       data: {
@@ -86,9 +86,9 @@ export class SelectedListComponent implements OnInit {
     templateUrl: "selected-product-edit-dialog.html",
     standalone: false
 })
-export class SelectedProductEditDialog {
+export class PosTicketLineEditDialog {
   constructor(
-    public dialogRef: MatDialogRef<SelectedProductEditDialog>,
+    public dialogRef: MatDialogRef<PosTicketLineEditDialog>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData
   ) {}
 

@@ -30,7 +30,7 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
 
 import { PageNotFoundComponent } from './pages/vendei/page-not-found/page-not-found.component';
 import { MainScreenshotComponent } from './pages/vendei/main-screenshot/main-screenshot.component';
-import { ShoppingCartComponent } from './pages/vendei/shopping-cart/shopping-cart.component';
+import { PosCheckoutComponent } from './pages/vendei/shopping-cart/pos-checkout.component';
 import { MainComponent } from "./pages/main/main.component";
 
 //reg pages
@@ -57,9 +57,9 @@ import { RepOrdersComponent } from "./pages/rep/rep-orders/rep-orders.component"
 import { BackendApiPageComponent } from "./pages/tools/backend-api-page/backend-api-page.component";
 
 
-import { ProductListComponent } from './features/vendei/product-list/product-list.component';
-import { CalTableComponent } from './features/vendei/cal-table/cal-table.component';
-import { SelectedListComponent, SelectedProductEditDialog } from './features/vendei/selected-list/selected-list.component';
+import { PosCatalogComponent } from './features/vendei/product-list/pos-catalog.component';
+import { PosPaymentPanelComponent } from './features/vendei/cal-table/pos-payment-panel.component';
+import { PosTicketLinesComponent, PosTicketLineEditDialog } from './features/vendei/selected-list/pos-ticket-lines.component';
 import { CustomerListComponent } from './features/vendei/customer-list/customer-list.component';
 import { CustomersDialogComponent } from './features/vendei/customers-dialog/customers-dialog.component';
 // reg comp
@@ -85,8 +85,8 @@ const appRoutes: Routes = [
   { path: "mock", component: MainScreenshotComponent },
   {
     path: "",
-    component: ShoppingCartComponent,
-    data: { title: "Shopping Cart" }
+    component: PosCheckoutComponent,
+    data: { title: "POS Checkout" }
   },
   {
     path: "main",
@@ -200,13 +200,13 @@ const appRoutes: Routes = [
   declarations: [
     AppComponent,
     LoginComponent,
-    ProductListComponent,
+    PosCatalogComponent,
     MainScreenshotComponent,
     PageNotFoundComponent,
-    ShoppingCartComponent,
-    CalTableComponent,
-    SelectedListComponent,
-    SelectedProductEditDialog,
+    PosCheckoutComponent,
+    PosPaymentPanelComponent,
+    PosTicketLinesComponent,
+    PosTicketLineEditDialog,
     CustomerListComponent,
     CustomersDialogComponent,
     RegProductComponent,

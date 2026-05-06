@@ -1,4 +1,4 @@
-/** Shared with `ShoppingCartComponent.payIt` and payment UI — numeric values must stay stable. */
+/** Shared with `PosCheckoutComponent.payIt` and payment UI — numeric values must stay stable. */
 export enum PaymentType {
   PAYMONEY = 1,
   PAYRETURN = 2,
