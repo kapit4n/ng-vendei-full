@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { RegCategoryListComponent } from './reg-category-list.component';
 
@@ -6,7 +6,7 @@ describe('RegCategoryListComponent', () => {
   let component: RegCategoryListComponent;
   let fixture: ComponentFixture<RegCategoryListComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ RegCategoryListComponent ]
     })
