@@ -7,7 +7,7 @@ import { environment } from '../../../environments/environment';
 export class VConfigService {
 
   /** When true, load products/categories from `assets` JSON instead of the API. */
-  isTest = false;
+  isTest = true;
 
   // cards
   cardImg = { width: 200, height: 200 };

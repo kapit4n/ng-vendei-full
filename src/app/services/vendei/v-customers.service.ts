@@ -15,7 +15,7 @@ export class VCustomersService {
   customers: any[];
 
   /** json URL */
-  private jsonFileURL: string = "../../assets/vendei/customers.json";
+  private jsonFileURL: string = "assets/vendei/customers.json";
 
   /** Product List service constructor */
   constructor(private http: HttpClient, private configSvc: VConfigService) {}
@@ -43,17 +43,9 @@ export class VCustomersService {
    */
   getAll(): Observable<any> {
     if (this.configSvc.isTest) {
-      return this.http.get(this.jsonFileURL).pipe(
-        map((response: Response) => {
-          return <any>response;
-        })
-      );
+      return this.http.get<any>(this.jsonFileURL);
     } else {
-      return this.http.get(`${this.configSvc.baseUrl}/clients`).pipe(
-        map((response: Response) => {
-          return <any>response;
-        })
-      );
+      return this.http.get<any>(`${this.configSvc.baseUrl}/clients`);
     }
   }
 }

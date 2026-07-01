@@ -14,7 +14,7 @@ export class VProductsService {
   products: any[];
 
   /** json URL */
-  private jsonFileURL: string = "../../assets/vendei/products.json";
+  private jsonFileURL: string = "assets/vendei/products.json";
 
   /** Product List service constructor */
   constructor(private http: HttpClient, private configSvc: VConfigService) {}
@@ -29,54 +29,50 @@ export class VProductsService {
   /**
    * Return Product by category
    */
-  productsByCategory(category: any): any[] {
-    return this.products;
-  }
+   productsByCategory(category: any): any[] {
+     return this.products;
+   }
 
   /**
    * Return an observable with the yeam that matches the id
    */
-  getProductById(id: any): Observable<any> {
-    return this.http.get(this.jsonFileURL).pipe(
-      map((response: Response) => {
-        return <any>response.json()[id - 1];
-      })
-    );
-  }
+   getProductById(id: any): Observable<any> {
+     return this.http.get<any>(this.jsonFileURL);
+   }
 
   /**
    * Return an observable with the list of products
    */
-  getProducts(): Observable<any> {
-    const normalizeList = (body: unknown): any[] => {
-      if (Array.isArray(body)) {
-        return body;
-      }
-      if (body && typeof body === 'object') {
-        const o = body as Record<string, unknown>;
-        const nested = o['data'] ?? o['rows'] ?? o['items'];
-        if (Array.isArray(nested)) {
-          return nested;
-        }
-      }
-      return [];
-    };
+   getProducts(): Observable<any> {
+     const normalizeList = (body: unknown): any[] => {
+       if (Array.isArray(body)) {
+         return body;
+       }
+       if (body && typeof body === 'object') {
+         const o = body as Record<string, unknown>;
+         const nested = o['data'] ?? o['rows'] ?? o['items'];
+         if (Array.isArray(nested)) {
+           return nested;
+         }
+       }
+       return [];
+     };
 
-    if (this.configSvc.isTest) {
-      return this.http.get(this.jsonFileURL).pipe(
-        map((response: unknown) => normalizeList(response)),
-        catchError(err => {
-          console.error('[VProductsService] getProducts (JSON) failed', err);
-          return of([]);
-        })
-      );
-    }
-    return this.http.get(`${this.configSvc.baseUrl}/productPresentations`).pipe(
-      map((response: unknown) => normalizeList(response)),
-      catchError(err => {
-        console.error('[VProductsService] getProducts failed', err);
-        return of([]);
-      })
-    );
-  }
+     if (this.configSvc.isTest) {
+       return this.http.get<any>(this.jsonFileURL).pipe(
+         map((response) => normalizeList(response)),
+         catchError(err => {
+           console.error('[VProductsService] getProducts (JSON) failed', err);
+           return of([]);
+         })
+       );
+     }
+     return this.http.get<any>(`${this.configSvc.baseUrl}/productPresentations`).pipe(
+       map((response) => normalizeList(response)),
+       catchError(err => {
+         console.error('[VProductsService] getProducts failed', err);
+         return of([]);
+       })
+     );
+   }
 }

@@ -10,7 +10,7 @@ import { VConfigService } from './v-config.service'
   providedIn: 'root'
 })
 export class VCategoriesService {
-  private jsonFileURL: string = "../../assets/vendei/categories.json";
+  private jsonFileURL: string = "assets/vendei/categories.json";
 
   constructor(private http: HttpClient, private configSvc: VConfigService) { }
   
@@ -33,16 +33,16 @@ export class VCategoriesService {
     };
 
     if (this.configSvc.isTest) {
-      return this.http.get(this.jsonFileURL).pipe(
-        map((response: unknown) => normalizeList(response)),
+      return this.http.get<any>(this.jsonFileURL).pipe(
+        map((response) => normalizeList(response)),
         catchError(err => {
           console.error('[VCategoriesService] getAll (JSON) failed', err);
           return of([]);
         })
       );
     }
-    return this.http.get(`${this.configSvc.baseUrl}/categories`).pipe(
-      map((response: unknown) => normalizeList(response)),
+    return this.http.get<any>(`${this.configSvc.baseUrl}/categories`).pipe(
+      map((response) => normalizeList(response)),
       catchError(err => {
         console.error('[VCategoriesService] getAll failed', err);
         return of([]);

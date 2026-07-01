@@ -11,7 +11,7 @@ import 'rxjs'; //get everything from Rx
   providedIn: "root"
 })
 export class VOrdersService {
-  private jsonFileURL: string = "../../assets/vendei/products.json";
+  private jsonFileURL: string = "assets/vendei/orders.json";
 
   constructor(private http: HttpClient, private configSvc: VConfigService) { }
 
@@ -28,18 +28,12 @@ export class VOrdersService {
    */
   getAll(): Observable<any> {
     if (this.configSvc.isTest) {
-      return this.http.get(this.jsonFileURL).pipe(
-        map((response: Response) => {
-          return <any>response;
-        })
-      );
+      return this.http.get<any>(this.jsonFileURL);
     } else {
       return this.http
-        .get(this.ordersUrl())
+        .get<any>(this.ordersUrl())
         .pipe(
-          map((response: Response) => {
-            return <any>response;
-          })
+          map((response) => response)
         );
     }
   }
