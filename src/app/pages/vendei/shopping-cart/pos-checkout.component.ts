@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from "@angular/core";
 import { Router } from "@angular/router";
-import { concatMap, from } from "rxjs";
+import { concatMap, forkJoin } from "rxjs";
 import { VOrdersService } from "../../../services/vendei/v-orders.service";
 import { VInventoryService } from "../../../services/vendei/v-inventory.service";
 import { VConfigService } from "src/app/services/vendei/v-config.service";
@@ -86,57 +86,36 @@ export class PosCheckoutComponent implements OnInit {
   printOrder() {
     let popupWindow;
     var todayTime = new Date();
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 
-    let headerInfo = `
-    Codigo Casero: <br CLEAR=”left” />
-      Software development company offers you web page development,
-      Billing software, Accounting, and customisable software.
-    `;
+    const productRows = this.selectedProducts.map(
+      p => `<tr>
+        <td>${p.quantity}</td>
+        <td>${p.Product.name}</td>
+        <td>${roundToCents(p.currentPrice).toFixed(2)}</td>
+        <td>${roundToCents(p.currentPrice * p.quantity).toFixed(2)}</td>
+      </tr>`
+    ).join("");
 
-    let addressInfo = `
-    <p style="font-size: 13px;">
-      Address. Cochabamba Bolivia, Times St 1414
-    </p>
-    `;
-
-    let footerInfo = `
-    <p style="font-size: 13px;">
-    Quality software developed by experienced developers.
-    </p>
-    `;
-
-    let innerContents = `<div style='padding-left: 20px;'>
-    <div>
-    <p style="font-size: 13px;">
-      <img style="float: left;" ALIGN=”left” HSPACE=”50” VSPACE=”50” src="http://localhost:4200/assets/vendei/print-logo.png" alt="Smiley face" height="120" width="120">
-      ${headerInfo}
-    </p>
-    ${addressInfo}
-    <div>Date: ${todayTime.toLocaleDateString("es-ES")} </div>
-    </div>`;
-    innerContents += "<table style='padding-left: 20px;'>";
-    innerContents += "<tr>";
-    innerContents += `<th>Qty</th>`;
-    innerContents += `<th>Detail</th>`;
-    innerContents += `<th>Price</th>`;
-    innerContents += `<th>SubTotal</th>`;
-    innerContents += "</tr>";
-    for (let i = 0; i < this.selectedProducts.length; i++) {
-      innerContents += "<tr>";
-      innerContents += `<td>${this.selectedProducts[i].quantity}</td>`;
-      innerContents += `<td>${this.selectedProducts[i].Product.name}</td>`;
-      innerContents += `<td>${roundToCents(this.selectedProducts[i].currentPrice).toFixed(2)}</td>`;
-      innerContents += `<td>${roundToCents(
-        this.selectedProducts[i].currentPrice * this.selectedProducts[i].quantity
-      ).toFixed(2)}</td>`;
-      innerContents += "</tr>";
-    }
-    innerContents += "</table>";
-    innerContents += "<div> Total: " + roundToCents(this.total).toFixed(2) + " </div>";
-    innerContents += "<div> Payed: " + roundToCents(this.totalPayed).toFixed(2) + " </div>";
-    innerContents += "<div> Returned: " + roundToCents(this.toReturn).toFixed(2) + " </div>";
-    innerContents += footerInfo;
+    const innerContents = [
+      `<div style='padding-left: 20px;'><div>`,
+      `<p style="font-size: 13px;">`,
+      `<img style="float: left;" src="http://localhost:4200/assets/vendei/print-logo.png" alt="Logo" height="120" width="120">`,
+      `Codigo Casero:<br>Software development company offers you web page development,`,
+      `Billing software, Accounting, and customisable software.`,
+      `</p>`,
+      `<p style="font-size: 13px;">Address. Cochabamba Bolivia, Times St 1414</p>`,
+      `<div>Date: ${todayTime.toLocaleDateString("es-ES")}</div>`,
+      `</div>`,
+      `<table style='padding-left: 20px;'>`,
+      `<tr><th>Qty</th><th>Detail</th><th>Price</th><th>SubTotal</th></tr>`,
+      productRows,
+      `</table>`,
+      `<div>Total: ${roundToCents(this.total).toFixed(2)}</div>`,
+      `<div>Payed: ${roundToCents(this.totalPayed).toFixed(2)}</div>`,
+      `<div>Returned: ${roundToCents(this.toReturn).toFixed(2)}</div>`,
+      `<p style="font-size: 13px;">Quality software developed by experienced developers.</p>`,
+      `</div>`,
+    ].join("");
     popupWindow = window.open(
       "",
       "_blank",
@@ -221,14 +200,6 @@ export class PosCheckoutComponent implements OnInit {
 
     }
 
-    // this.printOrderCount = 1;
-  
-    /*
-    if (this.printIt) {
-      this.printOrder();
-    }
-    */
-
     let order = {} as any;
     order.customerId = this.selectedCustomer.id;
     order.createdDate = new Date();
@@ -249,39 +220,33 @@ export class PosCheckoutComponent implements OnInit {
       detail.orderId = "0";
       details.push(detail);
     });
-    setTimeout(() => {
-      this.ordersSvc
-        .save(order)
-        .pipe(
-          concatMap((o: any) => {
-            details.forEach((d: any) => {
-              d.orderId = o.id;
-              d.createdDate = o.createdDate;
-            });
-            return from(details).pipe(
-              concatMap((d: any) =>
-                this.ordersSvc.saveDetail(d).pipe(
-                  concatMap(() =>
-                    this.inventorySvc.reduceInventory(String(d.productId), d.quantity).pipe(
-                      concatMap(() =>
-                        this.inventorySvc.updateTotalSelled(String(d.productId), d.totalPrice)
-                      ),
-                      concatMap(() =>
-                        this.inventorySvc.updateQuantitySelled(String(d.productId), d.quantity)
-                      )
-                    )
-                  )
-                )
-              )
-            );
-          })
-        )
-        .subscribe({
-          next: () => {},
-          error: (err) => console.error("submitOrder inventory pipeline", err),
+
+    const orderDone$ = this.ordersSvc.save(order).pipe(
+      concatMap((o: any) => {
+        details.forEach((d: any) => {
+          d.orderId = o.id;
+          d.createdDate = o.createdDate;
         });
-    }, 800);
-    this.clearItems();
+        return forkJoin(
+          details.map((d: any) =>
+            this.ordersSvc.saveDetail(d).pipe(
+              concatMap(() =>
+                forkJoin([
+                  this.inventorySvc.reduceInventory(String(d.productId), d.quantity),
+                  this.inventorySvc.updateTotalSelled(String(d.productId), d.totalPrice),
+                  this.inventorySvc.updateQuantitySelled(String(d.productId), d.quantity),
+                ])
+              )
+            )
+          )
+        );
+      })
+    );
+
+    orderDone$.subscribe({
+      complete: () => this.clearItems(),
+      error: (err) => console.error("submitOrder inventory pipeline", err),
+    });
   }
 
   clearItems() {

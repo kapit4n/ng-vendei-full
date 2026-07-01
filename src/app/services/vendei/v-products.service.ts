@@ -20,27 +20,6 @@ export class VProductsService {
   constructor(private http: HttpClient, private configSvc: VConfigService) {}
 
   /**
-   * Returns the list of products
-   */
-  list(): any[] {
-    return this.products;
-  }
-
-  /**
-   * Return Product by category
-   */
-   productsByCategory(category: any): any[] {
-     return this.products;
-   }
-
-  /**
-   * Return an observable with the yeam that matches the id
-   */
-   getProductById(id: any): Observable<any> {
-     return this.http.get<any>(this.jsonFileURL);
-   }
-
-  /**
    * Return an observable with the list of products
    */
    getProducts(): Observable<any> {

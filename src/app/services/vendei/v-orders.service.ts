@@ -5,8 +5,6 @@ import { map } from 'rxjs/operators';
 
 import { VConfigService } from './v-config.service'
 
-import 'rxjs'; //get everything from Rx    
-
 @Injectable({
   providedIn: "root"
 })

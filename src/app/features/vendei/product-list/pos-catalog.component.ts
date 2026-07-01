@@ -131,10 +131,10 @@ export class PosCatalogComponent implements OnInit {
     // `selectedProducts`. Reassigning `this.selectedProducts = [...]` would only
     // update this @Input locally and would not update the ticket.
     const list = this.selectedProducts;
-    if (list.some(p => p.id == product.id)) {
-      const line = list.filter(p => p.id == product.id)[0];
-      line.quantity = Number(line.quantity) + 1;
-      line.currentPrice = roundToCents(line.currentPrice ?? line.price);
+    const existing = list.find(p => p.id == product.id);
+    if (existing) {
+      existing.quantity = Number(existing.quantity) + 1;
+      existing.currentPrice = roundToCents(existing.currentPrice ?? existing.price);
     } else {
       const selectedP = Object.assign({}, product, {
         quantity: 1,
