@@ -15,20 +15,20 @@ export class VInventoryService {
   }
 
   reduceInventory(productId: string, amount: number): Observable<any> {
-    return this.http.post(
-      `${this.modelUrl}/reduceInventory`, { id: productId, amount }
+    return this.http.get(
+      `${this.modelUrl}/reduceInventory?id=${productId}&amount=${amount}`
     );
   }
 
   updateTotalSelled(productId: string, amount: number): Observable<any> {
-    return this.http.post(
-      `${this.modelUrl}/updateTotalSelled`, { id: productId, amount }
+    return this.http.get(
+      `${this.modelUrl}/updateTotalSelled?id=${productId}&amount=${amount}`
     );
   }
 
   updateQuantitySelled(productId: string, amount: number): Observable<any> {
-    return this.http.post(
-      `${this.modelUrl}/updateQuantitySelled`, { id: productId, amount }
+    return this.http.get(
+      `${this.modelUrl}/updateQuantitySelled?id=${productId}&amount=${amount}`
     );
   }
 

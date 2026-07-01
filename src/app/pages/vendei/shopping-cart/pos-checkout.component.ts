@@ -216,7 +216,7 @@ export class PosCheckoutComponent implements OnInit {
       detail.currentPrice = roundToCents(p.currentPrice);
       detail.discount = 0;
       detail.totalPrice = roundToCents(Number(p.quantity) * Number(p.currentPrice));
-      detail.productId = p.id;
+      detail.productId = p.productId ?? p.Product?.id ?? p.id;
       detail.orderId = "0";
       details.push(detail);
     });

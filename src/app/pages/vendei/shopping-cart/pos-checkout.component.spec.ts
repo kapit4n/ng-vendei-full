@@ -18,11 +18,12 @@ describe('PosCheckoutComponent', () => {
 
   const mockProduct = (overrides?: any) => ({
     id: 1,
+    productId: 1,
     name: 'Test Product',
     quantity: 1,
     currentPrice: 10.00,
     price: 10.00,
-    Product: { name: 'Test Product', code: 'T-001', image: '' },
+    Product: { id: 1, name: 'Test Product', code: 'T-001', image: '' },
     ...overrides,
   });
 
