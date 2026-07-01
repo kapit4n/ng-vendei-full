@@ -5,7 +5,7 @@
         <button mat-raised-button color="primary" class="cart-save-btn" (click)="submitOrder()"
           >
           <mat-icon>save</mat-icon>
-          Submit order
+          {{ config.printInvoiceBeforeSubmit ? 'Invoice & submit' : 'Submit order' }}
         </button>
       }
       @if (isOrderPaid && printOrderCount == 1) {

@@ -14,6 +14,8 @@ export class VConfigService {
 
   // invoice related
   printInvoice = false;
+  /** When true, show an invoice preview (print/PDF) before saving the order. */
+  printInvoiceBeforeSubmit = true;
 
   baseUrl = environment.apiBaseUrl;
 

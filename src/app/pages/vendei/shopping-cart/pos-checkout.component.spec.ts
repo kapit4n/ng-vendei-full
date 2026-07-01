@@ -1,9 +1,10 @@
 import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
-import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
-import { of } from 'rxjs';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { Observable, of } from 'rxjs';
 import { PosCheckoutComponent } from './pos-checkout.component';
 import { VOrdersService } from '../../../services/vendei/v-orders.service';
 import { VInventoryService } from '../../../services/vendei/v-inventory.service';
+import { VInvoiceService } from '../../../services/vendei/v-invoice.service';
 import { VConfigService } from 'src/app/services/vendei/v-config.service';
 import { Router } from '@angular/router';
 import { PaymentType } from 'src/app/features/vendei/payment-types';
@@ -14,6 +15,7 @@ describe('PosCheckoutComponent', () => {
   let routerSpy: jasmine.SpyObj<Router>;
   let ordersSvcSpy: jasmine.SpyObj<VOrdersService>;
   let inventorySvcSpy: jasmine.SpyObj<VInventoryService>;
+  let invoiceSvcSpy: jasmine.SpyObj<VInvoiceService>;
   let configSvc: VConfigService;
 
   const mockProduct = (overrides?: any) => ({
@@ -37,6 +39,7 @@ describe('PosCheckoutComponent', () => {
       'updateTotalSelled',
       'updateQuantitySelled',
     ]);
+    invoiceSvcSpy = jasmine.createSpyObj('VInvoiceService', ['generate']);
 
     TestBed.configureTestingModule({
       declarations: [PosCheckoutComponent],
@@ -46,6 +49,7 @@ describe('PosCheckoutComponent', () => {
         { provide: Router, useValue: routerSpy },
         { provide: VOrdersService, useValue: ordersSvcSpy },
         { provide: VInventoryService, useValue: inventorySvcSpy },
+        { provide: VInvoiceService, useValue: invoiceSvcSpy },
       ],
     }).compileComponents();
   }));
@@ -57,6 +61,7 @@ describe('PosCheckoutComponent', () => {
     inventorySvcSpy.reduceInventory.and.returnValue(of({}));
     inventorySvcSpy.updateTotalSelled.and.returnValue(of({}));
     inventorySvcSpy.updateQuantitySelled.and.returnValue(of({}));
+    invoiceSvcSpy.generate.and.returnValue('<html>invoice</html>');
 
     fixture = TestBed.createComponent(PosCheckoutComponent);
     component = fixture.componentInstance;
@@ -388,7 +393,7 @@ describe('PosCheckoutComponent', () => {
       expect(component.selectedProducts).toEqual([]);
     }));
 
-    it('prints when config.printInvoice is true and printTwice is false', fakeAsync(() => {
+    it('prints when config.printInvoice is true and printTwice is false', () => {
       spyOn(component, 'printOrder');
       configSvc.printInvoice = true;
       component.printTwice = false;
@@ -396,9 +401,9 @@ describe('PosCheckoutComponent', () => {
       component.submitOrder();
 
       expect(component.printOrder).toHaveBeenCalled();
-    }));
+    });
 
-    it('handles two-pass printing flow', fakeAsync(() => {
+    it('handles two-pass printing flow', () => {
       spyOn(component, 'printOrder');
       spyOn(component, 'clearItems');
       configSvc.printInvoice = true;
@@ -409,6 +414,273 @@ describe('PosCheckoutComponent', () => {
 
       expect(component.printOrder).toHaveBeenCalled();
       expect(component.clearItems).toHaveBeenCalled();
+    });
+
+    it('calls printInvoiceAndSave when printInvoiceBeforeSubmit is true', () => {
+      spyOn(component, 'printInvoiceAndSave');
+      configSvc.printInvoiceBeforeSubmit = true;
+
+      component.submitOrder();
+
+      expect(component.printInvoiceAndSave).toHaveBeenCalled();
+    });
+
+    it('calls saveOrder directly when both printInvoice and printInvoiceBeforeSubmit are false', () => {
+      spyOn(component, 'saveOrder').and.callThrough();
+      configSvc.printInvoice = false;
+      configSvc.printInvoiceBeforeSubmit = false;
+
+      component.submitOrder();
+
+      expect(component.saveOrder).toHaveBeenCalled();
+    });
+
+    it('printInvoice has priority over printInvoiceBeforeSubmit', () => {
+      spyOn(component, 'printOrder');
+      spyOn(component, 'printInvoiceAndSave');
+      configSvc.printInvoice = true;
+      configSvc.printInvoiceBeforeSubmit = true;
+
+      component.submitOrder();
+
+      expect(component.printOrder).toHaveBeenCalled();
+      expect(component.printInvoiceAndSave).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('saveOrder', () => {
+    beforeEach(() => {
+      component.selectedProducts = [
+        mockProduct({ id: 1, quantity: 2, currentPrice: 10 }),
+      ];
+      component.total = 20;
+      component.selectedCustomer = { id: 3, name: 'Maria' };
+      component.payedItems = [{ id: 1, value: 20 }];
+      component.calTotals();
+    });
+
+    it('builds order with correct structure', fakeAsync(() => {
+      component.saveOrder();
+      tick(800);
+
+      expect(ordersSvcSpy.save).toHaveBeenCalledWith(
+        jasmine.objectContaining({
+          customerId: 3,
+          total: 20,
+          paid: true,
+          delivered: true,
+        })
+      );
+      expect(ordersSvcSpy.save).toHaveBeenCalledWith(
+        jasmine.objectContaining({
+          createdDate: jasmine.any(Date),
+          deliveryDate: jasmine.any(Date),
+        })
+      );
     }));
+
+    it('builds details correctly', fakeAsync(() => {
+      component.saveOrder();
+      tick(800);
+
+      expect(ordersSvcSpy.saveDetail).toHaveBeenCalledWith(
+        jasmine.objectContaining({
+          productId: 1,
+          quantity: 2,
+          currentPrice: 10,
+          totalPrice: 20,
+          discount: 0,
+        })
+      );
+    }));
+
+    it('clears items on complete', fakeAsync(() => {
+      component.saveOrder();
+      tick(800);
+
+      expect(component.selectedProducts).toEqual([]);
+      expect(component.total).toBe(0);
+    }));
+  });
+
+  describe('printInvoiceAndSave', () => {
+    let mockWindow: any;
+
+    beforeEach(() => {
+      component.selectedProducts = [
+        mockProduct({ id: 1, quantity: 2, currentPrice: 10 }),
+      ];
+      component.total = 20;
+      component.selectedCustomer = { id: 3, name: 'Maria' };
+      component.payedItems = [{ id: 1, value: 20 }];
+      component.calTotals();
+
+      mockWindow = {
+        document: { write: jasmine.createSpy(), close: jasmine.createSpy() },
+        print: jasmine.createSpy(),
+        closed: false,
+        close: jasmine.createSpy(),
+      };
+    });
+
+    it('generates invoice HTML via invoice service', () => {
+      spyOn(window, 'open').and.returnValue(mockWindow);
+
+      component.printInvoiceAndSave();
+
+      expect(invoiceSvcSpy.generate).toHaveBeenCalledWith(
+        jasmine.objectContaining({
+          total: 20,
+          totalPayed: 20,
+        })
+      );
+    });
+
+    it('opens a print window with the generated HTML', () => {
+      spyOn(window, 'open').and.returnValue(mockWindow);
+
+      component.printInvoiceAndSave();
+
+      expect(window.open).toHaveBeenCalledWith('', '_blank', 'width=400,height=600');
+      expect(mockWindow.document.write).toHaveBeenCalledWith('<html>invoice</html>');
+      expect(mockWindow.document.close).toHaveBeenCalled();
+      expect(mockWindow.print).toHaveBeenCalled();
+    });
+
+    it('sets printOrderCount to 1 while printing', () => {
+      spyOn(window, 'open').and.returnValue(mockWindow);
+
+      component.printInvoiceAndSave();
+
+      expect(component.printOrderCount).toBe(1);
+    });
+
+    it('falls back to saveOrder when popup is blocked', () => {
+      spyOn(window, 'open').and.returnValue(null);
+      spyOn(component, 'saveOrder');
+
+      component.printInvoiceAndSave();
+
+      expect(component.saveOrder).toHaveBeenCalled();
+      expect(component.printOrderCount).toBe(0);
+    });
+
+    it('calls saveOrder when print window is closed', fakeAsync(() => {
+      spyOn(window, 'open').and.returnValue(mockWindow);
+      spyOn(component, 'saveOrder');
+
+      component.printInvoiceAndSave();
+
+      expect(component.saveOrder).not.toHaveBeenCalled();
+
+      mockWindow.closed = true;
+      tick(600);
+
+      expect(component.saveOrder).toHaveBeenCalled();
+    }));
+
+    it('calls saveOrder only once even if window closes multiple times', fakeAsync(() => {
+      spyOn(window, 'open').and.returnValue(mockWindow);
+      spyOn(component, 'saveOrder');
+
+      component.printInvoiceAndSave();
+      mockWindow.closed = true;
+      tick(600);
+      tick(600);
+
+      expect(component.saveOrder).toHaveBeenCalledTimes(1);
+    }));
+
+    it('calls saveOrder when onafterprint fires', () => {
+      spyOn(window, 'open').and.returnValue(mockWindow);
+      spyOn(component, 'saveOrder');
+
+      component.printInvoiceAndSave();
+
+      expect(component.saveOrder).not.toHaveBeenCalled();
+
+      mockWindow.onafterprint();
+
+      expect(component.saveOrder).toHaveBeenCalled();
+    });
+
+    it('saves only once when both onafterprint and window close happen', fakeAsync(() => {
+      spyOn(window, 'open').and.returnValue(mockWindow);
+      spyOn(component, 'saveOrder');
+
+      component.printInvoiceAndSave();
+
+      mockWindow.onafterprint();
+      mockWindow.closed = true;
+      tick(600);
+
+      expect(component.saveOrder).toHaveBeenCalledTimes(1);
+    }));
+
+    it('closes the print window after onafterprint fires', () => {
+      spyOn(window, 'open').and.returnValue(mockWindow);
+      spyOn(mockWindow, 'close');
+
+      component.printInvoiceAndSave();
+      mockWindow.onafterprint();
+
+      expect(mockWindow.close).toHaveBeenCalled();
+    });
+
+    it('does not call close on an already-closed window after onafterprint', () => {
+      spyOn(window, 'open').and.returnValue(mockWindow);
+      spyOn(mockWindow, 'close');
+
+      component.printInvoiceAndSave();
+      mockWindow.closed = true;
+      mockWindow.onafterprint();
+
+      expect(mockWindow.close).not.toHaveBeenCalled();
+    });
+
+    it('resets printOrderCount on save pipeline error', fakeAsync(() => {
+      ordersSvcSpy.save.and.returnValue(of({ id: 99 }));
+      const err$ = new Observable(sub => sub.error(new Error('save failed')));
+      ordersSvcSpy.saveDetail.and.returnValue(err$);
+      spyOn(window, 'open').and.returnValue(mockWindow);
+
+      component.printInvoiceAndSave();
+      mockWindow.onafterprint();
+      tick(800);
+
+      expect(component.printOrderCount).toBe(0);
+    }));
+  });
+
+  describe('buildOrderAndDetails', () => {
+    it('uses productId from p.productId with fallback chain', () => {
+      component.selectedProducts = [
+        { id: 999, productId: 1, quantity: 1, currentPrice: 10, Product: { id: 2 } },
+      ];
+      component.total = 10;
+
+      const { details } = component.buildOrderAndDetails();
+      expect(details[0].productId).toBe(1);
+    });
+
+    it('falls back to Product.id when productId is missing', () => {
+      component.selectedProducts = [
+        { id: 999, quantity: 1, currentPrice: 10, Product: { id: 2 } },
+      ];
+      component.total = 10;
+
+      const { details } = component.buildOrderAndDetails();
+      expect(details[0].productId).toBe(2);
+    });
+
+    it('falls back to p.id as last resort', () => {
+      component.selectedProducts = [
+        { id: 999, quantity: 1, currentPrice: 10 },
+      ];
+      component.total = 10;
+
+      const { details } = component.buildOrderAndDetails();
+      expect(details[0].productId).toBe(999);
+    });
   });
 });

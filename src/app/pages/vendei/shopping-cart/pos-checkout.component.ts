@@ -3,6 +3,7 @@ import { Router } from "@angular/router";
 import { concatMap, forkJoin } from "rxjs";
 import { VOrdersService } from "../../../services/vendei/v-orders.service";
 import { VInventoryService } from "../../../services/vendei/v-inventory.service";
+import { VInvoiceService } from "../../../services/vendei/v-invoice.service";
 import { VConfigService } from "src/app/services/vendei/v-config.service";
 import { roundToCents, isOrderReadyToSubmit, orderAmountDue } from "src/app/utils/money";
 import { PaymentType } from "src/app/features/vendei/payment-types";
@@ -49,7 +50,8 @@ export class PosCheckoutComponent implements OnInit {
   constructor(
     private ordersSvc: VOrdersService,
     private inventorySvc: VInventoryService,
-    private config: VConfigService,
+    private invoiceSvc: VInvoiceService,
+    public config: VConfigService,
     private readonly cdr: ChangeDetectorRef,
     private readonly router: Router
   ) {
@@ -200,7 +202,16 @@ export class PosCheckoutComponent implements OnInit {
 
     }
 
-    let order = {} as any;
+    if (this.config.printInvoiceBeforeSubmit) {
+      this.printInvoiceAndSave();
+      return;
+    }
+
+    this.saveOrder();
+  }
+
+  buildOrderAndDetails() {
+    const order: any = {};
     order.customerId = this.selectedCustomer.id;
     order.createdDate = new Date();
     order.total = roundToCents(this.total);
@@ -209,9 +220,9 @@ export class PosCheckoutComponent implements OnInit {
     order.delivered = true;
     order.deliveryDate = new Date();
 
-    let details = [];
+    const details: any[] = [];
     this.selectedProducts.forEach(p => {
-      let detail = {} as any;
+      const detail: any = {};
       detail.quantity = p.quantity;
       detail.currentPrice = roundToCents(p.currentPrice);
       detail.discount = 0;
@@ -220,6 +231,12 @@ export class PosCheckoutComponent implements OnInit {
       detail.orderId = "0";
       details.push(detail);
     });
+
+    return { order, details };
+  }
+
+  saveOrder() {
+    const { order, details } = this.buildOrderAndDetails();
 
     const orderDone$ = this.ordersSvc.save(order).pipe(
       concatMap((o: any) => {
@@ -245,8 +262,56 @@ export class PosCheckoutComponent implements OnInit {
 
     orderDone$.subscribe({
       complete: () => this.clearItems(),
-      error: (err) => console.error("submitOrder inventory pipeline", err),
+      error: (err) => {
+        console.error("submitOrder inventory pipeline", err);
+        this.printOrderCount = 0;
+      },
     });
+  }
+
+  printInvoiceAndSave(): void {
+    this.printOrderCount = 1;
+
+    const html = this.invoiceSvc.generate({
+      products: this.selectedProducts,
+      customer: this.selectedCustomer,
+      total: this.total,
+      totalPayed: this.totalPayed,
+      totalDiscount: this.totalDiscount,
+      totalReturn: this.totalReturn,
+      payedItems: this.payedItems,
+    });
+
+    const printWindow = window.open('', '_blank', 'width=400,height=600');
+    if (!printWindow) {
+      this.printOrderCount = 0;
+      this.saveOrder();
+      return;
+    }
+
+    printWindow.document.write(html);
+    printWindow.document.close();
+
+    let saved = false;
+    const doSave = () => {
+      if (saved) return;
+      saved = true;
+      if (!printWindow.closed) {
+        printWindow.close();
+      }
+      this.saveOrder();
+    };
+
+    printWindow.onafterprint = doSave;
+
+    const checkClosed = setInterval(() => {
+      if (printWindow.closed) {
+        clearInterval(checkClosed);
+        doSave();
+      }
+    }, 500);
+
+    printWindow.print();
   }
 
   clearItems() {
