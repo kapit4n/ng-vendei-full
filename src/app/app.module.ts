@@ -54,6 +54,7 @@ import { RepSellsComponent } from "./pages/rep/rep-sells/rep-sells.component";
 import { RepSellsByOrderComponent } from "./pages/rep/rep-sells-by-order/rep-sells-by-order.component";
 import { RepSellsByProductComponent } from "./pages/rep/rep-sells-by-product/rep-sells-by-product.component";
 import { RepOrdersComponent } from "./pages/rep/rep-orders/rep-orders.component";
+import { RepDailySalesComponent } from "./pages/rep/rep-daily-sales/rep-daily-sales.component";
 import { BackendApiPageComponent } from "./pages/tools/backend-api-page/backend-api-page.component";
 
 
@@ -193,6 +194,11 @@ const appRoutes: Routes = [
     component: RepSellsComponent,
     data: { breadcrumb: "Rep Sells" }
   },
+  {
+    path: "rep/daily-sales",
+    component: RepDailySalesComponent,
+    data: { breadcrumb: "Daily Sales" }
+  },
   { path: "**", component: PageNotFoundComponent }
 ];
 
@@ -226,6 +232,7 @@ const appRoutes: Routes = [
     RepOrdersComponent,
     RepSellsByOrderComponent,
     RepSellsByProductComponent,
+    RepDailySalesComponent,
     MainComponent,
     BackendApiPageComponent,
   ],

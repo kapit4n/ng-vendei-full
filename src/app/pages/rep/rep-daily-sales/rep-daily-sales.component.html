@@ -1,0 +1,118 @@
+<div class="rep-daily-page">
+  <div class="rep-daily-toolbar">
+    <div class="rep-daily-toolbar-actions">
+      <button mat-stroked-button type="button" (click)="openSells()">
+        <mat-icon>trending_up</mat-icon>
+        Sales analytics
+      </button>
+      <button mat-stroked-button type="button" (click)="openCart()">
+        <mat-icon>shopping_cart</mat-icon>
+        POS
+      </button>
+    </div>
+    <h1 class="rep-daily-title">Daily sales report</h1>
+    <button mat-stroked-button type="button" class="refresh-btn" (click)="refresh()" [disabled]="loading">
+      <mat-icon>refresh</mat-icon>
+      Refresh
+    </button>
+  </div>
+
+  @if (loading) {
+    <div class="rep-daily-state">
+      <mat-progress-spinner diameter="40" mode="indeterminate" aria-label="Loading"></mat-progress-spinner>
+      <span>Loading daily summary…</span>
+    </div>
+  }
+
+  @if (!loading && loadError) {
+    <p class="rep-daily-error">{{ loadError }}</p>
+  }
+
+  @if (!loading && summary) {
+    <div class="rep-daily-kpis">
+      <mat-card class="kpi-card">
+        <mat-card-content>
+          <div class="kpi-label">Orders today</div>
+          <div class="kpi-value">{{ summary.orderCount }}</div>
+        </mat-card-content>
+      </mat-card>
+      <mat-card class="kpi-card kpi-total">
+        <mat-card-content>
+          <div class="kpi-label">Total sales</div>
+          <div class="kpi-value">Bs {{ summary.totalSales | number:'1.2-2' }}</div>
+        </mat-card-content>
+      </mat-card>
+      <mat-card class="kpi-card kpi-cash">
+        <mat-card-content>
+          <div class="kpi-label">Cash</div>
+          <div class="kpi-value">Bs {{ summary.totalCash | number:'1.2-2' }}</div>
+        </mat-card-content>
+      </mat-card>
+      <mat-card class="kpi-card kpi-qr">
+        <mat-card-content>
+          <div class="kpi-label">QR</div>
+          <div class="kpi-value">Bs {{ summary.totalQr | number:'1.2-2' }}</div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="rep-daily-breakdown">
+      <mat-card class="breakdown-card">
+        <mat-card-title>Cash vs QR</mat-card-title>
+        <mat-card-content>
+          <div class="bar-chart">
+            <div class="bar-row">
+              <span class="bar-label">Cash</span>
+              <div class="bar-track">
+                <div class="bar-fill bar-fill--cash" [style.width.%]="cashPercent()"></div>
+              </div>
+              <span class="bar-value">Bs {{ summary.totalCash | number:'1.2-2' }}</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">QR</span>
+              <div class="bar-track">
+                <div class="bar-fill bar-fill--qr" [style.width.%]="qrPercent()"></div>
+              </div>
+              <span class="bar-value">Bs {{ summary.totalQr | number:'1.2-2' }}</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="breakdown-card">
+        <mat-card-title>Summary</mat-card-title>
+        <mat-card-content>
+          <table class="summary-table">
+            <tr>
+              <td class="summary-label">Net sales (after discounts)</td>
+              <td class="summary-value">Bs {{ netTotal | number:'1.2-2' }}</td>
+            </tr>
+            <tr>
+              <td class="summary-label">Total collected</td>
+              <td class="summary-value">Bs {{ summary.totalSales | number:'1.2-2' }}</td>
+            </tr>
+            <tr>
+              <td class="summary-label">Discounts given</td>
+              <td class="summary-value summary-negative">− Bs {{ summary.totalDiscount | number:'1.2-2' }}</td>
+            </tr>
+            <tr>
+              <td class="summary-label">Change returned</td>
+              <td class="summary-value summary-negative">− Bs {{ summary.totalReturn | number:'1.2-2' }}</td>
+            </tr>
+            <tr class="summary-divider">
+              <td colspan="2"></td>
+            </tr>
+            <tr class="summary-highlight">
+              <td class="summary-label">Expected bank deposit (QR)</td>
+              <td class="summary-value summary-bank">Bs {{ summary.totalQr | number:'1.2-2' }}</td>
+            </tr>
+            <tr class="summary-highlight">
+              <td class="summary-label">Cash in drawer</td>
+              <td class="summary-value summary-cash">Bs {{ netCash | number:'1.2-2' }}</td>
+            </tr>
+          </table>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
+</div>

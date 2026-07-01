@@ -108,6 +108,12 @@ export class MainComponent {
           path: '/rep/sells',
           matIcon: 'trending_up',
         },
+        {
+          title: 'Daily sales',
+          description: 'Today cash vs QR breakdown',
+          path: '/rep/daily-sales',
+          matIcon: 'payments',
+        },
       ],
     },
     {

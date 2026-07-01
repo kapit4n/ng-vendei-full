@@ -220,6 +220,18 @@ export class PosCheckoutComponent implements OnInit {
     order.delivered = true;
     order.deliveryDate = new Date();
 
+    const cashTotal = this.payedItems
+      .filter(p => p.payType === PaymentType.PAYMONEY)
+      .reduce((sum, p) => sum + (p.value || 0), 0);
+    const qrTotal = this.payedItems
+      .filter(p => p.payType === PaymentType.PAYQR)
+      .reduce((sum, p) => sum + (p.value || 0), 0);
+
+    order.paidCash = roundToCents(cashTotal);
+    order.paidQr = roundToCents(qrTotal);
+    order.totalDiscount = roundToCents(this.totalDiscount);
+    order.totalReturn = roundToCents(this.totalReturn);
+
     const details: any[] = [];
     this.selectedProducts.forEach(p => {
       const detail: any = {};
