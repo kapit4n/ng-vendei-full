@@ -101,7 +101,7 @@ const appRoutes: Routes = [
   },
   {
     path: "customers",
-    component: CustomerListComponent,
+    component: RegCustomerListComponent,
     data: { title: "Customers" }
   },
   {
