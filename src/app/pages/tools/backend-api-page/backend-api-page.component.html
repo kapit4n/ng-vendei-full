@@ -90,5 +90,95 @@
         </mat-card-content>
       </mat-card>
     }
+
+    @if (modelsData) {
+      <h2 class="models-section-title">
+        <mat-icon>table_chart</mat-icon>
+        Database models ({{ modelsData.models.length }})
+      </h2>
+      <p class="backend-api-meta">
+        Generated {{ modelsData.generatedAt | date:'medium' }}
+      </p>
+
+      @for (model of modelsData.models; track trackModel($index, model)) {
+        <mat-card
+          class="model-card"
+          [class.model-card--expanded]="expandedModel === model.modelName"
+        >
+          <mat-card-header
+            class="model-card-header"
+            (click)="toggleModel(model.modelName)"
+            role="button"
+            tabindex="0"
+            (keydown.enter)="toggleModel(model.modelName)"
+            >
+            <mat-card-title>
+              <span class="model-name">{{ model.modelName }}</span>
+              <span class="model-table">(table: <code>{{ model.tableName }}</code>)</span>
+            </mat-card-title>
+            <span class="model-expand-icon">
+              <mat-icon>{{ expandedModel === model.modelName ? 'expand_less' : 'expand_more' }}</mat-icon>
+            </span>
+          </mat-card-header>
+          @if (expandedModel === model.modelName) {
+            <mat-card-content>
+              <h4 class="model-subheading">Columns</h4>
+              <div class="table-wrap">
+                <table class="route-table model-attrs-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>PK</th>
+                      <th>Auto</th>
+                      <th>Nullable</th>
+                      <th>Default</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (attr of model.attributes; track attr.name) {
+                      <tr>
+                        <td><code>{{ attr.name }}</code></td>
+                        <td><span class="type-pill">{{ attr.type }}</span></td>
+                        <td class="bool-cell">{{ attr.primaryKey ? '✓' : '' }}</td>
+                        <td class="bool-cell">{{ attr.autoIncrement ? '✓' : '' }}</td>
+                        <td class="bool-cell">{{ attr.allowNull ? '✓' : '' }}</td>
+                        <td class="default-cell">{{ attr.defaultValue || '—' }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+
+              @if (model.associations.length) {
+                <h4 class="model-subheading">Associations</h4>
+                <div class="table-wrap">
+                  <table class="route-table model-assocs-table">
+                    <thead>
+                      <tr>
+                        <th>Type</th>
+                        <th>Target model</th>
+                        <th>Foreign key</th>
+                        <th>Alias (as)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (assoc of model.associations; track assoc.foreignKey + assoc.targetModel) {
+                        <tr>
+                          <td><span class="assoc-pill">{{ assoc.type }}</span></td>
+                          <td>{{ assoc.targetModel }}</td>
+                          <td><code>{{ assoc.foreignKey }}</code></td>
+                          <td>{{ assoc.as || '—' }}</td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              }
+            </mat-card-content>
+          }
+        </mat-card>
+      }
+    }
   }
 </div>

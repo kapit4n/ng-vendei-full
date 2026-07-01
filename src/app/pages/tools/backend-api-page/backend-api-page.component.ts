@@ -1,11 +1,14 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import {
   ApiEndpointGroup,
   ApiEndpointsResponse,
   BackendApiCatalogService,
+  DbModel,
+  ModelsResponse,
 } from 'src/app/services/tools/backend-api-catalog.service';
 
 @Component({
@@ -18,6 +21,8 @@ export class BackendApiPageComponent implements OnInit {
   loading = true;
   error: string | null = null;
   catalog: ApiEndpointsResponse | null = null;
+  modelsData: ModelsResponse | null = null;
+  expandedModel: string | null = null;
   /** Effective API root shown to the user (proxy vs absolute). */
   clientApiRoot = environment.apiBaseUrl || '(same origin as this app)';
 
@@ -34,8 +39,10 @@ export class BackendApiPageComponent implements OnInit {
   load(): void {
     this.loading = true;
     this.error = null;
-    this.apiCat
-      .getCatalog()
+    forkJoin({
+      catalog: this.apiCat.getCatalog(),
+      models: this.apiCat.getModels(),
+    })
       .pipe(
         finalize(() => {
           this.loading = false;
@@ -44,12 +51,14 @@ export class BackendApiPageComponent implements OnInit {
       )
       .subscribe({
         next: (data) => {
-          this.catalog = data;
+          this.catalog = data.catalog;
+          this.modelsData = data.models;
         },
         error: () => {
           this.error =
-            'Could not load /api/endpoints. Ensure inventory-nod is running and the dev proxy includes "/api" (see proxy.conf.json).';
+            'Could not load backend metadata. Ensure inventory-nod is running and the dev proxy includes "/api" (see proxy.conf.json).';
           this.catalog = null;
+          this.modelsData = null;
         },
       });
   }
@@ -65,6 +74,14 @@ export class BackendApiPageComponent implements OnInit {
 
   trackGroup(_index: number, g: ApiEndpointGroup): string {
     return g.id;
+  }
+
+  trackModel(_index: number, m: DbModel): string {
+    return m.modelName;
+  }
+
+  toggleModel(name: string): void {
+    this.expandedModel = this.expandedModel === name ? null : name;
   }
 
   get swaggerHref(): string {
