@@ -25,6 +25,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatRadioModule } from '@angular/material/radio';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 
 
@@ -57,6 +58,14 @@ import { RepOrdersComponent } from "./pages/rep/rep-orders/rep-orders.component"
 import { RepDailySalesComponent } from "./pages/rep/rep-daily-sales/rep-daily-sales.component";
 import { BackendApiPageComponent } from "./pages/tools/backend-api-page/backend-api-page.component";
 
+// ang pages
+import { AngQuestionsComponent } from "./pages/ang/ang-questions/ang-questions.component";
+import { AngQuestionFormComponent } from "./pages/ang/ang-question-form/ang-question-form.component";
+import { AngExamsComponent } from "./pages/ang/ang-exams/ang-exams.component";
+import { AngExamFormComponent } from "./pages/ang/ang-exam-form/ang-exam-form.component";
+import { AngExamTakeComponent } from "./pages/ang/ang-exam-take/ang-exam-take.component";
+import { AngExamResultComponent } from "./pages/ang/ang-exam-result/ang-exam-result.component";
+
 
 import { PosCatalogComponent } from './features/vendei/product-list/pos-catalog.component';
 import { PosPaymentPanelComponent } from './features/vendei/cal-table/pos-payment-panel.component';
@@ -79,6 +88,9 @@ import { IConfigService } from './services/inv/i-config.service';
 import { IProductsService } from './services/inv/i-products.service';
 // rep services
 import { RepConfigService } from "./services/rep/rep-config.service";
+// ang services
+import { AngQuestionService } from "./services/ang/ang-question.service";
+import { AngExamService } from "./services/ang/ang-exam.service";
 import { RepProductsService } from "./services/rep/rep-products.service";
 import { RepSellsService } from "./services/rep/rep-sells.service";
 
@@ -199,6 +211,42 @@ const appRoutes: Routes = [
     component: RepDailySalesComponent,
     data: { breadcrumb: "Daily Sales" }
   },
+  // Angular exams module
+  {
+    path: "angular/questions",
+    component: AngQuestionsComponent,
+    data: { title: "Angular Questions" }
+  },
+  {
+    path: "angular/questions/new",
+    component: AngQuestionFormComponent,
+    data: { title: "New Question" }
+  },
+  {
+    path: "angular/questions/:id",
+    component: AngQuestionFormComponent,
+    data: { title: "Edit Question" }
+  },
+  {
+    path: "angular/exams",
+    component: AngExamsComponent,
+    data: { title: "Angular Exams" }
+  },
+  {
+    path: "angular/exams/new",
+    component: AngExamFormComponent,
+    data: { title: "New Exam" }
+  },
+  {
+    path: "angular/exams/take/:id",
+    component: AngExamTakeComponent,
+    data: { title: "Take Exam" }
+  },
+  {
+    path: "angular/exams/result/:id",
+    component: AngExamResultComponent,
+    data: { title: "Exam Result" }
+  },
   { path: "**", component: PageNotFoundComponent }
 ];
 
@@ -235,6 +283,12 @@ const appRoutes: Routes = [
     RepDailySalesComponent,
     MainComponent,
     BackendApiPageComponent,
+    AngQuestionsComponent,
+    AngQuestionFormComponent,
+    AngExamsComponent,
+    AngExamFormComponent,
+    AngExamTakeComponent,
+    AngExamResultComponent,
   ],
   imports: [
     RouterModule.forRoot(appRoutes),
@@ -255,6 +309,7 @@ const appRoutes: Routes = [
     MatDialogModule,
     MatProgressSpinnerModule,
     MatSlideToggleModule,
+    MatRadioModule,
     ClipboardModule,
     FormsModule,
     ReactiveFormsModule,
@@ -274,6 +329,8 @@ const appRoutes: Routes = [
     RepConfigService,
     RepProductsService,
     RepSellsService,
+    AngQuestionService,
+    AngExamService,
     provideHttpClient(),
   ],
   bootstrap: [AppComponent],

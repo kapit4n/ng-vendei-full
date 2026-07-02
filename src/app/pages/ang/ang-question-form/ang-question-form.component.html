@@ -1,0 +1,70 @@
+<div class="ang-page">
+  <mat-card class="ang-card">
+    <mat-card-header>
+      <mat-card-title>{{ pageTitle }}</mat-card-title>
+      <mat-card-subtitle>Add a single or multi-select question about Angular.</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      @if (loadError) {
+        <p class="form-error" role="alert">{{ loadError }}</p>
+      }
+      @if (saveError) {
+        <p class="form-error" role="alert">{{ saveError }}</p>
+      }
+
+      <form [formGroup]="form" class="form-layout">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Question text</mat-label>
+          <textarea matInput rows="3" formControlName="text" placeholder="What is a component in Angular?"></textarea>
+          @if (form.get('text')?.hasError('required') && form.get('text')?.touched) {
+            <mat-error>Question text is required</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Complexity</mat-label>
+          <mat-select formControlName="complexity">
+            @for (c of complexities; track c) {
+              <mat-option [value]="c">{{ c | titlecase }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Explanation (shown after answering)</mat-label>
+          <textarea matInput rows="2" formControlName="explanation" placeholder="A component is a building block that controls a part of the UI..."></textarea>
+        </mat-form-field>
+
+        <div class="section-label">
+          <h3>Options</h3>
+          <button mat-stroked-button type="button" (click)="addOption()">
+            <mat-icon>add</mat-icon> Add option
+          </button>
+        </div>
+
+        <div formArrayName="options" class="options-list">
+          @for (opt of options.controls; track idx; let idx = $index) {
+            <div class="option-row" [formGroupName]="idx">
+              <mat-checkbox formControlName="correct" class="option-checkbox"></mat-checkbox>
+              <mat-form-field appearance="outline" class="option-field">
+                <mat-label>Option {{ idx + 1 }}</mat-label>
+                <input matInput formControlName="text" placeholder="Enter option text" />
+              </mat-form-field>
+              @if (options.length > 2) {
+                <button mat-icon-button type="button" class="option-remove" (click)="removeOption(idx)" aria-label="Remove option">
+                  <mat-icon>close</mat-icon>
+                </button>
+              }
+            </div>
+          }
+        </div>
+      </form>
+    </mat-card-content>
+
+    <mat-card-actions align="end" class="card-actions">
+      <button mat-stroked-button type="button" (click)="cancel()">Cancel</button>
+      <button mat-raised-button color="primary" type="button" (click)="save()">Save</button>
+    </mat-card-actions>
+  </mat-card>
+</div>

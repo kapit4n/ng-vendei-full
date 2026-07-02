@@ -1,0 +1,91 @@
+<div class="ang-page">
+  <div class="page-header">
+    <div class="page-header-text">
+      <h1 class="page-title">Angular Questions</h1>
+      <p class="page-subtitle">Create and manage Angular practice questions at every skill level.</p>
+    </div>
+    <div class="header-actions">
+      @if (!questionSvc.hasSeedData()) {
+        <button mat-stroked-button type="button" (click)="seedData()">
+          <mat-icon>auto_awesome</mat-icon>
+          Seed 100 questions
+        </button>
+      }
+      <button mat-raised-button color="primary" type="button" (click)="newQuestion()">
+        <mat-icon>add</mat-icon>
+        New question
+      </button>
+    </div>
+  </div>
+
+  <div class="filters-bar">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search questions</mat-label>
+      <input matInput [(ngModel)]="searchText" (ngModelChange)="onSearchChange()" autocomplete="off" />
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="complexity-field">
+      <mat-label>Complexity</mat-label>
+      <mat-select [value]="complexityFilter" (selectionChange)="onComplexityChange($event.value)">
+        <mat-option value="all">All</mat-option>
+        <mat-option value="basic">Basic</mat-option>
+        <mat-option value="intermediate">Intermediate</mat-option>
+        <mat-option value="advanced">Advanced</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  @if (loadError) {
+    <p class="form-error" role="alert">{{ loadError }}</p>
+  }
+
+  @if (!filtered.length && !loadError) {
+    <div class="empty-state">
+      <mat-icon class="empty-icon">quiz</mat-icon>
+      <p class="empty-title">No questions found</p>
+      <p class="empty-hint">{{ questions.length ? 'Try adjusting your search or filter.' : 'Add a question to get started.' }}</p>
+      @if (!questions.length) {
+        <button mat-raised-button color="primary" type="button" (click)="newQuestion()">Create question</button>
+        <button mat-stroked-button type="button" (click)="seedData()" style="margin-left: 0.5rem">
+          <mat-icon>auto_awesome</mat-icon>
+          Seed 100 sample questions
+        </button>
+      }
+    </div>
+  }
+
+  @if (seedMessage) {
+    <p class="seed-message" role="status">{{ seedMessage }}</p>
+  }
+
+  @if (filtered.length) {
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Question</th>
+            <th>Complexity</th>
+            <th>Options</th>
+            <th class="col-actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (q of filtered; track trackById($index, q)) {
+            <tr>
+              <td class="cell-strong">{{ q.text }}</td>
+              <td>
+                <span class="badge" [class]="complexityClass(q.complexity)">{{ q.complexity }}</span>
+              </td>
+              <td class="cell-muted">{{ q.options.length }} option{{ q.options.length !== 1 ? 's' : '' }}</td>
+              <td class="col-actions">
+                <button mat-stroked-button color="primary" type="button" (click)="editQuestion(q.id)">Edit</button>
+                <button mat-stroked-button color="warn" type="button" (click)="removeQuestion(q)">Delete</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

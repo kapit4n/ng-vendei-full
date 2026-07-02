@@ -117,6 +117,26 @@ export class MainComponent {
       ],
     },
     {
+      id: 'angular',
+      label: 'Angular Practice',
+      subtitle: 'Study and test your Angular knowledge',
+      matIcon: 'school',
+      tiles: [
+        {
+          title: 'Questions',
+          description: 'Manage Angular practice questions',
+          path: '/angular/questions',
+          matIcon: 'quiz',
+        },
+        {
+          title: 'Exams',
+          description: 'Create and take exams with random questions',
+          path: '/angular/exams',
+          matIcon: 'assignment',
+        },
+      ],
+    },
+    {
       id: 'tools',
       label: 'Tools',
       subtitle: 'Integration and diagnostics',

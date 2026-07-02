@@ -1,0 +1,79 @@
+<div class="ang-page">
+  @if (loadError) {
+    <p class="form-error" role="alert">{{ loadError }}</p>
+  }
+
+  @if (result) {
+    <div class="result-header">
+      <div class="result-header-text">
+        <h1 class="page-title">{{ result.examTitle }}</h1>
+        <p class="page-subtitle">Completed {{ result.completedAt | date:'medium' }}</p>
+      </div>
+      <button mat-stroked-button type="button" (click)="backToExams()">Back to exams</button>
+    </div>
+
+    <div class="score-card" [class]="gradeClass">
+      <div class="score-circle">
+        <span class="score-value">{{ result.score }}/{{ result.total }}</span>
+        <span class="score-percent">{{ percent }}%</span>
+      </div>
+      <div class="score-info">
+        <span class="score-label">{{ gradeLabel }}</span>
+        <span class="score-detail">
+          {{ result.score }} of {{ result.total }} question{{ result.total !== 1 ? 's' : '' }} answered correctly
+        </span>
+      </div>
+    </div>
+
+    <div class="answers-section">
+      <h2>Question review</h2>
+
+      @for (answer of result.answers; track answer.questionId; let idx = $index) {
+        <mat-card class="answer-card" appearance="outlined" [class.answer--correct]="answer.isCorrect" [class.answer--incorrect]="!answer.isCorrect">
+          <mat-card-content>
+            <div class="answer-header">
+              <span class="answer-number">{{ idx + 1 }}.</span>
+              <span class="answer-text">{{ answer.questionText }}</span>
+              <mat-icon class="answer-icon">{{ answer.isCorrect ? 'check_circle' : 'cancel' }}</mat-icon>
+            </div>
+
+            <div class="answer-options">
+              @for (optIdx of answer.correctOptions.concat(answer.selectedOptions).filter((v, i, a) => a.indexOf(v) === i).sort(); track optIdx) {
+                @if (questions.get(result!.answers[idx].questionId); as question) {
+                  <div class="answer-option" [class]="optionClass(answer, optIdx)">
+                    <mat-icon class="opt-icon">
+                      @if (isOptionCorrect(answer, optIdx) && isOptionSelected(answer, optIdx)) {
+                        check_circle
+                      } @else if (isOptionCorrect(answer, optIdx) && !isOptionSelected(answer, optIdx)) {
+                        add_circle
+                      } @else if (!isOptionCorrect(answer, optIdx) && isOptionSelected(answer, optIdx)) {
+                        cancel
+                      } @else {
+                        radio_button_unchecked
+                      }
+                    </mat-icon>
+                    <span class="opt-text">{{ question.options[optIdx]?.text || 'Unknown' }}</span>
+                  </div>
+                }
+              }
+            </div>
+
+            @if (result.answers[idx].isCorrect === false) {
+              @if (questions.get(answer.questionId); as question) {
+                @if (question.explanation) {
+                  <div class="explanation">
+                    <strong>Explanation:</strong> {{ question.explanation }}
+                  </div>
+                }
+              }
+            }
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+
+    <div class="submit-bar">
+      <button mat-raised-button color="primary" type="button" (click)="backToExams()">Back to exams</button>
+    </div>
+  }
+</div>

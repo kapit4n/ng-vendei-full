@@ -1,0 +1,138 @@
+.ang-page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1rem 1rem 2rem;
+  box-sizing: border-box;
+}
+
+.ang-card {
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(15, 23, 42, 0.08);
+}
+
+.form-error {
+  margin: 0 0 1rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 8px;
+  background: rgba(211, 47, 47, 0.08);
+  color: #c62828;
+  font-size: 0.875rem;
+}
+
+.form-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.exam-config-row {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.complexity-field {
+  flex: 1;
+}
+
+.count-field {
+  width: 200px;
+}
+
+.generate-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 0.5rem 0;
+}
+
+.pool-info {
+  font-size: 0.85rem;
+  color: rgba(15, 23, 42, 0.6);
+}
+
+.section-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.75rem;
+}
+
+.section-label h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.question-preview-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-height: 320px;
+  overflow-y: auto;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 8px;
+  padding: 0.5rem;
+  background: #fafafa;
+}
+
+.question-preview-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 0.85rem;
+}
+
+.preview-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #0f172a;
+}
+
+.preview-options {
+  flex-shrink: 0;
+  color: rgba(15, 23, 42, 0.5);
+  font-size: 0.8rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  flex-shrink: 0;
+  text-transform: capitalize;
+}
+
+.badge--basic {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.badge--intermediate {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.badge--advanced {
+  background: #fce4ec;
+  color: #c62828;
+}
+
+.card-actions {
+  padding: 1rem 1rem 1.25rem !important;
+  gap: 0.5rem;
+}

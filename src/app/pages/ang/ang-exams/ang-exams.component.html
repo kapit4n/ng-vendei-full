@@ -1,0 +1,98 @@
+<div class="ang-page">
+  <div class="page-header">
+    <div class="page-header-text">
+      <h1 class="page-title">Angular Exams</h1>
+      <p class="page-subtitle">Create exams with randomly selected questions and test your knowledge.</p>
+    </div>
+    <button mat-raised-button color="primary" type="button" (click)="newExam()">
+      <mat-icon>add</mat-icon>
+      New exam
+    </button>
+  </div>
+
+  <mat-tab-group (selectedTabChange)="loadData()">
+    <mat-tab label="Exams">
+      <ng-template matTabContent>
+        @if (!exams.length) {
+          <div class="empty-state">
+            <mat-icon class="empty-icon">assignment</mat-icon>
+            <p class="empty-title">No exams yet</p>
+            <p class="empty-hint">Create an exam to start practicing.</p>
+            <button mat-raised-button color="primary" type="button" (click)="newExam()">Create exam</button>
+          </div>
+        }
+
+        @if (exams.length) {
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Questions</th>
+                  <th>Created</th>
+                  <th class="col-actions">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (exam of exams; track trackExam($index, exam)) {
+                  <tr>
+                    <td class="cell-strong">{{ exam.title }}</td>
+                    <td class="cell-muted">{{ exam.questionIds.length }}</td>
+                    <td class="cell-muted">{{ exam.createdAt | date:'mediumDate' }}</td>
+                    <td class="col-actions">
+                      <button mat-stroked-button color="primary" type="button" (click)="takeExam(exam.id)">Take exam</button>
+                      <button mat-stroked-button color="warn" type="button" (click)="removeExam(exam)">Delete</button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab label="Results">
+      <ng-template matTabContent>
+        @if (!results.length) {
+          <div class="empty-state">
+            <mat-icon class="empty-icon">fact_check</mat-icon>
+            <p class="empty-title">No results yet</p>
+            <p class="empty-hint">Take an exam to see your results here.</p>
+          </div>
+        }
+
+        @if (results.length) {
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Exam</th>
+                  <th>Score</th>
+                  <th>Date</th>
+                  <th class="col-actions">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (r of results; track trackResult($index, r)) {
+                  <tr>
+                    <td class="cell-strong">{{ r.examTitle }}</td>
+                    <td>
+                      <span class="score-badge" [class.score--good]="percent(r) >= 70" [class.score--ok]="percent(r) >= 40 && percent(r) < 70" [class.score--bad]="percent(r) < 40">
+                        {{ r.score }}/{{ r.total }} ({{ percent(r) }}%)
+                      </span>
+                    </td>
+                    <td class="cell-muted">{{ r.completedAt | date:'medium' }}</td>
+                    <td class="col-actions">
+                      <button mat-stroked-button color="primary" type="button" (click)="viewResult(r.id)">View</button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group>
+</div>

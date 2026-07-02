@@ -1,0 +1,72 @@
+<div class="ang-page">
+  <div class="page-header">
+    <div class="page-header-text">
+      <h1 class="page-title">{{ examTitle }}</h1>
+      <p class="page-subtitle">Answer all questions then submit to see your results.</p>
+    </div>
+  </div>
+
+  @if (loadError) {
+    <p class="form-error" role="alert">{{ loadError }}</p>
+  }
+
+  @if (!questionAnswers.length && !loadError) {
+    <div class="empty-state">
+      <mat-icon class="empty-icon">info</mat-icon>
+      <p class="empty-title">No questions available</p>
+      <p class="empty-hint">The questions for this exam may have been deleted.</p>
+    </div>
+  }
+
+  @if (questionAnswers.length) {
+    <div class="exam-progress">
+      <span>{{ questionAnswers.length }} question{{ questionAnswers.length !== 1 ? 's' : '' }}</span>
+    </div>
+
+    <div class="questions-list">
+      @for (qa of questionAnswers; track qa.question.id; let idx = $index) {
+        <mat-card class="question-card" appearance="outlined">
+          <mat-card-content>
+            <div class="question-header">
+              <span class="question-number">{{ idx + 1 }}.</span>
+              <span class="question-text">{{ qa.question.text }}</span>
+              <span class="badge" [class]="'badge--' + qa.question.complexity">{{ qa.question.complexity }}</span>
+            </div>
+
+            <div class="options-group">
+              @if (isSingleCorrect(qa.question.options)) {
+                <!-- Single select (radio) -->
+                @for (opt of qa.question.options; track $index; let optIdx = $index) {
+                  <mat-radio-button
+                    [checked]="qa.selected[optIdx]"
+                    (change)="onRadioChange(qa, optIdx)"
+                    [disabled]="submitted"
+                    class="option-radio">
+                    {{ opt.text }}
+                  </mat-radio-button>
+                }
+              } @else {
+                <!-- Multi select (checkbox) -->
+                @for (opt of qa.question.options; track $index; let optIdx = $index) {
+                  <mat-checkbox
+                    [(ngModel)]="qa.selected[optIdx]"
+                    [disabled]="submitted"
+                    class="option-checkbox">
+                    {{ opt.text }}
+                  </mat-checkbox>
+                }
+              }
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+
+    <div class="submit-bar">
+      <button mat-stroked-button type="button" (click)="cancel()">Cancel</button>
+      <button mat-raised-button color="primary" type="button" (click)="submit()" [disabled]="submitted">
+        Submit exam
+      </button>
+    </div>
+  }
+</div>

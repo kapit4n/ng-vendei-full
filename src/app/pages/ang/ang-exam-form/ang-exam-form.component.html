@@ -1,0 +1,74 @@
+<div class="ang-page">
+  <mat-card class="ang-card">
+    <mat-card-header>
+      <mat-card-title>New exam</mat-card-title>
+      <mat-card-subtitle>Configure your exam and randomly select questions.</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      @if (formError) {
+        <p class="form-error" role="alert">{{ formError }}</p>
+      }
+
+      <form [formGroup]="form" class="form-layout">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Exam title</mat-label>
+          <input matInput formControlName="title" placeholder="Angular Basics Test #1" autocomplete="off" />
+          @if (form.get('title')?.hasError('required') && form.get('title')?.touched) {
+            <mat-error>Title is required</mat-error>
+          }
+        </mat-form-field>
+
+        <div class="exam-config-row">
+          <mat-form-field appearance="outline" class="complexity-field">
+            <mat-label>Complexity filter</mat-label>
+            <mat-select formControlName="complexity">
+              @for (c of complexities; track c) {
+                <mat-option [value]="c">{{ c | titlecase }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="count-field">
+            <mat-label>Number of questions</mat-label>
+            <input matInput type="number" formControlName="questionCount" min="1" />
+          </mat-form-field>
+        </div>
+
+        <div class="generate-row">
+          <button mat-stroked-button color="primary" type="button" (click)="generatePreview()" [disabled]="!allQuestions.length">
+            <mat-icon>shuffle</mat-icon>
+            Generate selection
+          </button>
+          <span class="pool-info">
+            {{ allQuestions.length }} question{{ allQuestions.length !== 1 ? 's' : '' }} available
+            @if (form.get('complexity')?.value !== 'all') {
+              ({{ maxQuestions }} filtered)
+            }
+          </span>
+        </div>
+
+        @if (selectedQuestions.length) {
+          <div class="section-label">
+            <h3>Selected questions ({{ selectedQuestions.length }})</h3>
+          </div>
+
+          <div class="question-preview-list">
+            @for (q of selectedQuestions; track q.id) {
+              <div class="question-preview-item">
+                <span class="badge" [class]="'badge--' + q.complexity">{{ q.complexity }}</span>
+                <span class="preview-text">{{ q.text }}</span>
+                <span class="preview-options">{{ q.options.length }} opt{{ q.options.length !== 1 ? 's' : '' }}</span>
+              </div>
+            }
+          </div>
+        }
+      </form>
+    </mat-card-content>
+
+    <mat-card-actions align="end" class="card-actions">
+      <button mat-stroked-button type="button" (click)="cancel()">Cancel</button>
+      <button mat-raised-button color="primary" type="button" (click)="save()" [disabled]="!selectedQuestions.length">Create exam</button>
+    </mat-card-actions>
+  </mat-card>
+</div>
