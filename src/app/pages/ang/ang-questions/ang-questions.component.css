@@ -157,6 +157,36 @@
   font-size: 0.9rem;
 }
 
+.results-summary {
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+  color: rgba(15, 23, 42, 0.6);
+}
+
+.pagination-ellipsis {
+  padding: 0 0.25rem;
+  color: rgba(15, 23, 42, 0.4);
+  font-size: 0.9rem;
+}
+
+.pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.dedup-message {
+  margin: 0 0 1rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 8px;
+  background: rgba(255, 152, 0, 0.08);
+  color: #e65100;
+  font-size: 0.875rem;
+}
+
 .seed-message {
   margin: 0 0 1rem;
   padding: 0.65rem 0.85rem;

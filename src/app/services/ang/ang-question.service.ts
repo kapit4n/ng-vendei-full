@@ -54,6 +54,10 @@ export class AngQuestionService {
     return this.http.get<any[]>(this.base).pipe(map(rows => rows.length));
   }
 
+  dedup(): Observable<{ removed: number }> {
+    return this.http.post<{ removed: number }>(`${this.base}/dedup`, {});
+  }
+
   hasSeedData(): Observable<boolean> {
     return this.http.get<any[]>(this.base).pipe(map(rows => rows.length > 0));
   }

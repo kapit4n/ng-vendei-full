@@ -16,7 +16,43 @@ export class AngQuestionsComponent implements OnInit {
   complexityFilter: Complexity | 'all' = 'all';
   loadError = '';
   seedMessage = '';
+  dedupMessage = '';
   hasSeed = true;
+
+  pageSize = 10;
+  currentPage = 1;
+
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.filtered.length / this.pageSize));
+  }
+
+  get paginatedFiltered(): AngQuestion[] {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.filtered.slice(start, start + this.pageSize);
+  }
+
+  get visiblePages(): (number | '...')[] {
+    const total = this.totalPages;
+    const current = this.currentPage;
+    if (total <= 7) {
+      return Array.from({ length: total }, (_, i) => i + 1);
+    }
+    const pages: (number | '...')[] = [];
+    const start = Math.max(1, current - 3);
+    const end = Math.min(total, current + 3);
+    if (start > 1) {
+      pages.push(1);
+      if (start > 2) pages.push('...');
+    }
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+    if (end < total) {
+      if (end < total - 1) pages.push('...');
+      pages.push(total);
+    }
+    return pages;
+  }
 
   constructor(
     private questionSvc: AngQuestionService,
@@ -56,6 +92,14 @@ export class AngQuestionsComponent implements OnInit {
     });
   }
 
+  removeDuplicates(): void {
+    this.dedupMessage = '';
+    this.questionSvc.dedup().subscribe(res => {
+      this.dedupMessage = `${res.removed} duplicate${res.removed !== 1 ? 's' : ''} removed.`;
+      this.loadQuestions();
+    });
+  }
+
   applyFilters(): void {
     let list = this.questions;
     if (this.complexityFilter !== 'all') {
@@ -66,6 +110,13 @@ export class AngQuestionsComponent implements OnInit {
       list = list.filter(item => item.text.toLowerCase().includes(q));
     }
     this.filtered = [...list].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    this.currentPage = 1;
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
   }
 
   onSearchChange(): void {

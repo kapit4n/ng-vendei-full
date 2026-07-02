@@ -11,6 +11,10 @@
           Seed 100 questions
         </button>
       }
+      <button mat-stroked-button type="button" (click)="removeDuplicates()" [disabled]="filtered.length < 2">
+        <mat-icon>filter_alt_off</mat-icon>
+        Remove duplicates
+      </button>
       <button mat-raised-button color="primary" type="button" (click)="newQuestion()">
         <mat-icon>add</mat-icon>
         New question
@@ -59,7 +63,15 @@
     <p class="seed-message" role="status">{{ seedMessage }}</p>
   }
 
+  @if (dedupMessage) {
+    <p class="dedup-message" role="status">{{ dedupMessage }}</p>
+  }
+
   @if (filtered.length) {
+    <div class="results-summary">
+      Showing {{ paginatedFiltered.length }} of {{ filtered.length }} question{{ filtered.length !== 1 ? 's' : '' }}
+    </div>
+
     <div class="table-wrap">
       <table class="data-table">
         <thead>
@@ -71,7 +83,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (q of filtered; track trackById($index, q)) {
+          @for (q of paginatedFiltered; track trackById($index, q)) {
             <tr>
               <td class="cell-strong">{{ q.text }}</td>
               <td>
@@ -86,6 +98,32 @@
           }
         </tbody>
       </table>
+    </div>
+
+    <div class="pagination-bar">
+      <button mat-stroked-button type="button" [disabled]="currentPage <= 1" (click)="goToPage(currentPage - 1)">
+        <mat-icon>chevron_left</mat-icon>
+        Prev
+      </button>
+
+      @for (p of visiblePages; track $index) {
+        @if (p === '...') {
+          <span class="pagination-ellipsis">…</span>
+        } @else {
+          <button
+            mat-stroked-button
+            type="button"
+            [color]="p === currentPage ? 'primary' : ''"
+            (click)="goToPage(p)">
+            {{ p }}
+          </button>
+        }
+      }
+
+      <button mat-stroked-button type="button" [disabled]="currentPage >= totalPages" (click)="goToPage(currentPage + 1)">
+        Next
+        <mat-icon>chevron_right</mat-icon>
+      </button>
     </div>
   }
 </div>
