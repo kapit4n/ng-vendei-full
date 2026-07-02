@@ -1,0 +1,28 @@
+<div class="ang-page">
+  <div class="page-header">
+    <div class="page-header-text">
+      <h1 class="page-title">Angular Features Guide</h1>
+      <p class="page-subtitle">
+        Quick reference of all Angular features covered in the practice exams, organized by complexity.
+      </p>
+    </div>
+  </div>
+
+  @for (section of sections; track section.title) {
+    <section class="guide-section">
+      <h2 class="section-title">{{ section.title }}</h2>
+      <div class="card-grid">
+        @for (item of section.items; track item.term) {
+          <mat-card class="guide-card" appearance="outlined">
+            <mat-card-header>
+              <mat-card-title class="card-term">{{ item.term }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <p class="card-desc" [innerHTML]="item.desc"></p>
+            </mat-card-content>
+          </mat-card>
+        }
+      </div>
+    </section>
+  }
+</div>

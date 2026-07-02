@@ -134,6 +134,12 @@ export class MainComponent {
           path: '/angular/exams',
           matIcon: 'assignment',
         },
+        {
+          title: 'Features Guide',
+          description: 'Quick reference of Angular features covered in exams',
+          path: '/angular/guide',
+          matIcon: 'menu_book',
+        },
       ],
     },
     {

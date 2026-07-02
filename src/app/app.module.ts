@@ -65,6 +65,7 @@ import { AngExamsComponent } from "./pages/ang/ang-exams/ang-exams.component";
 import { AngExamFormComponent } from "./pages/ang/ang-exam-form/ang-exam-form.component";
 import { AngExamTakeComponent } from "./pages/ang/ang-exam-take/ang-exam-take.component";
 import { AngExamResultComponent } from "./pages/ang/ang-exam-result/ang-exam-result.component";
+import { AngFeaturesGuideComponent } from "./pages/ang/ang-features-guide/ang-features-guide.component";
 
 
 import { PosCatalogComponent } from './features/vendei/product-list/pos-catalog.component';
@@ -247,6 +248,11 @@ const appRoutes: Routes = [
     component: AngExamResultComponent,
     data: { title: "Exam Result" }
   },
+  {
+    path: "angular/guide",
+    component: AngFeaturesGuideComponent,
+    data: { title: "Angular Features Guide" }
+  },
   { path: "**", component: PageNotFoundComponent }
 ];
 
@@ -289,6 +295,7 @@ const appRoutes: Routes = [
     AngExamFormComponent,
     AngExamTakeComponent,
     AngExamResultComponent,
+    AngFeaturesGuideComponent,
   ],
   imports: [
     RouterModule.forRoot(appRoutes),
