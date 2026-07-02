@@ -5,7 +5,7 @@
       <p class="page-subtitle">Create and manage Angular practice questions at every skill level.</p>
     </div>
     <div class="header-actions">
-      @if (!questionSvc.hasSeedData()) {
+      @if (!hasSeed) {
         <button mat-stroked-button type="button" (click)="seedData()">
           <mat-icon>auto_awesome</mat-icon>
           Seed 100 questions

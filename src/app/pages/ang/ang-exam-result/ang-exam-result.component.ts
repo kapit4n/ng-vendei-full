@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AngExamService } from '../../../services/ang/ang-exam.service';
 import { AngQuestionService } from '../../../services/ang/ang-question.service';
 import { AngExamResult, AngQuestion } from '../../../utils/ang-models';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-ang-exam-result',
@@ -30,16 +31,21 @@ export class AngExamResultComponent implements OnInit {
       return;
     }
 
-    this.result = this.examSvc.getResultById(id) || null;
-    if (!this.result) {
-      this.loadError = 'Result not found.';
-      return;
-    }
-
-    for (const q of this.questionSvc.getAll()) {
-      this.questions.set(q.id, q);
-    }
-    this.cdr.detectChanges();
+    forkJoin({
+      result: this.examSvc.getResultById(id),
+      allQuestions: this.questionSvc.getAll(),
+    }).subscribe(({ result, allQuestions }) => {
+      if (!result) {
+        this.loadError = 'Result not found.';
+        this.cdr.detectChanges();
+        return;
+      }
+      this.result = result;
+      for (const q of allQuestions) {
+        this.questions.set(q.id, q);
+      }
+      this.cdr.detectChanges();
+    });
   }
 
   get percent(): number {

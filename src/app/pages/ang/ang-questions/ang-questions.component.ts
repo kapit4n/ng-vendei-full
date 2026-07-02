@@ -16,29 +16,44 @@ export class AngQuestionsComponent implements OnInit {
   complexityFilter: Complexity | 'all' = 'all';
   loadError = '';
   seedMessage = '';
+  hasSeed = true;
 
   constructor(
-    public questionSvc: AngQuestionService,
+    private questionSvc: AngQuestionService,
     private router: Router,
     private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
+    this.questionSvc.hasSeedData().subscribe(h => {
+      this.hasSeed = h;
+      this.cdr.detectChanges();
+    });
     this.loadQuestions();
   }
 
   loadQuestions(): void {
     this.loadError = '';
     this.seedMessage = '';
-    this.questions = this.questionSvc.getAll();
-    this.applyFilters();
-    this.cdr.detectChanges();
+    this.questionSvc.getAll().subscribe({
+      next: (list) => {
+        this.questions = list;
+        this.applyFilters();
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.loadError = 'Failed to load questions from server.';
+        this.cdr.detectChanges();
+      },
+    });
   }
 
   seedData(): void {
-    const count = this.questionSvc.seed();
-    this.seedMessage = `${count} sample questions added.`;
-    this.loadQuestions();
+    this.questionSvc.seed().subscribe(count => {
+      this.seedMessage = `${count} questions available.`;
+      this.hasSeed = true;
+      this.loadQuestions();
+    });
   }
 
   applyFilters(): void {
@@ -74,8 +89,7 @@ export class AngQuestionsComponent implements OnInit {
     if (!confirm(`Delete question "${q.text.substring(0, 60)}..."?`)) {
       return;
     }
-    this.questionSvc.remove(q.id);
-    this.loadQuestions();
+    this.questionSvc.remove(q.id).subscribe(() => this.loadQuestions());
   }
 
   complexityClass(c: Complexity): string {

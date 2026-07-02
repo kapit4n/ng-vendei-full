@@ -36,15 +36,20 @@
             <div class="options-group">
               @if (isSingleCorrect(qa.question.options)) {
                 <!-- Single select (radio) -->
-                @for (opt of qa.question.options; track $index; let optIdx = $index) {
-                  <mat-radio-button
-                    [checked]="qa.selected[optIdx]"
-                    (change)="onRadioChange(qa, optIdx)"
-                    [disabled]="submitted"
-                    class="option-radio">
-                    {{ opt.text }}
-                  </mat-radio-button>
-                }
+                <mat-radio-group
+                  [name]="'q_' + qa.question.id"
+                  [value]="qa.selected.indexOf(true)"
+                  (change)="onRadioChange(qa, $event.value)"
+                  [disabled]="submitted"
+                  class="option-radio-group">
+                  @for (opt of qa.question.options; track $index; let optIdx = $index) {
+                    <mat-radio-button
+                      [value]="optIdx"
+                      class="option-radio">
+                      {{ opt.text }}
+                    </mat-radio-button>
+                  }
+                </mat-radio-group>
               } @else {
                 <!-- Multi select (checkbox) -->
                 @for (opt of qa.question.options; track $index; let optIdx = $index) {

@@ -34,7 +34,10 @@ export class AngExamFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.allQuestions = this.questionSvc.getAll();
+    this.questionSvc.getAll().subscribe(list => {
+      this.allQuestions = list;
+      this.cdr.detectChanges();
+    });
   }
 
   get maxQuestions(): number {
@@ -80,14 +83,15 @@ export class AngExamFormComponent implements OnInit {
     }
 
     const exam: AngExam = {
-      id: crypto.randomUUID(),
+      id: 'new-' + Date.now(),
       title: (this.form.get('title')?.value || '').trim(),
       questionIds: this.selectedQuestions.map(q => q.id),
       createdAt: new Date().toISOString(),
     };
 
-    this.examSvc.saveExam(exam);
-    this.router.navigate(['/angular/exams']);
+    this.examSvc.saveExam(exam).subscribe(() => {
+      this.router.navigate(['/angular/exams']);
+    });
   }
 
   cancel(): void {

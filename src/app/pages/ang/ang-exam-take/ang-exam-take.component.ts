@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AngQuestionService } from '../../../services/ang/ang-question.service';
 import { AngExamService } from '../../../services/ang/ang-exam.service';
 import { AngQuestion, AngExamResult, AngExamAnswer } from '../../../utils/ang-models';
+import { forkJoin } from 'rxjs';
 
 interface QuestionAnswer {
   question: AngQuestion;
@@ -36,22 +37,25 @@ export class AngExamTakeComponent implements OnInit {
       return;
     }
 
-    const exam = this.examSvc.getExamById(examId);
-    if (!exam) {
-      this.loadError = 'Exam not found.';
-      return;
-    }
+    this.examSvc.getExamById(examId).subscribe(exam => {
+      if (!exam) {
+        this.loadError = 'Exam not found.';
+        this.cdr.detectChanges();
+        return;
+      }
 
-    this.examTitle = exam.title;
-    const questions = exam.questionIds
-      .map(id => this.questionSvc.getById(id))
-      .filter((q): q is AngQuestion => q != null);
+      this.examTitle = exam.title;
 
-    this.questionAnswers = questions.map(q => ({
-      question: q,
-      selected: new Array(q.options.length).fill(false),
-    }));
-    this.cdr.detectChanges();
+      const obs = exam.questionIds.map(id => this.questionSvc.getById(id));
+      forkJoin(obs).subscribe(questions => {
+        const valid = questions.filter((q): q is AngQuestion => q != null);
+        this.questionAnswers = valid.map(q => ({
+          question: q,
+          selected: new Array(q.options.length).fill(false),
+        }));
+        this.cdr.detectChanges();
+      });
+    });
   }
 
   isSingleCorrect(options: { correct: boolean }[]): boolean {
@@ -59,6 +63,7 @@ export class AngExamTakeComponent implements OnInit {
   }
 
   onRadioChange(qa: QuestionAnswer, index: number): void {
+    if (index < 0) return;
     qa.selected = qa.selected.map((_, i) => i === index);
   }
 
@@ -93,7 +98,7 @@ export class AngExamTakeComponent implements OnInit {
     const score = answers.filter(a => a.isCorrect).length;
 
     const result: AngExamResult = {
-      id: crypto.randomUUID(),
+      id: '',
       examId: this.route.snapshot.paramMap.get('id') || '',
       examTitle: this.examTitle,
       answers,
@@ -102,8 +107,9 @@ export class AngExamTakeComponent implements OnInit {
       completedAt: new Date().toISOString(),
     };
 
-    this.examSvc.saveResult(result);
-    this.router.navigate(['/angular/exams/result', result.id]);
+    this.examSvc.saveResult(result).subscribe(saved => {
+      this.router.navigate(['/angular/exams/result', saved.id]);
+    });
   }
 
   cancel(): void {

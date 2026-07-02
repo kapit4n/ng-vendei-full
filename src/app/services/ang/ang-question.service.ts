@@ -1,54 +1,64 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { RepConfigService } from '../rep/rep-config.service';
+import { Observable, map } from 'rxjs';
 import { AngQuestion } from '../../utils/ang-models';
-import { SEED_QUESTIONS } from '../../utils/ang-seed-data';
 
-const STORAGE_KEY = 'ang_questions';
+function mapRow(r: any): AngQuestion {
+  return {
+    id: String(r.id),
+    text: r.text,
+    options: r.options,
+    complexity: r.complexity,
+    explanation: r.explanation || '',
+    createdAt: r.createdAt,
+    updatedAt: r.updatedAt,
+  };
+}
 
 @Injectable({ providedIn: 'root' })
 export class AngQuestionService {
-  getAll(): AngQuestion[] {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as AngQuestion[]) : [];
+  private base: string;
+
+  constructor(private http: HttpClient, private config: RepConfigService) {
+    this.base = config.baseUrl + '/ang-questions';
   }
 
-  getById(id: string): AngQuestion | undefined {
-    return this.getAll().find(q => q.id === id);
+  getAll(): Observable<AngQuestion[]> {
+    return this.http.get<any[]>(this.base).pipe(map(rows => rows.map(mapRow)));
   }
 
-  save(question: AngQuestion): void {
-    const list = this.getAll();
-    const idx = list.findIndex(q => q.id === question.id);
-    if (idx >= 0) {
-      list[idx] = { ...question, updatedAt: new Date().toISOString() };
-    } else {
-      list.push(question);
+  getById(id: string): Observable<AngQuestion | undefined> {
+    return this.http.get<any>(`${this.base}/${id}`).pipe(map(r => r ? mapRow(r) : undefined));
+  }
+
+  save(question: AngQuestion): Observable<AngQuestion> {
+    const body = {
+      text: question.text,
+      options: question.options,
+      complexity: question.complexity,
+      explanation: question.explanation,
+    };
+    const id = question.id;
+    if (id && !id.startsWith('seed-') && !id.startsWith('new-')) {
+      return this.http.put<any>(`${this.base}/${id}`, body).pipe(map(mapRow));
     }
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+    return this.http.post<any>(this.base, body).pipe(map(mapRow));
   }
 
-  remove(id: string): void {
-    const list = this.getAll().filter(q => q.id !== id);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+  remove(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.base}/${id}`);
   }
 
-  seed(): number {
-    const existing = this.getAll();
-    const existingIds = new Set(existing.map(q => q.id));
-    const now = new Date().toISOString();
-    const newQuestions = SEED_QUESTIONS.map((q, i) => ({
-      ...q,
-      id: `seed-${i}`,
-      createdAt: now,
-      updatedAt: now,
-    }));
-    const toAdd = newQuestions.filter(q => !existingIds.has(q.id));
-    const updated = [...existing, ...toAdd];
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-    return toAdd.length;
+  seed(): Observable<number> {
+    return this.http.get<any[]>(this.base).pipe(map(rows => rows.length));
   }
 
-  hasSeedData(): boolean {
-    const existing = this.getAll();
-    return existing.some(q => q.id.startsWith('seed-'));
+  hasSeedData(): Observable<boolean> {
+    return this.http.get<any[]>(this.base).pipe(map(rows => rows.length > 0));
+  }
+
+  getCount(): Observable<number> {
+    return this.http.get<any[]>(this.base).pipe(map(rows => rows.length));
   }
 }

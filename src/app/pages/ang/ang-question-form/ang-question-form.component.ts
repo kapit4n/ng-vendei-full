@@ -69,26 +69,28 @@ export class AngQuestionFormComponent implements OnInit {
       return;
     }
     this.isNew = false;
-    const question = this.questionSvc.getById(id);
-    if (!question) {
-      this.loadError = 'Question not found.';
-      return;
-    }
-    this.form.patchValue({
-      text: question.text,
-      complexity: question.complexity,
-      explanation: question.explanation,
+    this.questionSvc.getById(id).subscribe(question => {
+      if (!question) {
+        this.loadError = 'Question not found.';
+        this.cdr.detectChanges();
+        return;
+      }
+      this.form.patchValue({
+        text: question.text,
+        complexity: question.complexity,
+        explanation: question.explanation,
+      });
+      while (this.options.length) {
+        this.options.removeAt(0);
+      }
+      for (const opt of question.options) {
+        this.options.push(this.fb.group({
+          text: [opt.text, Validators.required],
+          correct: [opt.correct],
+        }));
+      }
+      this.cdr.detectChanges();
     });
-    while (this.options.length) {
-      this.options.removeAt(0);
-    }
-    for (const opt of question.options) {
-      this.options.push(this.fb.group({
-        text: [opt.text, Validators.required],
-        correct: [opt.correct],
-      }));
-    }
-    this.cdr.detectChanges();
   }
 
   save(): void {
@@ -126,17 +128,18 @@ export class AngQuestionFormComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     const now = new Date().toISOString();
     const question: AngQuestion = {
-      id: id || crypto.randomUUID(),
+      id: id || 'new-' + Date.now(),
       text: (formVal.text || '').trim(),
       complexity: formVal.complexity,
       explanation: (formVal.explanation || '').trim(),
       options,
-      createdAt: id ? (this.questionSvc.getById(id)?.createdAt || now) : now,
+      createdAt: now,
       updatedAt: now,
     };
 
-    this.questionSvc.save(question);
-    this.router.navigate(['/angular/questions']);
+    this.questionSvc.save(question).subscribe(() => {
+      this.router.navigate(['/angular/questions']);
+    });
   }
 
   cancel(): void {

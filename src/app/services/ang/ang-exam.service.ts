@@ -1,48 +1,124 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { RepConfigService } from '../rep/rep-config.service';
+import { Observable, map, switchMap } from 'rxjs';
 import { AngExam, AngExamResult } from '../../utils/ang-models';
-
-const EXAMS_KEY = 'ang_exams';
-const RESULTS_KEY = 'ang_exam_results';
 
 @Injectable({ providedIn: 'root' })
 export class AngExamService {
-  getExams(): AngExam[] {
-    const raw = localStorage.getItem(EXAMS_KEY);
-    return raw ? (JSON.parse(raw) as AngExam[]) : [];
+  private examsBase: string;
+  private resultsBase: string;
+
+  constructor(private http: HttpClient, private config: RepConfigService) {
+    const base = config.baseUrl;
+    this.examsBase = base + '/ang-exams';
+    this.resultsBase = base + '/ang-results';
   }
 
-  getExamById(id: string): AngExam | undefined {
-    return this.getExams().find(e => e.id === id);
+  getExams(): Observable<AngExam[]> {
+    return this.http.get<any[]>(this.examsBase).pipe(
+      map(rows => rows.map((r: any) => ({
+        id: String(r.id),
+        title: r.title,
+        questionIds: r.questionIds || [],
+        createdAt: r.createdAt,
+      }))),
+    );
   }
 
-  saveExam(exam: AngExam): void {
-    const list = this.getExams();
-    const idx = list.findIndex(e => e.id === exam.id);
-    if (idx >= 0) {
-      list[idx] = exam;
-    } else {
-      list.push(exam);
+  getExamById(id: string): Observable<AngExam | undefined> {
+    return this.http.get<any>(`${this.examsBase}/${id}`).pipe(
+      map(r => r ? {
+        id: String(r.id),
+        title: r.title,
+        questionIds: r.questionIds || [],
+        createdAt: r.createdAt,
+      } : undefined),
+    );
+  }
+
+  saveExam(exam: AngExam): Observable<AngExam> {
+    const body = {
+      title: exam.title,
+      questionIds: exam.questionIds,
+    };
+    if (exam.id && !exam.id.startsWith('new-')) {
+      return this.http.put<any>(`${this.examsBase}/${exam.id}`, body).pipe(
+        map(r => ({ id: String(r.id), title: r.title, questionIds: r.questionIds || [], createdAt: r.createdAt })),
+      );
     }
-    localStorage.setItem(EXAMS_KEY, JSON.stringify(list));
+    return this.http.post<any>(this.examsBase, body).pipe(
+      map(r => ({ id: String(r.id), title: r.title, questionIds: r.questionIds || [], createdAt: r.createdAt })),
+    );
   }
 
-  removeExam(id: string): void {
-    const list = this.getExams().filter(e => e.id !== id);
-    localStorage.setItem(EXAMS_KEY, JSON.stringify(list));
+  removeExam(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.examsBase}/${id}`);
   }
 
-  getResults(): AngExamResult[] {
-    const raw = localStorage.getItem(RESULTS_KEY);
-    return raw ? (JSON.parse(raw) as AngExamResult[]) : [];
+  getResults(): Observable<AngExamResult[]> {
+    return this.http.get<any[]>(this.resultsBase).pipe(
+      map(rows => rows.map((r: any) => ({
+        id: String(r.id),
+        examId: String(r.examId),
+        examTitle: r.examTitle,
+        score: r.score,
+        total: r.total,
+        completedAt: r.completedAt,
+        answers: [],
+      }))),
+    );
   }
 
-  getResultById(id: string): AngExamResult | undefined {
-    return this.getResults().find(r => r.id === id);
+  getResultById(id: string): Observable<AngExamResult | undefined> {
+    return this.http.get<any>(`${this.resultsBase}/${id}`).pipe(
+      map(r => r ? {
+        id: String(r.id),
+        examId: String(r.examId),
+        examTitle: r.examTitle,
+        answers: (r.answers || []).map((a: any) => ({
+          questionId: String(a.questionId),
+          questionText: a.questionText,
+          selectedOptions: a.selectedOptions || [],
+          correctOptions: a.correctOptions || [],
+          isCorrect: a.isCorrect,
+        })),
+        score: r.score,
+        total: r.total,
+        completedAt: r.completedAt,
+      } : undefined),
+    );
   }
 
-  saveResult(result: AngExamResult): void {
-    const list = this.getResults();
-    list.push(result);
-    localStorage.setItem(RESULTS_KEY, JSON.stringify(list));
+  saveResult(result: AngExamResult): Observable<AngExamResult> {
+    const body = {
+      examId: result.examId ? Number(result.examId) : null,
+      examTitle: result.examTitle,
+      score: result.score,
+      total: result.total,
+      completedAt: result.completedAt,
+      answers: result.answers.map(a => ({
+        questionId: a.questionId ? Number(a.questionId) : null,
+        questionText: a.questionText,
+        selectedOptions: a.selectedOptions,
+        correctOptions: a.correctOptions,
+        isCorrect: a.isCorrect,
+      })),
+    };
+    return this.http.post<any>(this.resultsBase, body).pipe(
+      switchMap(() => this.http.get<any[]>(this.resultsBase)),
+      map((rows: any[]) => {
+        const created = rows[rows.length - 1];
+        return {
+          id: String(created.id),
+          examId: String(created.examId),
+          examTitle: created.examTitle,
+          answers: result.answers,
+          score: created.score,
+          total: created.total,
+          completedAt: created.completedAt,
+        };
+      }),
+    );
   }
 }

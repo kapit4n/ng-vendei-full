@@ -50,5 +50,17 @@
   "/inventory-lots": {
     "target": "http://127.0.0.1:3000",
     "secure": false
+  },
+  "/ang-questions": {
+    "target": "http://127.0.0.1:3000",
+    "secure": false
+  },
+  "/ang-exams": {
+    "target": "http://127.0.0.1:3000",
+    "secure": false
+  },
+  "/ang-results": {
+    "target": "http://127.0.0.1:3000",
+    "secure": false
   }
 }

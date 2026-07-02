@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AngExamService } from '../../../services/ang/ang-exam.service';
 import { AngExam, AngExamResult } from '../../../utils/ang-models';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-ang-exams',
@@ -24,9 +25,14 @@ export class AngExamsComponent implements OnInit {
   }
 
   loadData(): void {
-    this.exams = this.examSvc.getExams().sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-    this.results = this.examSvc.getResults().sort((a, b) => b.completedAt.localeCompare(a.completedAt));
-    this.cdr.detectChanges();
+    forkJoin({
+      exams: this.examSvc.getExams(),
+      results: this.examSvc.getResults(),
+    }).subscribe(({ exams, results }) => {
+      this.exams = exams.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+      this.results = results.sort((a, b) => b.completedAt.localeCompare(a.completedAt));
+      this.cdr.detectChanges();
+    });
   }
 
   newExam(): void {
@@ -45,8 +51,7 @@ export class AngExamsComponent implements OnInit {
     if (!confirm(`Delete exam "${exam.title}"?`)) {
       return;
     }
-    this.examSvc.removeExam(exam.id);
-    this.loadData();
+    this.examSvc.removeExam(exam.id).subscribe(() => this.loadData());
   }
 
   percent(result: AngExamResult): number {
