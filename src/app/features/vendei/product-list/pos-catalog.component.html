@@ -88,10 +88,11 @@
       <button type="button" class="product-list-item-t" (click)="addProduct(product)"
         [attr.aria-label]="'Add ' + displayProductName(product)">
         <div class="product-card-media">
-          <div class="product-card-image" [style.background-image]="'url(' + productCardImageUrl(product) + ')'"></div>
-        </div>
-        <div class="product-card-body">
-          <span class="product-card-price">Bs {{ product.currentPrice | number:'1.2-2' }}</span>
+        <div class="product-card-image" [style.background-image]="'url(' + productCardImageUrl(product) + ')'"></div>
+      </div>
+      <div class="product-card-body">
+        <span class="product-card-price">Bs {{ product.currentPrice | number:'1.2-2' }}</span>
+        <span class="product-card-code" title="Product code">{{ product.Product?.code || product.code }}</span>
           <span class="product-card-name">{{ productCardTitle(product) }}</span>
           @if (productCardLabel(product); as label) {
             <span class="product-card-label">{{ label }}</span>

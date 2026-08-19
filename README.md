@@ -1,6 +1,6 @@
 # NgVendeiFull
 
-![POS checkout](mockups/home.png)
+![POS checkout](mockups/all/vendei-full-shopping-cart.png)
 
 API
 https://github.com/kapit4n/inventory-nod

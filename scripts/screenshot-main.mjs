@@ -47,6 +47,19 @@ for (let i = 0; i < toAdd; i++) {
 // Wait for UI to settle
 await page.waitForTimeout(800);
 
+// Force all prices to be recomputed (in case they use cached values)
+await page.evaluate(() => {
+  // This triggers the price formatting to ensure prices are displayed
+  Array.from(document.querySelectorAll('.product-card-price')).forEach(el => {
+    const value = el.textContent || '';
+    // Force text node to update
+    el.textContent = value.trim();
+  });
+});
+
+// Wait a bit more for prices to update
+await page.waitForTimeout(500);
+
 // Save as the main repo screenshot (used in README)
 await page.screenshot({ path: `${OUT}/home.png`, fullPage: false });
 console.log('OK  home.png (POS view with products)');
@@ -54,6 +67,10 @@ console.log('OK  home.png (POS view with products)');
 // Also save as the named version
 await page.screenshot({ path: `${OUT}/ng-vendei-home-0010.png`, fullPage: false });
 console.log('OK  ng-vendei-home-0010.png (POS view with products)');
+
+// Save a comprehensive catalog view with prices
+await page.screenshot({ path: `${OUT}/features/product-catalog/main.png`, fullPage: false });
+console.log('OK  features/product-catalog/main.png (POS catalog with prices)');
 
 await page.close();
 await browser.close();
