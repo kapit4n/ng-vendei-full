@@ -1,11 +1,13 @@
 import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { Observable, of } from 'rxjs';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PosCheckoutComponent } from './pos-checkout.component';
 import { VOrdersService } from '../../../services/vendei/v-orders.service';
 import { VInventoryService } from '../../../services/vendei/v-inventory.service';
 import { VInvoiceService } from '../../../services/vendei/v-invoice.service';
 import { VConfigService } from 'src/app/services/vendei/v-config.service';
+import { VStoreProfileService, StoreProfile } from 'src/app/services/vendei/v-store-profile.service';
 import { Router } from '@angular/router';
 import { PaymentType } from 'src/app/features/vendei/payment-types';
 
@@ -16,6 +18,8 @@ describe('PosCheckoutComponent', () => {
   let ordersSvcSpy: jasmine.SpyObj<VOrdersService>;
   let inventorySvcSpy: jasmine.SpyObj<VInventoryService>;
   let invoiceSvcSpy: jasmine.SpyObj<VInvoiceService>;
+  let profileSvcSpy: jasmine.SpyObj<VStoreProfileService>;
+  let dialogSpy: jasmine.SpyObj<MatDialog>;
   let configSvc: VConfigService;
 
   const mockProduct = (overrides?: any) => ({
@@ -40,16 +44,22 @@ describe('PosCheckoutComponent', () => {
       'updateQuantitySelled',
     ]);
     invoiceSvcSpy = jasmine.createSpyObj('VInvoiceService', ['generate']);
+    profileSvcSpy = jasmine.createSpyObj('VStoreProfileService', ['getProfiles', 'getActiveProfileId', 'setActiveProfile', 'getActiveProfile']);
+    profileSvcSpy.getActiveProfileId.and.returnValue(1);
+    dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
 
     TestBed.configureTestingModule({
       declarations: [PosCheckoutComponent],
       schemas: [NO_ERRORS_SCHEMA],
+      imports: [MatDialogModule],
       providers: [
         VConfigService,
         { provide: Router, useValue: routerSpy },
         { provide: VOrdersService, useValue: ordersSvcSpy },
         { provide: VInventoryService, useValue: inventorySvcSpy },
         { provide: VInvoiceService, useValue: invoiceSvcSpy },
+        { provide: VStoreProfileService, useValue: profileSvcSpy },
+        { provide: MatDialog, useValue: dialogSpy },
       ],
     }).compileComponents();
   }));
@@ -681,6 +691,54 @@ describe('PosCheckoutComponent', () => {
 
       const { details } = component.buildOrderAndDetails();
       expect(details[0].productId).toBe(999);
+    });
+  });
+
+  describe('onProfileChanged', () => {
+    it('does not open dialog when cart is empty', () => {
+      component.selectedProducts = [];
+      component.onProfileChanged({ id: 2, name: 'Chicken Store', slug: 'chicken-store', description: '', active: true, defaultProfile: false });
+      expect(dialogSpy.open).not.toHaveBeenCalled();
+    });
+
+    it('opens confirmation dialog when cart has items', () => {
+      component.selectedProducts = [mockProduct()];
+      const dialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['afterClosed']);
+      dialogRefSpy.afterClosed.and.returnValue(of(false));
+      dialogSpy.open.and.returnValue(dialogRefSpy);
+
+      component.onProfileChanged({ id: 2, name: 'Chicken Store', slug: 'chicken-store', description: '', active: true, defaultProfile: false });
+
+      expect(dialogSpy.open).toHaveBeenCalled();
+    });
+
+    it('clears cart when user confirms', () => {
+      component.selectedProducts = [mockProduct()];
+      component.total = 10;
+      const dialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['afterClosed']);
+      dialogRefSpy.afterClosed.and.returnValue(of(true));
+      dialogSpy.open.and.returnValue(dialogRefSpy);
+
+      spyOn(component, 'clearItems').and.callThrough();
+      spyOn(component, 'recalTotal').and.callThrough();
+
+      component.onProfileChanged({ id: 2, name: 'Chicken Store', slug: 'chicken-store', description: '', active: true, defaultProfile: false });
+
+      expect(component.clearItems).toHaveBeenCalled();
+    });
+
+    it('does not clear cart when user cancels', () => {
+      component.selectedProducts = [mockProduct()];
+      const dialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['afterClosed']);
+      dialogRefSpy.afterClosed.and.returnValue(of(false));
+      dialogSpy.open.and.returnValue(dialogRefSpy);
+
+      spyOn(component, 'clearItems');
+
+      component.onProfileChanged({ id: 2, name: 'Chicken Store', slug: 'chicken-store', description: '', active: true, defaultProfile: false });
+
+      expect(component.clearItems).not.toHaveBeenCalled();
+      expect(component.selectedProducts.length).toBe(1);
     });
   });
 });

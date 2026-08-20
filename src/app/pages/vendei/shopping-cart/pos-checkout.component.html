@@ -1,6 +1,7 @@
 <div class="pos-shell">
   <div class="shopping-cart-container">
     <div class="cart-toolbar">
+      <app-store-profile-selector (profileChanged)="onProfileChanged($event)"></app-store-profile-selector>
       @if (isOrderPaid && printOrderCount == 0) {
         <button mat-raised-button color="primary" class="cart-save-btn" (click)="submitOrder()"
           >

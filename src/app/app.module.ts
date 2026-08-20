@@ -73,11 +73,14 @@ import { PosPaymentPanelComponent } from './features/vendei/cal-table/pos-paymen
 import { PosTicketLinesComponent, PosTicketLineEditDialog } from './features/vendei/selected-list/pos-ticket-lines.component';
 import { CustomerListComponent } from './features/vendei/customer-list/customer-list.component';
 import { CustomersDialogComponent } from './features/vendei/customers-dialog/customers-dialog.component';
+import { StoreProfileSelectorComponent } from './features/vendei/store-profile-selector/store-profile-selector.component';
+import { ProfileSwitchDialogComponent } from './features/vendei/profile-switch-dialog/profile-switch-dialog.component';
 // reg comp
 
 import { VProductsService } from './services/vendei/v-products.service';
 import { VCustomersService } from './services/vendei/v-customers.service';
 import { VConfigService } from './services/vendei/v-config.service';
+import { VStoreProfileService } from './services/vendei/v-store-profile.service';
 // reg services
 import { RProductService } from "./services/reg/r-product.service";
 import { RProductPresentationService } from "./services/reg/r-product-presentation.service";
@@ -269,6 +272,8 @@ const appRoutes: Routes = [
     PosTicketLineEditDialog,
     CustomerListComponent,
     CustomersDialogComponent,
+    StoreProfileSelectorComponent,
+    ProfileSwitchDialogComponent,
     RegProductComponent,
     RegProductPresentationComponent,
     RegCategoryComponent,
@@ -325,6 +330,7 @@ const appRoutes: Routes = [
     VProductsService,
     VCustomersService,
     VConfigService,
+    VStoreProfileService,
     RProductService,
     RProductPresentationService,
     RCategoryService,

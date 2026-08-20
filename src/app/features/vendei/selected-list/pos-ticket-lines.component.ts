@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Inject } from "@angular/core";
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { roundToCents } from "src/app/utils/money";
-import { resolvePresentationImageUrl } from "src/app/utils/product-image-url";
+import { resolvePresentationImageUrl, PRODUCT_CARD_PLACEHOLDER } from "src/app/utils/product-image-url";
 import {
   productLabelFromFields,
   productLabelFromFullName,
@@ -78,6 +78,10 @@ export class PosTicketLinesComponent implements OnInit {
 
   lineImageUrl(product: any): string {
     return resolvePresentationImageUrl(product?.img, product?.Product?.img);
+  }
+
+  onImageError(event: Event): void {
+    (event.target as HTMLImageElement).src = PRODUCT_CARD_PLACEHOLDER;
   }
 }
 

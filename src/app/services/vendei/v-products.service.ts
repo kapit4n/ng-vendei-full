@@ -22,7 +22,7 @@ export class VProductsService {
   /**
    * Return an observable with the list of products
    */
-   getProducts(): Observable<any> {
+   getProducts(profileId?: number): Observable<any> {
      const normalizeList = (body: unknown): any[] => {
        if (Array.isArray(body)) {
          return body;
@@ -46,7 +46,12 @@ export class VProductsService {
          })
        );
      }
-     return this.http.get<any>(`${this.configSvc.baseUrl}/productPresentations`).pipe(
+     const params: string[] = [];
+     if (profileId) {
+       params.push(`storeProfileId=${profileId}`);
+     }
+     const qs = params.length ? `?${params.join('&')}` : '';
+     return this.http.get<any>(`${this.configSvc.baseUrl}/productPresentations${qs}`).pipe(
        map((response) => normalizeList(response)),
        catchError(err => {
          console.error('[VProductsService] getProducts failed', err);

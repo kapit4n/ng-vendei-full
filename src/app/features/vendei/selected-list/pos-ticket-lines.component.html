@@ -3,7 +3,8 @@
     @for (product of selectedProducts; track product.id) {
       <div class="line-item">
         <div class="line-thumb">
-          <img [src]="lineImageUrl(product)" width="48" height="48" alt="" loading="lazy" />
+          <img [src]="lineImageUrl(product)" width="48" height="48" alt="" loading="lazy"
+            (error)="onImageError($event)" />
         </div>
         <div class="line-main">
           <div class="line-title-row">

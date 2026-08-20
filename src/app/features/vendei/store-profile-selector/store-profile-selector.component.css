@@ -1,0 +1,16 @@
+.profile-selector {
+  flex-shrink: 0;
+}
+
+.profile-field {
+  margin: 0;
+}
+
+.profile-field ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+.profile-field ::ng-deep .mdc-text-field--outlined .mdc-notched-outline__leading,
+.profile-field ::ng-deep .mdc-text-field--outlined .mdc-notched-outline__trailing {
+  border-radius: 8px;
+}

@@ -1,5 +1,5 @@
 import { ComponentFixture, discardPeriodicTasks, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { of, BehaviorSubject } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -9,6 +9,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { VProductsService } from '../../../services/vendei/v-products.service';
 import { VCategoriesService } from '../../../services/vendei/v-categories.service';
 import { VConfigService } from '../../../services/vendei/v-config.service';
+import { VStoreProfileService } from '../../../services/vendei/v-store-profile.service';
 import { PosCatalogComponent } from './pos-catalog.component';
 
 describe('PosCatalogComponent', () => {
@@ -16,7 +17,9 @@ describe('PosCatalogComponent', () => {
   let fixture: ComponentFixture<PosCatalogComponent>;
   let productsSvcSpy: jasmine.SpyObj<VProductsService>;
   let categoriesSvcSpy: jasmine.SpyObj<VCategoriesService>;
+  let profileSvcSpy: jasmine.SpyObj<VStoreProfileService>;
   let routerSpy: jasmine.SpyObj<Router>;
+  let activeProfileIdSubject: BehaviorSubject<number | null>;
 
   const sampleProducts = [
     {
@@ -51,6 +54,10 @@ describe('PosCatalogComponent', () => {
     productsSvcSpy = jasmine.createSpyObj('VProductsService', ['getProducts']);
     categoriesSvcSpy = jasmine.createSpyObj('VCategoriesService', ['getAll']);
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+    activeProfileIdSubject = new BehaviorSubject<number | null>(1);
+    profileSvcSpy = jasmine.createSpyObj('VStoreProfileService', ['getProfiles', 'getActiveProfileId', 'setActiveProfile', 'getActiveProfile']);
+    profileSvcSpy.getActiveProfileId.and.returnValue(1);
+    (profileSvcSpy as any).getActiveProfileId$ = () => activeProfileIdSubject.asObservable();
 
     productsSvcSpy.getProducts.and.returnValue(of(sampleProducts));
     categoriesSvcSpy.getAll.and.returnValue(of(sampleCategories));
@@ -68,6 +75,7 @@ describe('PosCatalogComponent', () => {
         VConfigService,
         { provide: VProductsService, useValue: productsSvcSpy },
         { provide: VCategoriesService, useValue: categoriesSvcSpy },
+        { provide: VStoreProfileService, useValue: profileSvcSpy },
         { provide: Router, useValue: routerSpy },
       ],
     }).compileComponents();

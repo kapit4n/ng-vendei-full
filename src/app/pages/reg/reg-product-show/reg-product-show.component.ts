@@ -8,7 +8,7 @@ import {
   IProductPresentation,
 } from '../../../services/reg/r-product-presentation.service';
 import { RUploadService } from '../../../services/reg/r-upload.service';
-import { resolvePresentationImageUrl, resolveProductImageUrl } from 'src/app/utils/product-image-url';
+import { resolvePresentationImageUrl, resolveProductImageUrl, PRODUCT_CARD_PLACEHOLDER } from 'src/app/utils/product-image-url';
 import { normalizeApiArray, normalizeApiRecord } from 'src/app/utils/api-body';
 
 @Component({
@@ -201,6 +201,10 @@ export class RegProductShowComponent implements OnInit {
 
   usesInheritedImage(row: IProductPresentation): boolean {
     return !(row.img || '').trim();
+  }
+
+  onImageError(event: Event): void {
+    (event.target as HTMLImageElement).src = PRODUCT_CARD_PLACEHOLDER;
   }
 
   onProductImageSelected(ev: Event, input: HTMLInputElement): void {

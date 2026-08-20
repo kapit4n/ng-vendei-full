@@ -1,10 +1,13 @@
 import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from "@angular/core";
 import { Router } from "@angular/router";
 import { concatMap, forkJoin } from "rxjs";
+import { MatDialog } from "@angular/material/dialog";
 import { VOrdersService } from "../../../services/vendei/v-orders.service";
 import { VInventoryService } from "../../../services/vendei/v-inventory.service";
 import { VInvoiceService } from "../../../services/vendei/v-invoice.service";
 import { VConfigService } from "src/app/services/vendei/v-config.service";
+import { VStoreProfileService, StoreProfile } from "src/app/services/vendei/v-store-profile.service";
+import { ProfileSwitchDialogComponent } from "src/app/features/vendei/profile-switch-dialog/profile-switch-dialog.component";
 import { roundToCents, isOrderReadyToSubmit, orderAmountDue } from "src/app/utils/money";
 import { PaymentType } from "src/app/features/vendei/payment-types";
 
@@ -53,7 +56,8 @@ export class PosCheckoutComponent implements OnInit {
     private invoiceSvc: VInvoiceService,
     public config: VConfigService,
     private readonly cdr: ChangeDetectorRef,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly dialog: MatDialog
   ) {
     this.total = 0;
     this.selectedCustomer = Object.assign({}, this.emptyCustomer);
@@ -353,6 +357,21 @@ export class PosCheckoutComponent implements OnInit {
 
   openPosMore(): void {
     this.router.navigate(["/main"]);
+  }
+
+  onProfileChanged(profile: StoreProfile): void {
+    if (this.selectedProducts.length > 0) {
+      const confirmDialog = this.dialog.open(ProfileSwitchDialogComponent, {
+        width: '380px',
+        data: { profileName: profile.name },
+      });
+      confirmDialog.afterClosed().subscribe((confirmed) => {
+        if (confirmed) {
+          this.clearItems();
+          this.recalTotal();
+        }
+      });
+    }
   }
 
   public selectCustomer(customer: any) {

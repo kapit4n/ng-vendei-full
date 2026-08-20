@@ -17,7 +17,7 @@ export class VCategoriesService {
   /**
    * Return an observable with the list of categories
    */
-  getAll(): Observable<any> {
+  getAll(profileId?: number): Observable<any> {
     const normalizeList = (body: unknown): any[] => {
       if (Array.isArray(body)) {
         return body;
@@ -41,7 +41,12 @@ export class VCategoriesService {
         })
       );
     }
-    return this.http.get<any>(`${this.configSvc.baseUrl}/categories`).pipe(
+    const params: string[] = [];
+    if (profileId) {
+      params.push(`storeProfileId=${profileId}`);
+    }
+    const qs = params.length ? `?${params.join('&')}` : '';
+    return this.http.get<any>(`${this.configSvc.baseUrl}/categories${qs}`).pipe(
       map((response) => normalizeList(response)),
       catchError(err => {
         console.error('[VCategoriesService] getAll failed', err);

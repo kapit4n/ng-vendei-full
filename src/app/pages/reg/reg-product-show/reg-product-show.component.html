@@ -33,7 +33,8 @@
       <div class="summary-layout">
         <div class="summary-media">
           <div class="summary-image-frame">
-            <img [src]="productImageUrl()" [alt]="displayProductName()" class="summary-image" />
+            <img [src]="productImageUrl()" [alt]="displayProductName()" class="summary-image"
+              (error)="onImageError($event)" />
           </div>
           <div class="image-actions">
             <input
@@ -147,7 +148,8 @@
               @for (row of presentations; track presentationRowTrack($index, row)) {
                 <tr>
                   <td class="thumb-cell">
-                    <img [src]="presentationThumbUrl(row)" alt="" class="row-thumb" />
+                    <img [src]="presentationThumbUrl(row)" alt="" class="row-thumb"
+                      (error)="onImageError($event)" />
                     @if (usesInheritedImage(row)) {
                       <span class="thumb-badge">Product</span>
                     }

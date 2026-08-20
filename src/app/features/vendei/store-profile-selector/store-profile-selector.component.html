@@ -1,0 +1,14 @@
+<div class="profile-selector">
+  <mat-form-field appearance="outline" subscriptSizing="dynamic" class="profile-field">
+    <mat-label>Tipo de negocio</mat-label>
+    <mat-icon matPrefix>storefront</mat-icon>
+    <mat-select
+      [value]="activeProfileId"
+      (selectionChange)="onSelectionChange($event.value)"
+      [disabled]="loading || profiles.length === 0">
+      @for (profile of profiles; track profile.id) {
+        <mat-option [value]="profile.id">{{ profile.name }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+</div>

@@ -1,8 +1,10 @@
-import { ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from "@angular/core";
-import { forkJoin } from "rxjs";
+import { ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { forkJoin, Subject } from "rxjs";
+import { switchMap, takeUntil } from "rxjs/operators";
 import { VProductsService } from "../../../services/vendei/v-products.service";
 import { VCategoriesService } from "../../../services/vendei/v-categories.service";
 import { VConfigService } from "../../../services/vendei/v-config.service";
+import { VStoreProfileService } from "../../../services/vendei/v-store-profile.service";
 import { Router } from "@angular/router";
 import { roundToCents } from "src/app/utils/money";
 import { resolvePresentationImageUrl } from "src/app/utils/product-image-url";
@@ -18,7 +20,7 @@ import {
     styleUrls: ["./pos-catalog.component.css"],
     standalone: false
 })
-export class PosCatalogComponent implements OnInit {
+export class PosCatalogComponent implements OnInit, OnDestroy {
   @Input()
   selectedProducts: any[];
   @Input() recalTotal: Function;
@@ -35,22 +37,27 @@ export class PosCatalogComponent implements OnInit {
   /** When set, filters by category id; null means all categories. */
   activeCategory: { id: number; name: string } | null = null;
 
+  private destroy$ = new Subject<void>();
+
   constructor(
     private productsSvc: VProductsService,
     private categoriesSvc: VCategoriesService,
     public configSvc: VConfigService,
+    private profileSvc: VStoreProfileService,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
-    // Single completion tick avoids stale UI between the two HTTP calls, and we
-    // run CD explicitly so the grid paints without needing a user event (e.g.
-    // focusing the search field).
-    forkJoin({
-      products: this.productsSvc.getProducts(),
-      categories: this.categoriesSvc.getAll(),
-    }).subscribe(({ products, categories }) => {
+    this.profileSvc.getActiveProfileId$().pipe(
+      takeUntil(this.destroy$),
+      switchMap((profileId) => {
+        return forkJoin({
+          products: this.productsSvc.getProducts(profileId || undefined),
+          categories: this.categoriesSvc.getAll(profileId || undefined),
+        });
+      })
+    ).subscribe(({ products, categories }) => {
       const normalized = (products || []).map((p: any) => ({
         ...p,
         currentPrice: roundToCents(p.currentPrice ?? p.price),
@@ -60,9 +67,15 @@ export class PosCatalogComponent implements OnInit {
       /** Sentinel -1 avoids clashing with a real category id of 0 from the API. */
       this.categories = [{ id: -1, name: "All" }, ...list];
       this.activeCategory = null;
+      this.searchQuery = "";
       this.applyFilters();
       this.cdr.detectChanges();
     });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   /** Stable @for track when `id` is missing or not unique (presentations often use `productId`). */

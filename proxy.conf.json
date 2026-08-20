@@ -51,6 +51,10 @@
     "target": "http://127.0.0.1:3000",
     "secure": false
   },
+  "/storeProfiles": {
+    "target": "http://127.0.0.1:3000",
+    "secure": false
+  },
   "/ang-questions": {
     "target": "http://127.0.0.1:3000",
     "secure": false
