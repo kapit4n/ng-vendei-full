@@ -322,6 +322,24 @@ describe('Failure Scenarios — Regression', () => {
       expect(orderArg.paidCash).toBe(60);
       expect(orderArg.paidQr).toBe(40);
     }));
+
+    it('includes storeProfileId from active profile', () => {
+      component.selectedProducts = [makeProduct({ quantity: 1, currentPrice: 10 })];
+      component.total = 10;
+      profileSvcSpy.getActiveProfileId.and.returnValue(3);
+
+      const { order } = component.buildOrderAndDetails();
+      expect(order.storeProfileId).toBe(3);
+    });
+
+    it('omits storeProfileId when profile is null', () => {
+      component.selectedProducts = [makeProduct({ quantity: 1, currentPrice: 10 })];
+      component.total = 10;
+      profileSvcSpy.getActiveProfileId.and.returnValue(null);
+
+      const { order } = component.buildOrderAndDetails();
+      expect(order.storeProfileId).toBeUndefined();
+    });
   });
 
   describe('Concurrent / rapid submission', () => {

@@ -251,6 +251,7 @@ describe('Selling Process Contract — Integration', () => {
           total: 64,
           paid: true,
           delivered: true,
+          storeProfileId: 1,
         })
       );
     }));
@@ -601,6 +602,24 @@ describe('Selling Process Contract — Integration', () => {
       expect(details[0].totalPrice).toBe(30);
       expect(details[0].discount).toBe(0);
       expect(details[0].productId).toBe(1);
+    });
+
+    it('order includes storeProfileId from active profile', () => {
+      component.selectedProducts = [makeProduct({ quantity: 1, currentPrice: 10 })];
+      component.total = 10;
+      profileSvcSpy.getActiveProfileId.and.returnValue(2);
+
+      const { order } = component.buildOrderAndDetails();
+      expect(order.storeProfileId).toBe(2);
+    });
+
+    it('order omits storeProfileId when no active profile', () => {
+      component.selectedProducts = [makeProduct({ quantity: 1, currentPrice: 10 })];
+      component.total = 10;
+      profileSvcSpy.getActiveProfileId.and.returnValue(null);
+
+      const { order } = component.buildOrderAndDetails();
+      expect(order.storeProfileId).toBeUndefined();
     });
   });
 });

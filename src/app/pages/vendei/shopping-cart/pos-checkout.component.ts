@@ -57,7 +57,8 @@ export class PosCheckoutComponent implements OnInit {
     public config: VConfigService,
     private readonly cdr: ChangeDetectorRef,
     private readonly router: Router,
-    private readonly dialog: MatDialog
+    private readonly dialog: MatDialog,
+    private readonly profileSvc: VStoreProfileService
   ) {
     this.total = 0;
     this.selectedCustomer = Object.assign({}, this.emptyCustomer);
@@ -235,6 +236,11 @@ export class PosCheckoutComponent implements OnInit {
     order.paidQr = roundToCents(qrTotal);
     order.totalDiscount = roundToCents(this.totalDiscount);
     order.totalReturn = roundToCents(this.totalReturn);
+
+    const activeProfileId = this.profileSvc.getActiveProfileId();
+    if (activeProfileId != null) {
+      order.storeProfileId = activeProfileId;
+    }
 
     const details: any[] = [];
     this.selectedProducts.forEach(p => {

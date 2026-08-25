@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { of } from 'rxjs';
 import { CustomerListComponent } from './customer-list.component';
 import { VCustomersService } from '../../../services/vendei/v-customers.service';
 
@@ -11,7 +12,7 @@ describe('CustomerListComponent', () => {
     TestBed.configureTestingModule({
       declarations: [CustomerListComponent],
       providers: [
-        { provide: VCustomersService, useValue: { loadCustomers: jasmine.createSpy('loadCustomers') } },
+        { provide: VCustomersService, useValue: { getAll: jasmine.createSpy('getAll').and.returnValue(of([])) } },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
