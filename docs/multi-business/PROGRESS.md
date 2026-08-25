@@ -4,9 +4,9 @@ Last Updated: 2026-08-25
 
 Current Phase: Phase 1
 
-Current Task: Phase 2 (MB-010)
+Current Task: MB-013 (Frontend template selection UI)
 
-Overall Progress: 60%
+Overall Progress: 70%
 
 ## Completed
 
@@ -23,10 +23,20 @@ Overall Progress: 60%
   - Seeder: 5 profiles with business-specific config
   - API verified: GET, POST, PUT all return correct types
 - MB-008: Frontend Service Updates for BusinessProfile (completed as part of MB-004/005)
+- MB-010: Design Catalog Template Data Model
+  - 3 new tables: CatalogTemplates, CatalogTemplateCategories, CatalogTemplateProducts
+  - Models with JSON getters/setters for capabilities, receiptConfig, posConfig
+- MB-011: Create Template Seed Data for 6 Business Types
+  - 6 templates: supermarket, chicken, butcher, clothing, bakery, hardware
+  - Each with 5 categories + 15 products (90 products total)
+- MB-012: Implement Template Application API
+  - POST /catalogTemplates/:id/apply — transactional copy
+  - Creates StoreProfile + categories + products + presentations + UoM links
+- MB-014: Template-Based Product Seeding (completed as part of MB-012)
 
 ## In Progress
 
-- Phase 2: Catalog Templates (MB-010 through MB-014)
+- MB-013: Frontend Template Selection UI
 
 ## Blocked
 

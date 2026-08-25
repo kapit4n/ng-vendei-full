@@ -344,3 +344,120 @@ MB-004, MB-005
 
 **Commit:**
 - (pending)
+
+---
+
+## MB-010 — Design Catalog Template Data Model
+
+**Status:** COMPLETED
+**Priority:** HIGH
+**Phase:** 2
+
+**Objective:**
+Design the data model for reusable catalog templates.
+
+**Dependencies:** MB-007
+
+**Acceptance Criteria:**
+- [x] CatalogTemplate model with business config fields
+- [x] CatalogTemplateCategory model with sort order
+- [x] CatalogTemplateProduct model with pricing, UoM, stock
+- [x] FK relationships: Template -> Categories -> Products
+
+**Files Changed:**
+- inventory-nod: migrations/20260825130000-create-catalog-templates.js
+- inventory-nod: models/catalogtemplate.js, catalogtemplatecategory.js, catalogtemplateproduct.js
+
+**Commit:** a2d61eb
+
+---
+
+## MB-011 — Create Template Seed Data for 6 Business Types
+
+**Status:** COMPLETED
+**Priority:** HIGH
+**Phase:** 2
+
+**Objective:**
+Seed 6 catalog templates with categories and products.
+
+**Dependencies:** MB-010
+
+**Acceptance Criteria:**
+- [x] Supermarket template (barcode, weight, discounts, customers)
+- [x] Chicken Store template (combos, fast checkout)
+- [x] Butcher Shop template (weight, lots, expiration)
+- [x] Clothing Store template (variants, sizes, colors)
+- [x] Bakery template (weight, combos, loyalty)
+- [x] Hardware Store template (variable quantity)
+
+**Files Changed:**
+- inventory-nod: seeders/20260825130000-seed-catalog-templates.js
+
+**Commit:** a2d61eb
+
+---
+
+## MB-012 — Implement Template Application API
+
+**Status:** COMPLETED
+**Priority:** HIGH
+**Phase:** 2
+
+**Objective:**
+API endpoint to apply a template: create StoreProfile + copy categories/products.
+
+**Dependencies:** MB-010
+
+**Acceptance Criteria:**
+- [x] POST /catalogTemplates/:id/apply endpoint
+- [x] Creates StoreProfile with template's business config
+- [x] Copies categories with storeProfileId
+- [x] Copies products with codes, prices, UoM links, presentations
+- [x] Transactional (all-or-nothing)
+- [x] Caller can override name, slug, businessName, currency, etc.
+
+**Files Changed:**
+- inventory-nod: controllers/catalogtemplates.js, routes/catalogtemplates.js, app.js
+
+**Commit:** a2d61eb
+
+---
+
+## MB-013 — Frontend Template Selection UI
+
+**Status:** NOT_STARTED
+**Priority:** HIGH
+**Phase:** 2
+
+**Objective:**
+UI for users to browse templates and apply one to create a new business.
+
+**Dependencies:** MB-012
+
+**Acceptance Criteria:**
+- [ ] Template gallery page showing all templates
+- [ ] Template detail view with categories and products preview
+- [ ] "Apply Template" button creating a new profile
+- [ ] Form for overriding name, businessName, currency, etc.
+
+---
+
+## MB-014 — Template-Based Product Seeding
+
+**Status:** COMPLETED
+**Priority:** HIGH
+**Phase:** 2
+
+**Objective:**
+When a template is applied, seed the new profile with products.
+
+**Dependencies:** MB-010, MB-012
+
+**Acceptance Criteria:**
+- [x] Products created with codes, prices, stock
+- [x] ProductPresentations created with UoM
+- [x] ProductUnitOfMeasure links created
+- [x] Categories mapped correctly
+
+**Commit:** a2d61eb
