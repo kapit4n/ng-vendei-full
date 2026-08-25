@@ -242,7 +242,7 @@ MB-004
 
 ## MB-007 — Add Backend API Endpoints for Extended Profile Fields
 
-**Status:** NOT_STARTED
+**Status:** COMPLETED
 **Priority:** HIGH
 **Phase:** 1
 
@@ -253,20 +253,26 @@ Extend the backend to store and serve the new BusinessProfile fields.
 MB-004
 
 **Acceptance Criteria:**
-- [ ] storeProfiles table extended with new columns
-- [ ] API accepts new fields on create/update
-- [ ] API returns new fields on get/list
-- [ ] Migration script for existing records
+- [x] storeProfiles table extended with 11 new columns
+- [x] API accepts new fields on create/update
+- [x] API returns new fields on get/list
+- [x] Migration script for existing records (backfill defaults)
 
 **Implementation Notes:**
-This task is in the backend repo (inventory-nod), not this repo.
-Frontend can proceed with mock/default values while backend is updated.
+- Migration `20260825120000-extend-store-profiles-business-config.js`: adds 11 nullable columns with defaults, backfills existing rows
+- StoreProfile model: new fields with TEXT getters/setters for JSON fields (capabilities, receiptConfig, posConfig)
+- Controller `pickProfilePayload()`: accepts all new fields, trims strings, passes arrays/objects through
+- Seeder: all 5 profiles seeded with business-specific config (businessType, businessName, currency, locale, tax, capabilities, receipt/pos config)
+- Verified: GET /storeProfiles returns arrays/objects correctly deserialized, POST creates with all fields
 
 **Files Changed:**
-- (backend repo)
+- migrations/20260825120000-extend-store-profiles-business-config.js (new)
+- models/storeprofile.js (11 new fields + JSON getters/setters)
+- controllers/storeprofiles.js (pickProfilePayload extended)
+- seeders/20260819120000-seed-store-profiles.js (business config per profile)
 
 **Tests:**
-- (backend tests)
+- API smoke test: GET list, GET by id, POST create — all return correct types
 
 **Commit:**
 - (pending)
