@@ -4,9 +4,9 @@ Last Updated: 2026-08-25
 
 Current Phase: Phase 1
 
-Current Task: MB-009 (Migration strategy ADR)
+Current Task: Phase 2 (MB-010)
 
-Overall Progress: 55%
+Overall Progress: 60%
 
 ## Completed
 
@@ -26,7 +26,7 @@ Overall Progress: 55%
 
 ## In Progress
 
-- MB-009: Migration Strategy for Existing Data (ADR documentation)
+- Phase 2: Catalog Templates (MB-010 through MB-014)
 
 ## Blocked
 
@@ -34,8 +34,7 @@ Overall Progress: 55%
 
 ## Next Task
 
-MB-009: Migration Strategy ADR (documentation in DECISIONS.md)
-Then: Phase 2 — Catalog Templates (MB-010 through MB-014)
+Phase 2 — MB-010: Design Catalog Template Data Model
 
 ## Tests
 

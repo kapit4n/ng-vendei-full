@@ -313,7 +313,7 @@ Completed as part of MB-004. All helper methods added to VStoreProfileService wi
 
 ## MB-009 — Migration Strategy for Existing Data
 
-**Status:** NOT_STARTED
+**Status:** COMPLETED
 **Priority:** MEDIUM
 **Phase:** 1
 
@@ -324,22 +324,23 @@ Ensure existing store profiles and orders work correctly after the schema extens
 MB-004, MB-005
 
 **Acceptance Criteria:**
-- [ ] Existing profiles get default values for new fields
-- [ ] Existing orders get a default storeProfileId
-- [ ] No data loss
-- [ ] Rollback strategy documented
+- [x] Existing profiles get default values for new fields
+- [x] Existing orders get a default storeProfileId
+- [x] No data loss
+- [x] Rollback strategy documented
 
 **Implementation Notes:**
-- Default businessType: 'supermarket'
-- Default currency: 'BOB'
+- ADR-MB-006 documents the three-layer strategy: SQL DEFAULT + backfill + frontend fallback
+- Default businessType: 'supermarket', currency: 'BOB', locale: 'es-BO', taxLabel: 'NIT'
 - Default capabilities: ['BARCODE', 'DISCOUNTS', 'CUSTOMERS']
-- Default locale: 'es-BO'
+- Rollback drops all 11 columns in reverse order; no data loss since columns are additive
+- Frontend and backend can be deployed independently
 
 **Files Changed:**
-- docs/multi-business/DECISIONS.md (new ADR)
+- docs/multi-business/DECISIONS.md (ADR-MB-006)
 
 **Tests:**
-- N/A (migration script in backend)
+- N/A (documentation + migration already verified)
 
 **Commit:**
 - (pending)

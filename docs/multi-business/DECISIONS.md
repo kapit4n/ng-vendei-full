@@ -135,3 +135,56 @@ Option 3 aligns with the principle that adding a new business type should be a c
 - Testing covers config combinations, not business type permutations
 
 **Status:** ACCEPTED
+
+---
+
+## ADR-MB-006 — Migration Strategy for Existing Data
+
+**Date:** 2026-08-25
+
+**Context:**
+Existing StoreProfiles, Products, Categories, and Orders need to work correctly after the schema extension. The migration must not lose data and must assign sensible defaults.
+
+**Decision:**
+Apply a three-layer migration strategy:
+
+1. **Schema extension** — Add all new columns as nullable with SQL `DEFAULT` values. Existing rows automatically get defaults via the database engine.
+2. **Backfill** — UPDATE existing rows to set explicit business config defaults (businessType: 'supermarket', currency: 'BOB', etc.) for rows where the new columns are NULL.
+3. **Frontend fallback** — `VStoreProfileService` helper methods return hardcoded defaults when profile fields are undefined/null, ensuring the UI works even if the backend hasn't been migrated yet.
+
+**Defaults Applied:**
+
+| Field | Default | Rationale |
+|-------|---------|-----------|
+| businessType | `'supermarket'` | Preserves current behavior |
+| businessName | `null` | Falls back to `name` field |
+| currency | `'BOB'` | Current hardcoded currency |
+| currencySymbol | `'Bs'` | Current hardcoded symbol |
+| locale | `'es-BO'` | Current hardcoded locale |
+| taxId | `null` | No default — business-specific |
+| taxLabel | `'NIT'` | Current hardcoded label |
+| address | `null` | No default — business-specific |
+| capabilities | `["BARCODE","DISCOUNTS","CUSTOMERS"]` | Minimum safe set |
+| receiptConfig | `{paperWidth:80, headerLines:[], footerLines:[]}` | Standard receipt |
+| posConfig | `{catalogColumns:4, showProductImages:true, quickProducts:[], defaultSellingMode:'UNIT'}` | Current POS layout |
+
+**Rollback Strategy:**
+- Migration `down()` drops all 11 columns in reverse order
+- No data loss since columns are additive (nullable)
+- Original 6 columns are untouched
+
+**Alternatives Considered:**
+1. Nullable without defaults — simpler but UI breaks for existing profiles
+2. Required with migration — forces data entry, risky for existing deployments
+3. Nullable with SQL DEFAULT + backfill — safe, backward-compatible
+
+**Reason:**
+Option 3 is the safest approach. The SQL DEFAULT handles the schema change instantly. The backfill ensures existing rows have meaningful values. The frontend fallback ensures the UI works even if the backend is temporarily out of sync.
+
+**Consequences:**
+- Existing profiles get supermarket defaults automatically
+- New profiles can be created with any business type
+- No user intervention required for existing data
+- Frontend and backend can be deployed independently (frontend first is safe)
+
+**Status:** ACCEPTED
