@@ -34,7 +34,7 @@ import { MainScreenshotComponent } from './pages/vendei/main-screenshot/main-scr
 import { PosCheckoutComponent } from './pages/vendei/shopping-cart/pos-checkout.component';
 import { MainComponent } from "./pages/main/main.component";
 
-//reg pages
+// reg pages
 import { RCustomerService } from "./services/reg/r-customer.service";
 import { RegProductComponent } from "./pages/reg/reg-product/reg-product.component";
 import { RegProductPresentationComponent } from "./pages/reg/reg-product-presentation/reg-product-presentation.component";
@@ -46,6 +46,7 @@ import { RegCustomerComponent } from "./pages/reg/reg-customer/reg-customer.comp
 import { RegCustomerListComponent } from "./pages/reg/reg-customer-list/reg-customer-list.component";
 import { RegUnitOfMeasureListComponent } from "./pages/reg/reg-unit-of-measure-list/reg-unit-of-measure-list.component";
 import { RegUnitOfMeasureComponent } from "./pages/reg/reg-unit-of-measure/reg-unit-of-measure.component";
+import { CatalogTemplatesComponent } from "./pages/reg/catalog-templates/catalog-templates.component";
 // inv pages
 import { InvProductsComponent } from "./pages/inv/inv-products/inv-products.component";
 import { InvProductsInvComponent } from "./pages/inv/inv-products-inv/inv-products-inv.component";
@@ -176,6 +177,11 @@ const appRoutes: Routes = [
     data: { breadcrumb: "Unit of measure" }
   },
   {
+    path: "reg/templates",
+    component: CatalogTemplatesComponent,
+    data: { title: "Catalog Templates" }
+  },
+  {
     path: "reg/customers",
     component: RegCustomerListComponent,
     data: { breadcrumb: "List Customer" }
@@ -301,6 +307,7 @@ const appRoutes: Routes = [
     AngExamTakeComponent,
     AngExamResultComponent,
     AngFeaturesGuideComponent,
+    CatalogTemplatesComponent,
   ],
   imports: [
     RouterModule.forRoot(appRoutes),

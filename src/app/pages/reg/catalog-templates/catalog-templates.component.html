@@ -1,0 +1,116 @@
+<div class="catalog-templates-page">
+  <div class="page-header">
+    <h2>Catalog Templates</h2>
+    <p class="subtitle">Choose a template to quickly set up a new business</p>
+  </div>
+
+  @if (loading) {
+    <div class="loading-state">
+      <mat-spinner diameter="40"></mat-spinner>
+      <span>Loading templates...</span>
+    </div>
+  }
+
+  @if (!loading && !templates.length) {
+    <div class="empty-state">
+      <mat-icon>inventory_2</mat-icon>
+      <p>No templates available</p>
+    </div>
+  }
+
+  @if (!loading && templates.length) {
+    <div class="template-grid">
+      @for (template of templates; track template.id) {
+        <mat-card class="template-card" (click)="viewTemplate(template)">
+          <mat-card-header>
+            <mat-icon mat-card-avatar class="template-icon">{{ businessTypeIcon(template.businessType) }}</mat-icon>
+            <mat-card-title>{{ template.name }}</mat-card-title>
+            <mat-card-subtitle>{{ template.businessType }}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <p>{{ template.description }}</p>
+            @if (template.capabilities?.length) {
+              <div class="capabilities">
+                @for (cap of template.capabilities; track cap) {
+                  <span class="capability-chip">{{ cap }}</span>
+                }
+              </div>
+            }
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-raised-button color="primary">
+              <mat-icon>add</mat-icon> Use Template
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      }
+    </div>
+  }
+</div>
+
+@if (selectedTemplate) {
+  <div class="apply-overlay" (click)="closeDetail()">
+    <mat-card class="apply-dialog" (click)="$event.stopPropagation()">
+      <mat-card-header>
+        <mat-icon mat-card-avatar class="template-icon">{{ businessTypeIcon(selectedTemplate.businessType) }}</mat-icon>
+        <mat-card-title>Apply: {{ selectedTemplate.name }}</mat-card-title>
+        <mat-card-subtitle>{{ selectedTemplate.description }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        @if (selectedTemplate.categories?.length) {
+          <div class="detail-section">
+            <h4>Categories ({{ selectedTemplate.categories.length }})</h4>
+            <div class="tag-list">
+              @for (cat of selectedTemplate.categories; track cat.id) {
+                <span class="tag">{{ cat.name }}</span>
+              }
+            </div>
+          </div>
+        }
+        @if (selectedTemplate.products?.length) {
+          <div class="detail-section">
+            <h4>Products ({{ selectedTemplate.products.length }})</h4>
+            <div class="tag-list">
+              @for (prod of selectedTemplate.products.slice(0, 8); track prod.id) {
+                <span class="tag">{{ prod.name }}</span>
+              }
+              @if (selectedTemplate.products.length > 8) {
+                <span class="tag more">+{{ selectedTemplate.products.length - 8 }} more</span>
+              }
+            </div>
+          </div>
+        }
+
+        <div class="detail-section">
+          <h4>New Business Profile</h4>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Profile Name</mat-label>
+            <input matInput [(ngModel)]="applyName" placeholder="e.g. My Store">
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>URL Slug</mat-label>
+            <input matInput [(ngModel)]="applySlug" placeholder="e.g. my-store">
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Business Name</mat-label>
+            <input matInput [(ngModel)]="applyBusinessName" placeholder="e.g. Mi Tienda">
+          </mat-form-field>
+        </div>
+
+        @if (applyError) {
+          <div class="error-msg">{{ applyError }}</div>
+        }
+      </mat-card-content>
+      <mat-card-actions align="end">
+        <button mat-stroked-button (click)="closeDetail()">Cancel</button>
+        <button mat-raised-button color="accent" (click)="applyTemplate()" [disabled]="applying || !applyName || !applySlug">
+          @if (applying) {
+            <mat-spinner diameter="16"></mat-spinner>
+          } @else {
+            <mat-icon>rocket_launch</mat-icon> Create Business
+          }
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+}

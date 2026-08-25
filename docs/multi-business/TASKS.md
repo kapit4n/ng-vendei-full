@@ -426,7 +426,7 @@ API endpoint to apply a template: create StoreProfile + copy categories/products
 
 ## MB-013 — Frontend Template Selection UI
 
-**Status:** NOT_STARTED
+**Status:** COMPLETED
 **Priority:** HIGH
 **Phase:** 2
 
@@ -436,10 +436,29 @@ UI for users to browse templates and apply one to create a new business.
 **Dependencies:** MB-012
 
 **Acceptance Criteria:**
-- [ ] Template gallery page showing all templates
-- [ ] Template detail view with categories and products preview
-- [ ] "Apply Template" button creating a new profile
-- [ ] Form for overriding name, businessName, currency, etc.
+- [x] Template gallery page showing all templates
+- [x] Template detail view with categories and products preview
+- [x] "Apply Template" button creating a new profile
+- [x] Form for overriding name, businessName, currency, etc.
+
+**Implementation Notes:**
+- VCatalogTemplateService: getAll, getById, apply methods calling /catalogTemplates API
+- CatalogTemplatesComponent: grid of template cards, detail overlay dialog
+- Route: /reg/templates
+- Proxy entry added for /catalogTemplates
+- 10 new tests (9 catalog-templates + 1 loadTemplates)
+
+**Files Changed:**
+- src/app/services/vendei/v-catalog-template.service.ts (new)
+- src/app/pages/reg/catalog-templates/catalog-templates.component.ts (new)
+- src/app/pages/reg/catalog-templates/catalog-templates.component.html (new)
+- src/app/pages/reg/catalog-templates/catalog-templates.component.css (new)
+- src/app/pages/reg/catalog-templates/catalog-templates.component.spec.ts (new)
+- src/app/app.module.ts (declared component + route)
+- proxy.conf.json (added /catalogTemplates)
+
+**Tests:**
+- 536 total, 5 pre-existing failures only, no regressions
 
 ---
 

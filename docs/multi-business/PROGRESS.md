@@ -2,11 +2,12 @@
 
 Last Updated: 2026-08-25
 
-Current Phase: Phase 1
+Current Phase: Phase 2
+Complete
 
-Current Task: MB-013 (Frontend template selection UI)
+Current Task: MB-013 COMPLETED
 
-Overall Progress: 70%
+Overall Progress: 80%
 
 ## Completed
 
@@ -33,10 +34,15 @@ Overall Progress: 70%
   - POST /catalogTemplates/:id/apply — transactional copy
   - Creates StoreProfile + categories + products + presentations + UoM links
 - MB-014: Template-Based Product Seeding (completed as part of MB-012)
+- MB-013: Frontend Template Selection UI
+  - VCatalogTemplateService: getAll, getById, apply methods
+  - CatalogTemplatesComponent: grid gallery + apply dialog
+  - Route: /reg/templates
+  - 10 new tests (all passing)
 
 ## In Progress
 
-- MB-013: Frontend Template Selection UI
+- None
 
 ## Blocked
 
@@ -44,14 +50,14 @@ Overall Progress: 70%
 
 ## Next Task
 
-Phase 2 — MB-010: Design Catalog Template Data Model
+Phase 3 — next steps TBD (product attribute management UI, multi-business navigation)
 
 ## Tests
 
 Unit (frontend):
-- 526 tests
+- 536 tests
 - Pre-existing failures only
-- No regressions from MB-004 through MB-006
+- No regressions from MB-004 through MB-013
 
 Backend:
 - Migration: PASS (21 migrations, db:migrate + db:seed:all)

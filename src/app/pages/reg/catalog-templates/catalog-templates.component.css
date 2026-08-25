@@ -1,0 +1,143 @@
+.catalog-templates-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.page-header h2 {
+  margin: 0 0 0.25rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.subtitle {
+  color: #64748b;
+  margin: 0 0 1.5rem;
+  font-size: 0.9rem;
+}
+
+.loading-state,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 3rem;
+  color: #64748b;
+}
+
+.empty-state mat-icon {
+  font-size: 3rem;
+  width: 3rem;
+  height: 3rem;
+}
+
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.template-card {
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.template-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.template-icon {
+  font-size: 1.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e8eaf6;
+  border-radius: 50%;
+  color: #3f51b5;
+}
+
+.capabilities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+}
+
+.capability-chip {
+  font-size: 0.7rem;
+  padding: 0.15rem 0.5rem;
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+/* Apply overlay */
+.apply-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.apply-dialog {
+  width: 90%;
+  max-width: 500px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.detail-section {
+  margin-bottom: 1rem;
+}
+
+.detail-section h4 {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.tag {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  background: #f1f5f9;
+  border-radius: 4px;
+  color: #475569;
+}
+
+.tag.more {
+  background: #e2e8f0;
+  font-style: italic;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.error-msg {
+  color: #d32f2f;
+  font-size: 0.85rem;
+  padding: 0.5rem;
+  background: #ffebee;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+}
+
+mat-card-actions button mat-spinner {
+  display: inline-block;
+  margin-right: 0.25rem;
+}
