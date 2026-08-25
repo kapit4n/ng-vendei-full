@@ -1,6 +1,8 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { RouterTestingModule } from '@angular/router/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { RegCustomerListComponent } from './reg-customer-list.component';
+import { RCustomerService } from '../../../services/reg/r-customer.service';
 
 describe('RegCustomerListComponent', () => {
   let component: RegCustomerListComponent;
@@ -8,9 +10,13 @@ describe('RegCustomerListComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ RegCustomerListComponent ]
-    })
-    .compileComponents();
+      imports: [RouterTestingModule.withRoutes([])],
+      declarations: [RegCustomerListComponent],
+      providers: [
+        { provide: RCustomerService, useValue: {} },
+      ],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

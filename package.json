@@ -12,7 +12,9 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "e2e:playwright": "npx playwright test",
+    "e2e:playwright:ui": "npx playwright test --ui"
   },
   "private": true,
   "dependencies": {
