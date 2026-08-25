@@ -114,29 +114,28 @@ ng build --configuration production
 
 ## Baseline Test Results
 
-**Recorded:** 2026-08-25 (updated after MB-004)
+**Recorded:** 2026-08-25 (updated after MB-006)
 
 ### Unit Tests (Karma + Jasmine)
 
 | Metric | Value |
 |--------|-------|
 | Total spec files | 57 |
-| Total tests | 522 |
-| Executed before disconnect | 85 |
-| Passing (of executed) | 81 |
-| Failing (pre-existing) | 4 |
-| Execution time | ~1s (before disconnect) |
+| Total tests | 526 |
+| Failing (pre-existing) | 7–8 (varies by disconnect) |
+| Build | PASS (1.69 MB) |
 
-**Pre-existing failures (4):**
-1. `PosCheckoutComponent printInvoiceAndSave closes the print window after onafterprint fires`
-2. `PosCheckoutComponent printInvoiceAndSave does not call close on an already-closed window after onafterprint`
-3. `PosCheckoutComponent submitOrder saves order and details`
-4. `Failure Scenarios — Regression Price edge cases handles zero price product`
+**Pre-existing failures (7 unique):**
+1. `AppComponent should render the brand text in the nav` — flaky scaffold
+2. `RegProductPresentationComponent should create` — scaffold missing providers
+3. `PosCheckoutComponent printInvoiceAndSave` — 2 tests (print window mock)
+4. `PosCheckoutComponent submitOrder saves order and details` — pre-existing
+5. `Failure Scenarios — Regression` — 4 tests (makeProduct falsy-value bug `|| 10`)
+6. `rep-product-sales-analytics buildExecutiveSummary` — pre-existing utility test
 
-**Fixed during MB-001–MB-004 (6 scaffold tests resolved):**
-- `InvProductsInvComponent should create` — fixed mock (added `getById`, `addToInventory`, etc.)
-- `CustomerListComponent should create` — fixed mock (changed `loadCustomers` to `getAll`)
-- Plus 4 fixes from previous session (AppComponent, RegCategory, RegCustomer, RegProduct, RegProductPresentation, RegCategoryList, RegCustomerList, RegProductList, CustomersDialog)
+**Fixed during MB-001–MB-006:**
+- 11 scaffold tests (InvProductsInv, CustomerList, AppComponent, etc.)
+- 2 additional mock fixes (extractCss deprecation)
 
 **Disconnect cause:** `afterAll` error from scaffold test, followed by 30s timeout. Pre-existing issue.
 

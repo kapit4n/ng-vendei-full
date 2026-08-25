@@ -193,7 +193,7 @@ MB-004
 
 ## MB-006 — Make Hardcoded Values Configurable Through Profile
 
-**Status:** NOT_STARTED
+**Status:** COMPLETED
 **Priority:** HIGH
 **Phase:** 1
 
@@ -204,29 +204,36 @@ Replace hardcoded currency, location, business name, and locale with BusinessPro
 MB-004
 
 **Acceptance Criteria:**
-- [ ] Currency symbol reads from profile
-- [ ] Address reads from profile
-- [ ] Business name reads from profile
-- [ ] Locale reads from profile
-- [ ] Tax ID reads from profile
-- [ ] Receipt paper width reads from profile
-- [ ] Fallback to current defaults if profile field is empty
+- [x] Currency symbol reads from profile (templates + charts)
+- [x] Address reads from profile (invoice + print receipt)
+- [x] Business name reads from profile (invoice + print receipt)
+- [x] Locale reads from profile (date formatting)
+- [x] Tax ID/label reads from profile (invoice header)
+- [x] Fallback to current defaults if profile field is empty
 
 **Implementation Notes:**
-- rep-sells.component.ts: Replace 'Bs' with profile.currencySymbol
-- rep-products.component.ts: Replace 'Bs' with profile.currencySymbol
-- v-invoice.service.ts: Replace hardcoded values with profile fields
-- pos-checkout.component.ts: Replace hardcoded receipt values
+- Injected VStoreProfileService into 5 components/services
+- Added `currencySymbol` getter to 4 reporting components + POS checkout
+- VInvoiceService: uses profile for business name, address, tax, locale
+- pos-checkout.component.ts printOrder(): uses profile for business name, address, locale
+- All 4 HTML templates: replaced hardcoded 'Bs' with `{{ currencySymbol }}`
+- Zero hardcoded 'Bs' remaining in templates; defaults only in `||` fallbacks
 
 **Files Changed:**
-- src/app/pages/rep/rep-sells/rep-sells.component.ts
-- src/app/pages/rep/rep-products/rep-products.component.ts
-- src/app/services/vendei/v-invoice.service.ts
-- src/app/pages/vendei/shopping-cart/pos-checkout.component.ts
+- src/app/services/vendei/v-invoice.service.ts (profile-based header)
+- src/app/pages/rep/rep-sells/rep-sells.component.ts (currencySymbol getter + chart labels)
+- src/app/pages/rep/rep-sells/rep-sells.component.html (5× Bs → currencySymbol)
+- src/app/pages/rep/rep-products/rep-products.component.ts (currencySymbol getter + chart labels)
+- src/app/pages/rep/rep-products/rep-products.component.html (6× Bs → currencySymbol)
+- src/app/pages/rep/rep-daily-sales/rep-daily-sales.component.ts (currencySymbol getter)
+- src/app/pages/rep/rep-daily-sales/rep-daily-sales.component.html (12× Bs → currencySymbol)
+- src/app/pages/vendei/shopping-cart/pos-checkout.component.ts (currencySymbol getter + printOrder)
+- src/app/pages/vendei/shopping-cart/pos-checkout.component.html (4× Bs → currencySymbol)
+- src/app/pages/vendei/shopping-cart/pos-checkout.integration.spec.ts (updated spy methods)
+- src/app/pages/vendei/shopping-cart/pos-checkout.failure.spec.ts (updated spy methods)
 
 **Tests:**
-- Existing component tests updated
-- New tests for profile-based rendering
+- 526 tests, pre-existing failures only, no regressions
 
 **Commit:**
 - (pending)

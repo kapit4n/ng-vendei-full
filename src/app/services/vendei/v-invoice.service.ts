@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { PaymentType } from 'src/app/features/vendei/payment-types';
 import { roundToCents } from 'src/app/utils/money';
+import { VStoreProfileService } from './v-store-profile.service';
 
 export interface InvoiceData {
   products: any[];
@@ -16,10 +17,19 @@ export interface InvoiceData {
   providedIn: 'root',
 })
 export class VInvoiceService {
+  constructor(private readonly profileSvc: VStoreProfileService) {}
+
   generate(data: InvoiceData): string {
     const now = new Date();
-    const dateStr = now.toLocaleDateString('es-ES');
-    const timeStr = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+    const locale = this.profileSvc.getLocale();
+    const dateStr = now.toLocaleDateString(locale);
+    const timeStr = now.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
+
+    const currencySymbol = this.profileSvc.getCurrencySymbol();
+    const businessName = this.profileSvc.getBusinessName() || 'Codigo Casero';
+    const address = this.profileSvc.getAddress() || 'Cochabamba Bolivia, Times St 1414';
+    const taxLabel = this.profileSvc.getTaxLabel();
+    const taxId = this.profileSvc.getTaxId();
 
     const productRows = data.products
       .map(
@@ -47,6 +57,8 @@ export class VInvoiceService {
 
     const customerName = data.customer?.name ?? '';
     const customerId = data.customer?.ci ?? data.customer?.code ?? '';
+
+    const taxLine = taxId ? `${taxLabel}: ${taxId}` : `${taxLabel}: —`;
 
     return `<!DOCTYPE html>
 <html>
@@ -88,8 +100,8 @@ export class VInvoiceService {
 </head>
 <body>
   <div class="center header">
-    <h2>Codigo Casero</h2>
-    <p>Software development company<br>Cochabamba Bolivia, Times St 1414<br>NIT: —</p>
+    <h2>${businessName}</h2>
+    <p>${address}<br>${taxLine}</p>
   </div>
   <hr>
   <div class="center invoice-title">INVOICE</div>
@@ -108,7 +120,7 @@ export class VInvoiceService {
   <div class="totals">
     <table>
       <tr><td>Total</td><td class="total-col">${data.total.toFixed(2)}</td></tr>
-      ${data.totalDiscount > 0 ? `<tr><td>Discount</td><td class="total-col">−${data.totalDiscount.toFixed(2)}</td></tr>` : ''}
+      ${data.totalDiscount > 0 ? `<tr><td>Discount</td><td class="total-col">\u2212${data.totalDiscount.toFixed(2)}</td></tr>` : ''}
     </table>
     <hr>
     <table>
@@ -117,7 +129,7 @@ export class VInvoiceService {
     <hr>
     <table>
       <tr><td>Paid</td><td class="total-col">${data.totalPayed.toFixed(2)}</td></tr>
-      ${data.totalReturn > 0 ? `<tr><td>Change</td><td class="total-col">−${data.totalReturn.toFixed(2)}</td></tr>` : ''}
+      ${data.totalReturn > 0 ? `<tr><td>Change</td><td class="total-col">\u2212${data.totalReturn.toFixed(2)}</td></tr>` : ''}
       <tr><td>Amount paid</td><td class="total-col">${roundToCents(data.totalPayed - data.totalReturn).toFixed(2)}</td></tr>
     </table>
     ${paymentLines ? `<hr><table><tbody>${paymentLines}</tbody></table>` : ''}

@@ -39,19 +39,19 @@
       <mat-card class="kpi-card kpi-total">
         <mat-card-content>
           <div class="kpi-label">Total sales</div>
-          <div class="kpi-value">Bs {{ summary.totalSales | number:'1.2-2' }}</div>
+          <div class="kpi-value">{{ currencySymbol }} {{ summary.totalSales | number:'1.2-2' }}</div>
         </mat-card-content>
       </mat-card>
       <mat-card class="kpi-card kpi-cash">
         <mat-card-content>
           <div class="kpi-label">Cash</div>
-          <div class="kpi-value">Bs {{ summary.totalCash | number:'1.2-2' }}</div>
+          <div class="kpi-value">{{ currencySymbol }} {{ summary.totalCash | number:'1.2-2' }}</div>
         </mat-card-content>
       </mat-card>
       <mat-card class="kpi-card kpi-qr">
         <mat-card-content>
           <div class="kpi-label">QR</div>
-          <div class="kpi-value">Bs {{ summary.totalQr | number:'1.2-2' }}</div>
+          <div class="kpi-value">{{ currencySymbol }} {{ summary.totalQr | number:'1.2-2' }}</div>
         </mat-card-content>
       </mat-card>
     </div>
@@ -66,14 +66,14 @@
               <div class="bar-track">
                 <div class="bar-fill bar-fill--cash" [style.width.%]="cashPercent()"></div>
               </div>
-              <span class="bar-value">Bs {{ summary.totalCash | number:'1.2-2' }}</span>
+              <span class="bar-value">{{ currencySymbol }} {{ summary.totalCash | number:'1.2-2' }}</span>
             </div>
             <div class="bar-row">
               <span class="bar-label">QR</span>
               <div class="bar-track">
                 <div class="bar-fill bar-fill--qr" [style.width.%]="qrPercent()"></div>
               </div>
-              <span class="bar-value">Bs {{ summary.totalQr | number:'1.2-2' }}</span>
+              <span class="bar-value">{{ currencySymbol }} {{ summary.totalQr | number:'1.2-2' }}</span>
             </div>
           </div>
         </mat-card-content>
@@ -85,30 +85,30 @@
           <table class="summary-table">
             <tr>
               <td class="summary-label">Net sales (after discounts)</td>
-              <td class="summary-value">Bs {{ netTotal | number:'1.2-2' }}</td>
+              <td class="summary-value">{{ currencySymbol }} {{ netTotal | number:'1.2-2' }}</td>
             </tr>
             <tr>
               <td class="summary-label">Total collected</td>
-              <td class="summary-value">Bs {{ summary.totalSales | number:'1.2-2' }}</td>
+              <td class="summary-value">{{ currencySymbol }} {{ summary.totalSales | number:'1.2-2' }}</td>
             </tr>
             <tr>
               <td class="summary-label">Discounts given</td>
-              <td class="summary-value summary-negative">− Bs {{ summary.totalDiscount | number:'1.2-2' }}</td>
+              <td class="summary-value summary-negative">− {{ currencySymbol }} {{ summary.totalDiscount | number:'1.2-2' }}</td>
             </tr>
             <tr>
               <td class="summary-label">Change returned</td>
-              <td class="summary-value summary-negative">− Bs {{ summary.totalReturn | number:'1.2-2' }}</td>
+              <td class="summary-value summary-negative">− {{ currencySymbol }} {{ summary.totalReturn | number:'1.2-2' }}</td>
             </tr>
             <tr class="summary-divider">
               <td colspan="2"></td>
             </tr>
             <tr class="summary-highlight">
               <td class="summary-label">Expected bank deposit (QR)</td>
-              <td class="summary-value summary-bank">Bs {{ summary.totalQr | number:'1.2-2' }}</td>
+              <td class="summary-value summary-bank">{{ currencySymbol }} {{ summary.totalQr | number:'1.2-2' }}</td>
             </tr>
             <tr class="summary-highlight">
               <td class="summary-label">Cash in drawer</td>
-              <td class="summary-value summary-cash">Bs {{ netCash | number:'1.2-2' }}</td>
+              <td class="summary-value summary-cash">{{ currencySymbol }} {{ netCash | number:'1.2-2' }}</td>
             </tr>
           </table>
         </mat-card-content>

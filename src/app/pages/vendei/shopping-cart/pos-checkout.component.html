@@ -40,24 +40,24 @@
         <div class="cart-summary">
           <div class="cart-summary-row cart-summary-total">
             <span class="label">Total</span>
-            <span class="value">Bs {{ total | number:'1.2-2' }}</span>
+            <span class="value">{{ currencySymbol }} {{ total | number:'1.2-2' }}</span>
           </div>
           @if (totalPayed > 0 && effectivePaid != netOrderTotal) {
             <div class="cart-summary-row">
               <span class="label" i18n>Payed</span>
-              <span class="value">Bs {{ totalPayed | number:'1.2-2' }}</span>
+              <span class="value">{{ currencySymbol }} {{ totalPayed | number:'1.2-2' }}</span>
             </div>
           }
           @if (totalDiscount > 0) {
             <div class="cart-summary-row">
               <span class="label">Discount</span>
-              <span class="value discount">− Bs {{ totalDiscount | number:'1.2-2' }}</span>
+              <span class="value discount">− {{ currencySymbol }} {{ totalDiscount | number:'1.2-2' }}</span>
             </div>
           }
           @if (toReturn > 0) {
             <div class="cart-summary-row">
               <span class="label">To return</span>
-              <span class="value">Bs {{ toReturn | number:'1.2-2' }}</span>
+              <span class="value">{{ currencySymbol }} {{ toReturn | number:'1.2-2' }}</span>
             </div>
           }
           @if (isOrderPaid) {

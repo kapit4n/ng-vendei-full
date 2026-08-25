@@ -34,7 +34,7 @@
       <mat-card class="kpi-card">
         <mat-card-title>Total revenue</mat-card-title>
         <mat-card-content>
-          <span class="kpi-value">Bs {{ summary.totalRevenue | number:'1.2-2' }}</span>
+          <span class="kpi-value">{{ currencySymbol }} {{ summary.totalRevenue | number:'1.2-2' }}</span>
           <span class="kpi-hint">All products, all time</span>
         </mat-card-content>
       </mat-card>
@@ -48,14 +48,14 @@
       <mat-card class="kpi-card">
         <mat-card-title>Avg. selling price</mat-card-title>
         <mat-card-content>
-          <span class="kpi-value">Bs {{ summary.avgSellingPrice | number:'1.2-2' }}</span>
+          <span class="kpi-value">{{ currencySymbol }} {{ summary.avgSellingPrice | number:'1.2-2' }}</span>
           <span class="kpi-hint">Per unit (where units &gt; 0)</span>
         </mat-card-content>
       </mat-card>
       <mat-card class="kpi-card">
         <mat-card-title>Est. gross margin</mat-card-title>
         <mat-card-content>
-          <span class="kpi-value">Bs {{ summary.estTotalGrossMargin | number:'1.2-2' }}</span>
+          <span class="kpi-value">{{ currencySymbol }} {{ summary.estTotalGrossMargin | number:'1.2-2' }}</span>
           <span class="kpi-hint">Revenue − cost × units (cost from catalog)</span>
         </mat-card-content>
       </mat-card>
@@ -169,7 +169,7 @@
             </ng-container>
             <ng-container matColumnDef="revenue">
               <th mat-header-cell *matHeaderCellDef class="num">Revenue</th>
-              <td mat-cell *matCellDef="let row" class="num">Bs {{ row.revenue | number:'1.2-2' }}</td>
+              <td mat-cell *matCellDef="let row" class="num">{{ currencySymbol }} {{ row.revenue | number:'1.2-2' }}</td>
             </ng-container>
             <ng-container matColumnDef="share">
               <th mat-header-cell *matHeaderCellDef class="num">Share</th>
@@ -177,11 +177,11 @@
             </ng-container>
             <ng-container matColumnDef="avgPrice">
               <th mat-header-cell *matHeaderCellDef class="num">Avg / unit</th>
-              <td mat-cell *matCellDef="let row" class="num">Bs {{ row.avgUnitPrice | number:'1.2-2' }}</td>
+              <td mat-cell *matCellDef="let row" class="num">{{ currencySymbol }} {{ row.avgUnitPrice | number:'1.2-2' }}</td>
             </ng-container>
             <ng-container matColumnDef="estMargin">
               <th mat-header-cell *matHeaderCellDef class="num">Est. margin</th>
-              <td mat-cell *matCellDef="let row" class="num">Bs {{ row.estGrossMargin | number:'1.2-2' }}</td>
+              <td mat-cell *matCellDef="let row" class="num">{{ currencySymbol }} {{ row.estGrossMargin | number:'1.2-2' }}</td>
             </ng-container>
             <ng-container matColumnDef="stock">
               <th mat-header-cell *matHeaderCellDef class="num">Stock</th>

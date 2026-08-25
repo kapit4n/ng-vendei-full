@@ -21,6 +21,7 @@ import {
   sumSellTotals,
   toInputDateValue,
 } from '../../../utils/rep-sell-analytics';
+import { VStoreProfileService } from '../../../services/vendei/v-store-profile.service';
 
 /** Quick-range preset that matches the current From/To (mutually exclusive UI). */
 type RepSellsQuickRangeKey = 'today' | '7' | '30' | '90' | 'ytd';
@@ -62,7 +63,8 @@ export class RepSellsComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private readonly sellsSrv: RepSellsService,
     private readonly router: Router,
-    private readonly cdr: ChangeDetectorRef
+    private readonly cdr: ChangeDetectorRef,
+    private readonly profileSvc: VStoreProfileService
   ) {
     const today = new Date();
     this.rangeEndStr = toInputDateValue(today);
@@ -184,6 +186,10 @@ export class RepSellsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.applyRange();
   }
 
+  get currencySymbol(): string {
+    return this.profileSvc.getCurrencySymbol();
+  }
+
   productName(sell: any): string {
     return sell?.product?.name ?? sell?.Product?.name ?? '—';
   }
@@ -242,8 +248,10 @@ export class RepSellsComponent implements OnInit, AfterViewInit, OnDestroy {
     const daily = buildDailySeries(this.filteredSells, lo, hi);
     const monthly = buildMonthlySeries(this.filteredSells);
 
+    const sym = this.currencySymbol;
+
     const currencyTick = (value: number | string) =>
-      typeof value === 'number' ? `Bs ${value}` : String(value);
+      typeof value === 'number' ? `${sym} ${value}` : String(value);
 
     this.chartDaily = new Chart(dEl, {
       type: 'bar',
@@ -251,7 +259,7 @@ export class RepSellsComponent implements OnInit, AfterViewInit, OnDestroy {
         labels: daily.labels,
         datasets: [
           {
-            label: 'Daily total (Bs)',
+            label: `Daily total (${sym})`,
             data: daily.values,
             backgroundColor: 'rgba(63, 81, 181, 0.55)',
             borderColor: 'rgba(63, 81, 181, 1)',
@@ -268,7 +276,7 @@ export class RepSellsComponent implements OnInit, AfterViewInit, OnDestroy {
             callbacks: {
               label: ctx => {
                 const v = Number(ctx.raw);
-                return `Bs ${v.toFixed(2)}`;
+                return `${sym} ${v.toFixed(2)}`;
               },
             },
           },
@@ -299,7 +307,7 @@ export class RepSellsComponent implements OnInit, AfterViewInit, OnDestroy {
         labels: mLabels,
         datasets: [
           {
-            label: 'Monthly total (Bs)',
+            label: `Monthly total (${sym})`,
             data: mValues,
             backgroundColor: 'rgba(233, 30, 99, 0.5)',
             borderColor: 'rgba(194, 24, 91, 1)',
@@ -316,7 +324,7 @@ export class RepSellsComponent implements OnInit, AfterViewInit, OnDestroy {
             callbacks: {
               label: ctx => {
                 const v = Number(ctx.raw);
-                return `Bs ${v.toFixed(2)}`;
+                return `${sym} ${v.toFixed(2)}`;
               },
             },
           },

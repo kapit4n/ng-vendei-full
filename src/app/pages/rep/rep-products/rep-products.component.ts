@@ -22,6 +22,7 @@ import {
   sortRowsByRevenueDesc,
   sortRowsForTable,
 } from '../../../utils/rep-product-sales-analytics';
+import { VStoreProfileService } from '../../../services/vendei/v-store-profile.service';
 
 @Component({
   selector: 'app-rep-products',
@@ -62,7 +63,8 @@ export class RepProductsComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private readonly productsSrv: RepProductsService,
     private readonly router: Router,
-    private readonly cdr: ChangeDetectorRef
+    private readonly cdr: ChangeDetectorRef,
+    private readonly profileSvc: VStoreProfileService
   ) {}
 
   ngOnInit(): void {
@@ -105,6 +107,10 @@ export class RepProductsComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.chartTop?.destroy();
     this.chartTop = undefined;
+  }
+
+  get currencySymbol(): string {
+    return this.profileSvc.getCurrencySymbol();
   }
 
   get tableRows(): ProductSalesAnalyticsRow[] {
@@ -152,13 +158,15 @@ export class RepProductsComponent implements OnInit, AfterViewInit, OnDestroy {
     const labels = top.map((r) => truncateLabel(r.name, 28));
     const data = top.map((r) => r.revenue);
 
+    const sym = this.currencySymbol;
+
     this.chartTop = new Chart(el, {
       type: 'bar',
       data: {
         labels,
         datasets: [
           {
-            label: 'Revenue (Bs)',
+            label: `Revenue (${sym})`,
             data,
             backgroundColor: 'rgba(63, 81, 181, 0.55)',
             borderColor: 'rgba(63, 81, 181, 1)',
@@ -177,7 +185,7 @@ export class RepProductsComponent implements OnInit, AfterViewInit, OnDestroy {
               label: (ctx) => {
                 const v = ctx.raw;
                 const n = typeof v === 'number' ? v : Number(v);
-                return `Bs ${Number.isFinite(n) ? n.toFixed(2) : '—'}`;
+                return `${sym} ${Number.isFinite(n) ? n.toFixed(2) : '\u2014'}`;
               },
             },
           },
@@ -185,7 +193,7 @@ export class RepProductsComponent implements OnInit, AfterViewInit, OnDestroy {
         scales: {
           x: {
             ticks: {
-              callback: (value) => `Bs ${value}`,
+              callback: (value) => `${sym} ${value}`,
             },
           },
         },

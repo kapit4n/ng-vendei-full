@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 import { RepDailySalesService, DailySalesSummary } from '../../../services/rep/rep-daily-sales.service';
 import { roundToCents } from 'src/app/utils/money';
+import { VStoreProfileService } from '../../../services/vendei/v-store-profile.service';
 
 @Component({
   selector: 'app-rep-daily-sales',
@@ -19,6 +20,7 @@ export class RepDailySalesComponent implements OnInit {
     private readonly dailySrv: RepDailySalesService,
     private readonly router: Router,
     private readonly cdr: ChangeDetectorRef,
+    private readonly profileSvc: VStoreProfileService
   ) {}
 
   ngOnInit(): void {
@@ -35,6 +37,10 @@ export class RepDailySalesComponent implements OnInit {
 
   openSells(): void {
     this.router.navigate(['/rep/sells']);
+  }
+
+  get currencySymbol(): string {
+    return this.profileSvc.getCurrencySymbol();
   }
 
   get netCash(): number {

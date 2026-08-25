@@ -43,8 +43,15 @@ describe('Failure Scenarios — Regression', () => {
     ordersSvcSpy = jasmine.createSpyObj('VOrdersService', ['save', 'saveDetail']);
     inventorySvcSpy = jasmine.createSpyObj('VInventoryService', ['reduceInventory', 'updateTotalSelled', 'updateQuantitySelled']);
     invoiceSvcSpy = jasmine.createSpyObj('VInvoiceService', ['generate']);
-    profileSvcSpy = jasmine.createSpyObj('VStoreProfileService', ['getProfiles', 'getActiveProfileId', 'setActiveProfile', 'getActiveProfile']);
+    profileSvcSpy = jasmine.createSpyObj('VStoreProfileService', ['getProfiles', 'getActiveProfileId', 'setActiveProfile', 'getActiveProfile', 'getCurrencySymbol', 'getCurrency', 'getLocale', 'getBusinessName', 'getAddress', 'getTaxLabel', 'getTaxId']);
     profileSvcSpy.getActiveProfileId.and.returnValue(1);
+    profileSvcSpy.getCurrencySymbol.and.returnValue('Bs');
+    profileSvcSpy.getCurrency.and.returnValue('BOB');
+    profileSvcSpy.getLocale.and.returnValue('es-BO');
+    profileSvcSpy.getBusinessName.and.returnValue('Test Store');
+    profileSvcSpy.getAddress.and.returnValue('Test Address');
+    profileSvcSpy.getTaxLabel.and.returnValue('NIT');
+    profileSvcSpy.getTaxId.and.returnValue('12345');
     dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
 
     TestBed.configureTestingModule({

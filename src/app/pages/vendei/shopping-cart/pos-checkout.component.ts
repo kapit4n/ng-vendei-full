@@ -66,6 +66,10 @@ export class PosCheckoutComponent implements OnInit {
 
   @ViewChild("toPrint", { static: false }) myDiv: ElementRef;
 
+  get currencySymbol(): string {
+    return this.profileSvc.getCurrencySymbol();
+  }
+
   ngOnInit() { }
 
   public removeProduct(product: any) {
@@ -93,6 +97,9 @@ export class PosCheckoutComponent implements OnInit {
   printOrder() {
     let popupWindow;
     var todayTime = new Date();
+    const locale = this.profileSvc.getLocale();
+    const businessName = this.profileSvc.getBusinessName() || 'Codigo Casero';
+    const address = this.profileSvc.getAddress() || 'Cochabamba Bolivia, Times St 1414';
 
     const productRows = this.selectedProducts.map(
       p => `<tr>
@@ -107,11 +114,11 @@ export class PosCheckoutComponent implements OnInit {
       `<div style='padding-left: 20px;'><div>`,
       `<p style="font-size: 13px;">`,
       `<img style="float: left;" src="http://localhost:4200/assets/vendei/print-logo.png" alt="Logo" height="120" width="120">`,
-      `Codigo Casero:<br>Software development company offers you web page development,`,
+      `${businessName}:<br>Software development company offers you web page development,`,
       `Billing software, Accounting, and customisable software.`,
       `</p>`,
-      `<p style="font-size: 13px;">Address. Cochabamba Bolivia, Times St 1414</p>`,
-      `<div>Date: ${todayTime.toLocaleDateString("es-ES")}</div>`,
+      `<p style="font-size: 13px;">Address. ${address}</p>`,
+      `<div>Date: ${todayTime.toLocaleDateString(locale)}</div>`,
       `</div>`,
       `<table style='padding-left: 20px;'>`,
       `<tr><th>Qty</th><th>Detail</th><th>Price</th><th>SubTotal</th></tr>`,
