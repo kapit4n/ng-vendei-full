@@ -1,0 +1,52 @@
+<div class="variant-select-dialog">
+  <h2 mat-dialog-title>Select variant for {{ data.productName }}</h2>
+
+  <mat-dialog-content>
+    @if (loading) {
+      <div class="loading-state">
+        <mat-spinner diameter="28"></mat-spinner>
+        <span>Loading variants...</span>
+      </div>
+    }
+
+    @if (loadError) {
+      <p class="form-error" role="alert">{{ loadError }}</p>
+    }
+
+    @if (!loading && !loadError) {
+      <div class="variant-list">
+        <button type="button" class="variant-item variant-item--base" (click)="selectBase()">
+          <div class="variant-info">
+            <span class="variant-name">Base product</span>
+            <span class="variant-price">{{ currencySymbol }} {{ data.basePrice | number:'1.2-2' }}</span>
+          </div>
+        </button>
+
+        @for (variant of variants; track variant.id) {
+          <button type="button" class="variant-item" (click)="selectVariant(variant)">
+            <div class="variant-info">
+              <span class="variant-name">{{ variant.name || 'Variant #' + variant.id }}</span>
+              @if (variantAttributeSummary(variant); as attrs) {
+                <span class="variant-attrs">{{ attrs }}</span>
+              }
+              <span class="variant-price">
+                @if (variant.price > 0) {
+                  {{ currencySymbol }} {{ variant.price | number:'1.2-2' }}
+                } @else {
+                  {{ currencySymbol }} {{ data.basePrice | number:'1.2-2' }}
+                }
+              </span>
+            </div>
+            @if (variant.sku) {
+              <span class="variant-sku">{{ variant.sku }}</span>
+            }
+          </button>
+        }
+      </div>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-stroked-button type="button" (click)="close()">Cancel</button>
+  </mat-dialog-actions>
+</div>

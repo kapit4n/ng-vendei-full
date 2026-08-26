@@ -10,6 +10,9 @@
           <div class="line-title-row">
             <div class="line-name-stack">
               <span class="line-name">{{ lineTitle(product) }}</span>
+              @if (product.variantName) {
+                <span class="line-variant">{{ product.variantName }}</span>
+              }
               @if (lineLabel(product); as lab) {
                 <span class="line-label">{{ lab }}</span>
               }

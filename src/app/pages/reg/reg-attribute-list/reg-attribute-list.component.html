@@ -1,0 +1,72 @@
+<div class="reg-attribute-list-page">
+  <div class="page-header">
+    <div class="page-header-text">
+      <h1 class="page-title">Product Attributes</h1>
+      <p class="page-subtitle">Define attributes like Size, Color, or Weight that can be assigned to products.</p>
+    </div>
+    <button mat-raised-button color="primary" type="button" (click)="newAttribute()">
+      <mat-icon>add</mat-icon>
+      New attribute
+    </button>
+  </div>
+
+  @if (loadError) {
+    <p class="form-error" role="alert">{{ loadError }}</p>
+  }
+
+  @if (!attributes.length && !loadError) {
+    <div class="empty-state">
+      <mat-icon class="empty-icon">tune</mat-icon>
+      <p class="empty-title">No attributes yet</p>
+      <p class="empty-hint">Create attributes to describe product variations like size, color, or material.</p>
+      <button mat-raised-button color="primary" type="button" (click)="newAttribute()">Create attribute</button>
+    </div>
+  }
+
+  @if (attributes.length) {
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Code</th>
+            <th>Type</th>
+            <th>Options</th>
+            <th>Required</th>
+            <th>Active</th>
+            <th class="col-actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (attr of attributes; track trackAttrRow($index, attr)) {
+            <tr>
+              <td class="cell-strong">{{ attr.name }}</td>
+              <td><code class="code-pill">{{ attr.code }}</code></td>
+              <td>{{ typeLabel(attr.type) }}</td>
+              <td class="cell-muted">
+                @if (attr.type === 'SELECT' && attr.options?.length) {
+                  {{ attr.options.join(', ') }}
+                } @else {
+                  —
+                }
+              </td>
+              <td>{{ attr.required ? 'Yes' : 'No' }}</td>
+              <td>{{ attr.active ? 'Yes' : 'No' }}</td>
+              <td class="col-actions">
+                <button mat-stroked-button color="primary" type="button" (click)="openAttribute(attr.id!)">Edit</button>
+                <button
+                  mat-stroked-button
+                  color="warn"
+                  type="button"
+                  [disabled]="deleteBusyId === attr.id"
+                  (click)="removeAttribute(attr)">
+                  Delete
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

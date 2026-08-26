@@ -1,0 +1,42 @@
+.reg-attribute-page {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 1rem 1rem 2rem;
+  box-sizing: border-box;
+}
+
+.reg-attribute-card {
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(15, 23, 42, 0.08);
+}
+
+.form-error {
+  margin: 0 0 1rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 8px;
+  background: rgba(211, 47, 47, 0.08);
+  color: #c62828;
+  font-size: 0.875rem;
+}
+
+.form-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.toggle-row {
+  display: flex;
+  gap: 2rem;
+  padding: 0.5rem 0;
+}
+
+.card-actions {
+  padding: 1rem 1rem 1.25rem !important;
+  gap: 0.5rem;
+}

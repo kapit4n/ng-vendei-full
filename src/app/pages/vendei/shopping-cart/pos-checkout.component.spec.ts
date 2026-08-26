@@ -692,6 +692,40 @@ describe('PosCheckoutComponent', () => {
       const { details } = component.buildOrderAndDetails();
       expect(details[0].productId).toBe(999);
     });
+
+    it('includes productVariantId when cart line has variant', () => {
+      component.selectedProducts = [
+        { id: '1-v10', productId: 1, quantity: 2, currentPrice: 70, variantId: 10, variantName: 'XL Red' },
+      ];
+      component.total = 140;
+
+      const { details } = component.buildOrderAndDetails();
+      expect(details[0].productVariantId).toBe(10);
+      expect(details[0].productId).toBe(1);
+    });
+
+    it('omits productVariantId when cart line has no variant', () => {
+      component.selectedProducts = [
+        { id: 1, productId: 1, quantity: 1, currentPrice: 10 },
+      ];
+      component.total = 10;
+
+      const { details } = component.buildOrderAndDetails();
+      expect(details[0].productVariantId).toBeUndefined();
+    });
+
+    it('mixes variant and non-variant lines correctly', () => {
+      component.selectedProducts = [
+        { id: '1-v10', productId: 1, quantity: 2, currentPrice: 70, variantId: 10 },
+        { id: 2, productId: 2, quantity: 1, currentPrice: 5 },
+      ];
+      component.total = 145;
+
+      const { details } = component.buildOrderAndDetails();
+      expect(details.length).toBe(2);
+      expect(details[0].productVariantId).toBe(10);
+      expect(details[1].productVariantId).toBeUndefined();
+    });
   });
 
   describe('onProfileChanged', () => {

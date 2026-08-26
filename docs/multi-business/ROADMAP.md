@@ -2,7 +2,7 @@
 
 ## Phase 0 — Baseline and Architecture Discovery
 
-**Status:** IN_PROGRESS
+**Status:** COMPLETED
 
 Analyze the current domain models, identify supermarket-specific assumptions, and document the baseline architecture.
 
@@ -24,7 +24,7 @@ Analyze the current domain models, identify supermarket-specific assumptions, an
 
 ## Phase 1 — Multi-Business Domain Foundation
 
-**Status:** NOT_STARTED
+**Status:** COMPLETED
 
 Introduce the conceptual model for BusinessProfile, BusinessType, BusinessCapability, and BusinessSettings.
 
@@ -49,7 +49,7 @@ Introduce the conceptual model for BusinessProfile, BusinessType, BusinessCapabi
 
 ## Phase 2 — Catalog Templates
 
-**Status:** NOT_STARTED
+**Status:** COMPLETED
 
 Introduce CatalogTemplate, CatalogTemplateCategory, CatalogTemplateProduct.
 
@@ -81,7 +81,7 @@ Introduce CatalogTemplate, CatalogTemplateCategory, CatalogTemplateProduct.
 
 ## Phase 3 — Generic Product Attributes
 
-**Status:** NOT_STARTED
+**Status:** IN_PROGRESS
 
 Design a flexible product-attribute system for cross-industry product variation.
 
@@ -110,6 +110,13 @@ Design a flexible product-attribute system for cross-industry product variation.
 - Variants are combinations of attribute values
 - POS can filter/select by attribute
 - No separate product tables per business type
+
+### Completion
+
+- [x] MB-015, MB-016, MB-017: Data model (4 tables + migration)
+- [x] MB-018: Backend CRUD API (3 controllers + routes)
+- [x] MB-019: Frontend attribute management UI (list + form + 20 tests)
+- [x] MB-020: POS variant selection integration
 
 ---
 

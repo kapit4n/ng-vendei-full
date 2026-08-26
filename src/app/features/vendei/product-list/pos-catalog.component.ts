@@ -1,10 +1,13 @@
 import { ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { forkJoin, Subject } from "rxjs";
 import { switchMap, takeUntil } from "rxjs/operators";
+import { MatDialog } from "@angular/material/dialog";
 import { VProductsService } from "../../../services/vendei/v-products.service";
 import { VCategoriesService } from "../../../services/vendei/v-categories.service";
 import { VConfigService } from "../../../services/vendei/v-config.service";
 import { VStoreProfileService } from "../../../services/vendei/v-store-profile.service";
+import { VProductVariantService } from "../../../services/vendei/v-product-variant.service";
+import { VariantSelectDialogComponent } from "../variant-select-dialog/variant-select-dialog.component";
 import { Router } from "@angular/router";
 import { roundToCents } from "src/app/utils/money";
 import { resolvePresentationImageUrl } from "src/app/utils/product-image-url";
@@ -44,6 +47,8 @@ export class PosCatalogComponent implements OnInit, OnDestroy {
     private categoriesSvc: VCategoriesService,
     public configSvc: VConfigService,
     private profileSvc: VStoreProfileService,
+    private variantSvc: VProductVariantService,
+    private dialog: MatDialog,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
@@ -140,18 +145,63 @@ export class PosCatalogComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Mutate the array in place: it is the same reference as the parent's
-    // `selectedProducts`. Reassigning `this.selectedProducts = [...]` would only
-    // update this @Input locally and would not update the ticket.
+    const productId = product.productId ?? product.Product?.id ?? product.id;
+    if (productId) {
+      this.variantSvc.getByProductId(productId).subscribe({
+        next: (variants) => {
+          const activeVariants = variants.filter((v) => v.active);
+          if (activeVariants.length > 0) {
+            this.openVariantDialog(product, activeVariants);
+          } else {
+            this.addProductToCart(product);
+          }
+        },
+        error: () => {
+          this.addProductToCart(product);
+        },
+      });
+    } else {
+      this.addProductToCart(product);
+    }
+  }
+
+  private openVariantDialog(product: any, variants: any[]): void {
+    const dialogRef = this.dialog.open(VariantSelectDialogComponent, {
+      width: '400px',
+      data: {
+        productId: product.productId ?? product.Product?.id ?? product.id,
+        productName: product.Product?.name || product.name || 'Product',
+        basePrice: roundToCents(product.currentPrice ?? product.price),
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === null) {
+        return;
+      }
+      if (result.base) {
+        this.addProductToCart(product);
+      } else {
+        this.addProductToCart(product, result);
+      }
+    });
+  }
+
+  private addProductToCart(product: any, variant?: any) {
     const list = this.selectedProducts;
-    const existing = list.find(p => p.id == product.id);
+    const lineId = variant ? `${product.id ?? product.productId}-v${variant.variantId}` : product.id;
+    const existing = list.find(p => p.id == lineId);
     if (existing) {
       existing.quantity = Number(existing.quantity) + 1;
       existing.currentPrice = roundToCents(existing.currentPrice ?? existing.price);
     } else {
       const selectedP = Object.assign({}, product, {
+        id: lineId,
         quantity: 1,
-        currentPrice: roundToCents(product.currentPrice ?? product.price),
+        currentPrice: variant ? roundToCents(variant.currentPrice) : roundToCents(product.currentPrice ?? product.price),
+        variantId: variant?.variantId || null,
+        variantName: variant?.variantName || null,
+        variantSku: variant?.variantSku || null,
       });
       list.push(selectedP);
     }

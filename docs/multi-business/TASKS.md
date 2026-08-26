@@ -480,3 +480,163 @@ When a template is applied, seed the new profile with products.
 - [x] Categories mapped correctly
 
 **Commit:** a2d61eb
+
+---
+
+## MB-015 — Design ProductAttributeDefinition Model
+
+**Status:** COMPLETED
+**Priority:** HIGH
+**Phase:** 3
+
+**Objective:**
+Design the data model for reusable product attribute definitions per business profile.
+
+**Dependencies:** MB-007
+
+**Acceptance Criteria:**
+- [x] ProductAttributeDefinition model with name, code, type, options, required, active, sortOrder
+- [x] StoreProfile FK relationship
+- [x] JSON-as-TEXT for options array (SQLite compatibility)
+
+**Files Changed:**
+- inventory-nod: migrations/20260825140000-create-product-attributes.js
+- inventory-nod: models/productattributedefinition.js
+
+**Commit:** (scaffolded with MB-016/017)
+
+---
+
+## MB-016 — Design ProductAttributeValue Model
+
+**Status:** COMPLETED
+**Priority:** HIGH
+**Phase:** 3
+
+**Objective:**
+Design the model for actual attribute values assigned to specific products.
+
+**Dependencies:** MB-015
+
+**Acceptance Criteria:**
+- [x] ProductAttributeValue model with productId, productAttributeDefinitionId, value
+- [x] FK relationships to Product and ProductAttributeDefinition
+
+**Files Changed:**
+- inventory-nod: models/productattributevalue.js
+
+**Commit:** (scaffolded with MB-015/017)
+
+---
+
+## MB-017 — Design ProductVariant Model
+
+**Status:** COMPLETED
+**Priority:** HIGH
+**Phase:** 3
+
+**Objective:**
+Design the model for specific product variants (e.g., "T-Shirt XL Red").
+
+**Dependencies:** MB-016
+
+**Acceptance Criteria:**
+- [x] ProductVariant model with name, sku, barcode, price, cost, stock, active
+- [x] ProductVariantAttributeValue junction table
+- [x] FK relationships with proper cascade rules
+
+**Files Changed:**
+- inventory-nod: models/productvariant.js
+- inventory-nod: models/productvariantattributevalue.js
+
+**Commit:** (scaffolded with MB-015/016)
+
+---
+
+## MB-018 — Backend API for Attributes
+
+**Status:** COMPLETED
+**Priority:** HIGH
+**Phase:** 3
+
+**Objective:**
+Full CRUD API endpoints for attribute definitions, values, and variants.
+
+**Dependencies:** MB-015, MB-016, MB-017
+
+**Acceptance Criteria:**
+- [x] GET/POST/PUT/DELETE /productAttributeDefinitions with storeProfileId filter
+- [x] GET/POST/DELETE /productAttributeValues with productId filter
+- [x] GET/POST/PUT/DELETE /productVariants with nested attribute includes
+- [x] Transactional create/update for variants with attribute value links
+- [x] Proxy entries added in frontend
+
+**Files Changed:**
+- inventory-nod: controllers/productattributedefinitions.js, productattributevalues.js, productvariants.js
+- inventory-nod: routes/productattributedefinitions.js, productattributevalues.js, productvariants.js
+- ng-vendei-full: proxy.conf.json (3 new entries)
+
+**Commit:** (scaffolded backend, proxy added in MB-019)
+
+---
+
+## MB-019 — Frontend Attribute Management UI
+
+**Status:** COMPLETED
+**Priority:** HIGH
+**Phase:** 3
+
+**Objective:**
+UI for managing product attribute definitions (list + create/edit form).
+
+**Dependencies:** MB-018
+
+**Acceptance Criteria:**
+- [x] Attribute definition list page with table view
+- [x] Attribute definition form (create/edit) with type selector
+- [x] SELECT type shows comma-separated options input
+- [x] Required and Active toggle switches
+- [x] Filtered by active storeProfile
+- [x] Route: /reg/attributes, /reg/attributes/new, /reg/attributes/:id
+
+**Implementation Notes:**
+- RAttributeDefinitionService: full CRUD calling /productAttributeDefinitions API
+- RegAttributeListComponent: table with name, code, type, options, required, active columns
+- RegAttributeComponent: form with mat-select for type, conditional options textarea
+- Proxy entries for /productAttributeDefinitions, /productAttributeValues, /productVariants
+- 20 new tests (10 list + 10 form), all passing
+
+**Files Changed:**
+- src/app/services/reg/r-attribute-definition.service.ts (new)
+- src/app/pages/reg/reg-attribute-list/reg-attribute-list.component.ts (new)
+- src/app/pages/reg/reg-attribute-list/reg-attribute-list.component.html (new)
+- src/app/pages/reg/reg-attribute-list/reg-attribute-list.component.css (new)
+- src/app/pages/reg/reg-attribute-list/reg-attribute-list.component.spec.ts (new)
+- src/app/pages/reg/reg-attribute/reg-attribute.component.ts (new)
+- src/app/pages/reg/reg-attribute/reg-attribute.component.html (new)
+- src/app/pages/reg/reg-attribute/reg-attribute.component.css (new)
+- src/app/pages/reg/reg-attribute/reg-attribute.component.spec.ts (new)
+- src/app/app.module.ts (declared components + routes + provider)
+- proxy.conf.json (3 new proxy entries)
+
+**Tests:**
+- 556 total, 6 pre-existing failures only, no regressions
+
+---
+
+## MB-020 — POS Integration for Variant Selection
+
+**Status:** COMPLETED
+**Priority:** HIGH
+**Phase:** 3
+
+**Objective:**
+Allow POS to filter/select products by variant when selling.
+
+**Dependencies:** MB-017, MB-019
+
+**Acceptance Criteria:**
+- [x] POS product list shows variant options when product has variants
+- [x] User can select variant before adding to cart
+- [x] Cart line item records selected variant
+- [x] Price reflects variant price when set

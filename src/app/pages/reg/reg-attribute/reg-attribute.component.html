@@ -1,0 +1,70 @@
+<div class="reg-attribute-page">
+  <mat-card class="reg-attribute-card">
+    <mat-card-header>
+      <mat-card-title>{{ pageTitle }}</mat-card-title>
+      <mat-card-subtitle>Attributes describe product variations (e.g. Size, Color, Weight).</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      @if (loadError) {
+        <p class="form-error" role="alert">{{ loadError }}</p>
+      }
+      @if (saveError) {
+        <p class="form-error" role="alert">{{ saveError }}</p>
+      }
+
+      <div class="form-layout">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Name</mat-label>
+          <input matInput [(ngModel)]="attrInfo.name" name="name" required autocomplete="off" placeholder="e.g. Size, Color, Material" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Code</mat-label>
+          <input matInput [(ngModel)]="attrInfo.code" name="code" required autocomplete="off" placeholder="e.g. SIZE, COLOR" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Type</mat-label>
+          <mat-select [(ngModel)]="attrInfo.type" name="type" (selectionChange)="onTypeChange()">
+            @for (t of attributeTypes; track t.value) {
+              <mat-option [value]="t.value">{{ t.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        @if (isSelectType) {
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Options (comma-separated)</mat-label>
+            <textarea
+              matInput
+              rows="2"
+              [(ngModel)]="optionsInput"
+              name="options"
+              placeholder="e.g. S, M, L, XL"></textarea>
+            <mat-hint>Separate each option with a comma.</mat-hint>
+          </mat-form-field>
+        }
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Sort Order</mat-label>
+          <input matInput type="number" [(ngModel)]="attrInfo.sortOrder" name="sortOrder" />
+        </mat-form-field>
+
+        <div class="toggle-row">
+          <mat-slide-toggle [(ngModel)]="attrInfo.required" name="required">
+            Required
+          </mat-slide-toggle>
+          <mat-slide-toggle [(ngModel)]="attrInfo.active" name="active">
+            Active
+          </mat-slide-toggle>
+        </div>
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions align="end" class="card-actions">
+      <button mat-stroked-button type="button" (click)="cancel()">Cancel</button>
+      <button mat-raised-button color="primary" type="button" (click)="save()">Save</button>
+    </mat-card-actions>
+  </mat-card>
+</div>

@@ -10,6 +10,8 @@ import { VProductsService } from '../../../services/vendei/v-products.service';
 import { VCategoriesService } from '../../../services/vendei/v-categories.service';
 import { VConfigService } from '../../../services/vendei/v-config.service';
 import { VStoreProfileService } from '../../../services/vendei/v-store-profile.service';
+import { VProductVariantService } from '../../../services/vendei/v-product-variant.service';
+import { MatDialog } from '@angular/material/dialog';
 import { PosCatalogComponent } from './pos-catalog.component';
 
 /**
@@ -30,6 +32,8 @@ describe('Catalog & Product Selection — Integration', () => {
   let categoriesSvcSpy: jasmine.SpyObj<VCategoriesService>;
   let profileSvcSpy: jasmine.SpyObj<VStoreProfileService>;
   let routerSpy: jasmine.SpyObj<Router>;
+  let variantSvcSpy: jasmine.SpyObj<VProductVariantService>;
+  let dialogSpy: jasmine.SpyObj<MatDialog>;
   let activeProfileIdSubject: BehaviorSubject<number | null>;
 
   const supermarketProducts = [
@@ -54,10 +58,14 @@ describe('Catalog & Product Selection — Integration', () => {
     productsSvcSpy = jasmine.createSpyObj('VProductsService', ['getProducts']);
     categoriesSvcSpy = jasmine.createSpyObj('VCategoriesService', ['getAll']);
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+    variantSvcSpy = jasmine.createSpyObj('VProductVariantService', ['getByProductId']);
+    dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
     activeProfileIdSubject = new BehaviorSubject<number | null>(1);
     profileSvcSpy = jasmine.createSpyObj('VStoreProfileService', ['getProfiles', 'getActiveProfileId', 'setActiveProfile', 'getActiveProfile']);
     profileSvcSpy.getActiveProfileId.and.returnValue(1);
     (profileSvcSpy as any).getActiveProfileId$ = () => activeProfileIdSubject.asObservable();
+
+    variantSvcSpy.getByProductId.and.returnValue(of([]));
 
     TestBed.configureTestingModule({
       declarations: [PosCatalogComponent],
@@ -68,6 +76,8 @@ describe('Catalog & Product Selection — Integration', () => {
         { provide: VCategoriesService, useValue: categoriesSvcSpy },
         { provide: VStoreProfileService, useValue: profileSvcSpy },
         { provide: Router, useValue: routerSpy },
+        { provide: VProductVariantService, useValue: variantSvcSpy },
+        { provide: MatDialog, useValue: dialogSpy },
       ],
     }).compileComponents();
   }));

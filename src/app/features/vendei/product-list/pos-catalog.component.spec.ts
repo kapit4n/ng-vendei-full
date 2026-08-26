@@ -1,15 +1,17 @@
 import { ComponentFixture, discardPeriodicTasks, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
-import { of, BehaviorSubject } from 'rxjs';
+import { of, BehaviorSubject, throwError } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialog } from '@angular/material/dialog';
 import { VProductsService } from '../../../services/vendei/v-products.service';
 import { VCategoriesService } from '../../../services/vendei/v-categories.service';
 import { VConfigService } from '../../../services/vendei/v-config.service';
 import { VStoreProfileService } from '../../../services/vendei/v-store-profile.service';
+import { VProductVariantService } from '../../../services/vendei/v-product-variant.service';
 import { PosCatalogComponent } from './pos-catalog.component';
 
 describe('PosCatalogComponent', () => {
@@ -19,6 +21,8 @@ describe('PosCatalogComponent', () => {
   let categoriesSvcSpy: jasmine.SpyObj<VCategoriesService>;
   let profileSvcSpy: jasmine.SpyObj<VStoreProfileService>;
   let routerSpy: jasmine.SpyObj<Router>;
+  let variantSvcSpy: jasmine.SpyObj<VProductVariantService>;
+  let dialogSpy: jasmine.SpyObj<MatDialog>;
   let activeProfileIdSubject: BehaviorSubject<number | null>;
 
   const sampleProducts = [
@@ -54,6 +58,8 @@ describe('PosCatalogComponent', () => {
     productsSvcSpy = jasmine.createSpyObj('VProductsService', ['getProducts']);
     categoriesSvcSpy = jasmine.createSpyObj('VCategoriesService', ['getAll']);
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+    variantSvcSpy = jasmine.createSpyObj('VProductVariantService', ['getByProductId']);
+    dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
     activeProfileIdSubject = new BehaviorSubject<number | null>(1);
     profileSvcSpy = jasmine.createSpyObj('VStoreProfileService', ['getProfiles', 'getActiveProfileId', 'setActiveProfile', 'getActiveProfile']);
     profileSvcSpy.getActiveProfileId.and.returnValue(1);
@@ -61,6 +67,7 @@ describe('PosCatalogComponent', () => {
 
     productsSvcSpy.getProducts.and.returnValue(of(sampleProducts));
     categoriesSvcSpy.getAll.and.returnValue(of(sampleCategories));
+    variantSvcSpy.getByProductId.and.returnValue(of([]));
 
     TestBed.configureTestingModule({
       declarations: [PosCatalogComponent],
@@ -77,6 +84,8 @@ describe('PosCatalogComponent', () => {
         { provide: VCategoriesService, useValue: categoriesSvcSpy },
         { provide: VStoreProfileService, useValue: profileSvcSpy },
         { provide: Router, useValue: routerSpy },
+        { provide: VProductVariantService, useValue: variantSvcSpy },
+        { provide: MatDialog, useValue: dialogSpy },
       ],
     }).compileComponents();
   }));
@@ -277,6 +286,143 @@ describe('PosCatalogComponent', () => {
       expect(component.selectedProducts.length).toBe(0);
       expect(recalTotalSpy).not.toHaveBeenCalled();
     });
+
+    it('opens variant dialog when product has variants', fakeAsync(() => {
+      const mockVariant = { id: 10, productId: 1, name: 'XL Red', sku: '', barcode: '', price: 70, cost: 0, stock: 0, active: true };
+      variantSvcSpy.getByProductId.and.returnValue(of([mockVariant]));
+      dialogSpy.open.and.returnValue({ afterClosed: () => of(null) } as any);
+
+      component.addProduct(sampleProducts[0]);
+      tick();
+
+      expect(dialogSpy.open).toHaveBeenCalled();
+      expect(component.selectedProducts.length).toBe(0);
+    }));
+
+    it('adds to cart directly when no variants', fakeAsync(() => {
+      variantSvcSpy.getByProductId.and.returnValue(of([]));
+
+      component.addProduct(sampleProducts[0]);
+      tick();
+
+      expect(component.selectedProducts.length).toBe(1);
+      expect(component.selectedProducts[0].quantity).toBe(1);
+      expect(dialogSpy.open).not.toHaveBeenCalled();
+    }));
+
+    it('adds to cart directly when variant fetch fails', fakeAsync(() => {
+      variantSvcSpy.getByProductId.and.returnValue(throwError(() => new Error('network')));
+
+      component.addProduct(sampleProducts[0]);
+      tick();
+
+      expect(component.selectedProducts.length).toBe(1);
+      expect(component.selectedProducts[0].quantity).toBe(1);
+      expect(dialogSpy.open).not.toHaveBeenCalled();
+    }));
+
+    it('adds product with variant data when variant is selected', fakeAsync(() => {
+      const variantResult = {
+        variantId: 10,
+        variantName: 'XL Red',
+        variantSku: 'XL-R',
+        currentPrice: 70,
+      };
+      variantSvcSpy.getByProductId.and.returnValue(of([{ id: 10, productId: 1, name: 'XL Red', sku: '', barcode: '', price: 70, cost: 0, stock: 0, active: true }]));
+      dialogSpy.open.and.returnValue({ afterClosed: () => of(variantResult) } as any);
+
+      component.addProduct(sampleProducts[0]);
+      tick();
+
+      expect(component.selectedProducts.length).toBe(1);
+      const line = component.selectedProducts[0];
+      expect(line.variantId).toBe(10);
+      expect(line.variantName).toBe('XL Red');
+      expect(line.variantSku).toBe('XL-R');
+      expect(line.currentPrice).toBe(70);
+      expect(line.id).toBe('1-v10');
+    }));
+
+    it('adds product without variant data when base is selected', fakeAsync(() => {
+      variantSvcSpy.getByProductId.and.returnValue(of([{ id: 10, productId: 1, name: 'XL Red', sku: '', barcode: '', price: 70, cost: 0, stock: 0, active: true }]));
+      dialogSpy.open.and.returnValue({ afterClosed: () => of({ base: true }) } as any);
+
+      component.addProduct(sampleProducts[0]);
+      tick();
+
+      expect(component.selectedProducts.length).toBe(1);
+      const line = component.selectedProducts[0];
+      expect(line.variantId).toBeNull();
+      expect(line.variantName).toBeNull();
+      expect(line.id).toBe(1);
+    }));
+
+    it('does not add product when dialog is cancelled', fakeAsync(() => {
+      variantSvcSpy.getByProductId.and.returnValue(of([{ id: 10, productId: 1, name: 'XL Red', sku: '', barcode: '', price: 70, cost: 0, stock: 0, active: true }]));
+      dialogSpy.open.and.returnValue({ afterClosed: () => of(null) } as any);
+
+      component.addProduct(sampleProducts[0]);
+      tick();
+
+      expect(component.selectedProducts.length).toBe(0);
+    }));
+
+    it('increments quantity when same variant is added twice', fakeAsync(() => {
+      const variantResult = {
+        variantId: 10,
+        variantName: 'XL Red',
+        variantSku: 'XL-R',
+        currentPrice: 70,
+      };
+      variantSvcSpy.getByProductId.and.returnValue(of([{ id: 10, productId: 1, name: 'XL Red', sku: '', barcode: '', price: 70, cost: 0, stock: 0, active: true }]));
+      dialogSpy.open.and.returnValue({ afterClosed: () => of(variantResult) } as any);
+
+      component.addProduct(sampleProducts[0]);
+      tick();
+      component.addProduct(sampleProducts[0]);
+      tick();
+
+      expect(component.selectedProducts.length).toBe(1);
+      expect(component.selectedProducts[0].quantity).toBe(2);
+      expect(component.selectedProducts[0].variantId).toBe(10);
+    }));
+
+    it('creates separate lines for different variants of same product', fakeAsync(() => {
+      variantSvcSpy.getByProductId.and.returnValue(of([
+        { id: 10, productId: 1, name: 'XL Red', sku: 'XL-R', barcode: '', price: 70, cost: 0, stock: 0, active: true },
+        { id: 11, productId: 1, name: 'L Blue', sku: 'LB', barcode: '', price: 65, cost: 0, stock: 0, active: true },
+      ]));
+
+      dialogSpy.open.and.returnValues(
+        { afterClosed: () => of({ variantId: 10, variantName: 'XL Red', variantSku: 'XL-R', currentPrice: 70 }) } as any,
+        { afterClosed: () => of({ variantId: 11, variantName: 'L Blue', variantSku: 'LB', currentPrice: 65 }) } as any,
+      );
+
+      component.addProduct(sampleProducts[0]);
+      tick();
+      component.addProduct(sampleProducts[0]);
+      tick();
+
+      expect(component.selectedProducts.length).toBe(2);
+      expect(component.selectedProducts[0].variantId).toBe(10);
+      expect(component.selectedProducts[1].variantId).toBe(11);
+    }));
+
+    it('uses variant price when variant has no price set', fakeAsync(() => {
+      const variantResult = {
+        variantId: 10,
+        variantName: 'XL Red',
+        variantSku: 'XL-R',
+        currentPrice: 2.5,
+      };
+      variantSvcSpy.getByProductId.and.returnValue(of([{ id: 10, productId: 1, name: 'XL Red', sku: '', barcode: '', price: 0, cost: 0, stock: 0, active: true }]));
+      dialogSpy.open.and.returnValue({ afterClosed: () => of(variantResult) } as any);
+
+      component.addProduct(sampleProducts[0]);
+      tick();
+
+      expect(component.selectedProducts[0].currentPrice).toBe(2.5);
+    }));
   });
 
   describe('addByCodeField', () => {

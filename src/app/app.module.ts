@@ -47,6 +47,8 @@ import { RegCustomerListComponent } from "./pages/reg/reg-customer-list/reg-cust
 import { RegUnitOfMeasureListComponent } from "./pages/reg/reg-unit-of-measure-list/reg-unit-of-measure-list.component";
 import { RegUnitOfMeasureComponent } from "./pages/reg/reg-unit-of-measure/reg-unit-of-measure.component";
 import { CatalogTemplatesComponent } from "./pages/reg/catalog-templates/catalog-templates.component";
+import { RegAttributeListComponent } from "./pages/reg/reg-attribute-list/reg-attribute-list.component";
+import { RegAttributeComponent } from "./pages/reg/reg-attribute/reg-attribute.component";
 // inv pages
 import { InvProductsComponent } from "./pages/inv/inv-products/inv-products.component";
 import { InvProductsInvComponent } from "./pages/inv/inv-products-inv/inv-products-inv.component";
@@ -76,6 +78,7 @@ import { CustomerListComponent } from './features/vendei/customer-list/customer-
 import { CustomersDialogComponent } from './features/vendei/customers-dialog/customers-dialog.component';
 import { StoreProfileSelectorComponent } from './features/vendei/store-profile-selector/store-profile-selector.component';
 import { ProfileSwitchDialogComponent } from './features/vendei/profile-switch-dialog/profile-switch-dialog.component';
+import { VariantSelectDialogComponent } from './features/vendei/variant-select-dialog/variant-select-dialog.component';
 // reg comp
 
 import { VProductsService } from './services/vendei/v-products.service';
@@ -88,6 +91,7 @@ import { RProductPresentationService } from "./services/reg/r-product-presentati
 import { RCategoryService } from "./services/reg/r-category.service";
 import { RUnitOfMeasureService } from "./services/reg/r-unit-of-measure.service";
 import { RConfigService } from "./services/reg/r-config.service";
+import { RAttributeDefinitionService } from "./services/reg/r-attribute-definition.service";
 // inv services
 import { IConfigService } from './services/inv/i-config.service';
 import { IProductsService } from './services/inv/i-products.service';
@@ -180,6 +184,21 @@ const appRoutes: Routes = [
     path: "reg/templates",
     component: CatalogTemplatesComponent,
     data: { title: "Catalog Templates" }
+  },
+  {
+    path: "reg/attributes",
+    component: RegAttributeListComponent,
+    data: { breadcrumb: "Product Attributes" }
+  },
+  {
+    path: "reg/attributes/new",
+    component: RegAttributeComponent,
+    data: { breadcrumb: "New Attribute" }
+  },
+  {
+    path: "reg/attributes/:id",
+    component: RegAttributeComponent,
+    data: { breadcrumb: "Edit Attribute" }
   },
   {
     path: "reg/customers",
@@ -280,6 +299,7 @@ const appRoutes: Routes = [
     CustomersDialogComponent,
     StoreProfileSelectorComponent,
     ProfileSwitchDialogComponent,
+    VariantSelectDialogComponent,
     RegProductComponent,
     RegProductPresentationComponent,
     RegCategoryComponent,
@@ -308,6 +328,8 @@ const appRoutes: Routes = [
     AngExamResultComponent,
     AngFeaturesGuideComponent,
     CatalogTemplatesComponent,
+    RegAttributeListComponent,
+    RegAttributeComponent,
   ],
   imports: [
     RouterModule.forRoot(appRoutes),
@@ -344,6 +366,7 @@ const appRoutes: Routes = [
     RUnitOfMeasureService,
     RConfigService,
     RCustomerService,
+    RAttributeDefinitionService,
     IConfigService,
     IProductsService,
     RepConfigService,

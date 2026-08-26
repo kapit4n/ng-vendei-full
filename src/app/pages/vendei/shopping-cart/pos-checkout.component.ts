@@ -104,7 +104,7 @@ export class PosCheckoutComponent implements OnInit {
     const productRows = this.selectedProducts.map(
       p => `<tr>
         <td>${p.quantity}</td>
-        <td>${p.Product.name}</td>
+        <td>${p.Product.name}${p.variantName ? ' (' + p.variantName + ')' : ''}</td>
         <td>${roundToCents(p.currentPrice).toFixed(2)}</td>
         <td>${roundToCents(p.currentPrice * p.quantity).toFixed(2)}</td>
       </tr>`
@@ -258,6 +258,9 @@ export class PosCheckoutComponent implements OnInit {
       detail.totalPrice = roundToCents(Number(p.quantity) * Number(p.currentPrice));
       detail.productId = p.productId ?? p.Product?.id ?? p.id;
       detail.orderId = "0";
+      if (p.variantId) {
+        detail.productVariantId = p.variantId;
+      }
       details.push(detail);
     });
 
