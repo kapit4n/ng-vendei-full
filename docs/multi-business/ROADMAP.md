@@ -161,7 +161,7 @@ LOYALTY              — loyalty program
 
 ## Phase 5 — Advanced Selling Modes
 
-**Status:** NOT_STARTED
+**Status:** COMPLETED
 
 Support generic selling modes beyond simple unit sales.
 
@@ -172,22 +172,12 @@ Support generic selling modes beyond simple unit sales.
 - MB-027: POS selling mode UI
 - MB-028: Price calculation per mode
 
-### Selling Modes
+### Completion
 
-| Mode | Example | Use Case |
-|------|---------|----------|
-| UNIT | 1 Coca-Cola | Standard retail |
-| WEIGHT | 1.25 kg × Bs 30/kg | Butcher, produce |
-| VARIABLE_QTY | 2.5 meters × Bs 20/m | Fabric, wire |
-| VARIANT | T-Shirt / XL / Black | Clothing |
-| COMBO | Family Chicken Combo | Bundled products |
-
-### Acceptance Criteria
-
-- Each product/presentation can specify its selling mode
-- POS calculates price correctly per mode
-- Receipt shows correct quantity/unit/price format
-- Existing unit-sales mode continues working
+- [x] MB-025: Selling mode constants and helpers (SELLING_MODES, isDecimalSellingMode, sellingModeUnitLabel)
+- [x] MB-026: Backend support (sellingMode on Product, unitLabel on OrderDetail)
+- [x] MB-027: POS selling mode UI (decimal qty dialog, unit labels on tickets/edit)
+- [x] MB-028: Price calculation and receipt formatting per mode
 
 ---
 

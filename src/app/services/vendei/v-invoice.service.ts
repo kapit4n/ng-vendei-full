@@ -35,7 +35,7 @@ export class VInvoiceService {
       .map(
         (p) => `
           <tr>
-            <td class="qty">${p.quantity}</td>
+            <td class="qty">${p.quantity}${p.unitLabel ? ' ' + p.unitLabel : ''}</td>
             <td class="desc">${p.Product?.name ?? p.name ?? ''}</td>
             <td class="price">${roundToCents(p.currentPrice).toFixed(2)}</td>
             <td class="total">${roundToCents(Number(p.quantity) * Number(p.currentPrice)).toFixed(2)}</td>

@@ -24,6 +24,8 @@ export interface IProduct {
   trackExpiry?: boolean;
   /** If set and trackExpiry, receive can omit expiry (today + N days in UTC on server). */
   defaultShelfLifeDays?: number | null;
+  /** Selling mode for this product: UNIT, WEIGHT, VARIABLE_QTY, VARIANT, COMBO. */
+  sellingMode?: string;
 }
 
 @Injectable({

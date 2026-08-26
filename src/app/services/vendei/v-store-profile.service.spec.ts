@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { VStoreProfileService, StoreProfile, CAPABILITIES } from './v-store-profile.service';
+import { VStoreProfileService, StoreProfile, CAPABILITIES, isDecimalSellingMode, sellingModeUnitLabel } from './v-store-profile.service';
 import { VConfigService } from './v-config.service';
 
 describe('VStoreProfileService', () => {
@@ -326,6 +326,56 @@ describe('VStoreProfileService', () => {
       expect(config.showProductImages).toBe(true);
       expect(config.quickProducts).toEqual([]);
       expect(config.defaultSellingMode).toBe('UNIT');
+    });
+
+    it('getDefaultSellingMode returns profile default', () => {
+      expect(service.getDefaultSellingMode()).toBe('UNIT');
+    });
+
+    it('resolveSellingMode returns product override when valid', () => {
+      expect(service.resolveSellingMode('WEIGHT')).toBe('WEIGHT');
+    });
+
+    it('resolveSellingMode falls back to profile default', () => {
+      expect(service.resolveSellingMode(null)).toBe('UNIT');
+    });
+
+    it('resolveSellingMode ignores invalid mode', () => {
+      expect(service.resolveSellingMode('INVALID')).toBe('UNIT');
+    });
+  });
+
+  describe('selling mode helpers', () => {
+    it('isDecimalSellingMode returns true for WEIGHT', () => {
+      expect(isDecimalSellingMode('WEIGHT')).toBe(true);
+    });
+
+    it('isDecimalSellingMode returns true for VARIABLE_QTY', () => {
+      expect(isDecimalSellingMode('VARIABLE_QTY')).toBe(true);
+    });
+
+    it('isDecimalSellingMode returns false for UNIT', () => {
+      expect(isDecimalSellingMode('UNIT')).toBe(false);
+    });
+
+    it('isDecimalSellingMode returns false for null', () => {
+      expect(isDecimalSellingMode(null)).toBe(false);
+    });
+
+    it('sellingModeUnitLabel returns kg for WEIGHT', () => {
+      expect(sellingModeUnitLabel('WEIGHT')).toBe('kg');
+    });
+
+    it('sellingModeUnitLabel returns m for VARIABLE_QTY', () => {
+      expect(sellingModeUnitLabel('VARIABLE_QTY')).toBe('m');
+    });
+
+    it('sellingModeUnitLabel returns un for UNIT', () => {
+      expect(sellingModeUnitLabel('UNIT')).toBe('un');
+    });
+
+    it('sellingModeUnitLabel returns empty for null', () => {
+      expect(sellingModeUnitLabel(null)).toBe('');
     });
   });
 });

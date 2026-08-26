@@ -15,7 +15,7 @@ export interface PosConfig {
   catalogColumns: number;
   showProductImages: boolean;
   quickProducts: number[];
-  defaultSellingMode: string;
+  defaultSellingMode: SellingMode;
 }
 
 export interface StoreProfile {
@@ -87,6 +87,32 @@ export const CAPABILITIES = {
 } as const;
 
 export type Capability = typeof CAPABILITIES[keyof typeof CAPABILITIES];
+
+/** Well-known selling mode constants. */
+export const SELLING_MODES = {
+  UNIT: 'UNIT',
+  WEIGHT: 'WEIGHT',
+  VARIABLE_QTY: 'VARIABLE_QTY',
+  VARIANT: 'VARIANT',
+  COMBO: 'COMBO',
+} as const;
+
+export type SellingMode = typeof SELLING_MODES[keyof typeof SELLING_MODES];
+
+/** Whether the selling mode uses decimal quantities (weight, meters, etc.). */
+export function isDecimalSellingMode(mode: string | undefined | null): boolean {
+  return mode === SELLING_MODES.WEIGHT || mode === SELLING_MODES.VARIABLE_QTY;
+}
+
+/** Default unit label for a selling mode. */
+export function sellingModeUnitLabel(mode: string | undefined | null): string {
+  switch (mode) {
+    case SELLING_MODES.WEIGHT: return 'kg';
+    case SELLING_MODES.VARIABLE_QTY: return 'm';
+    case SELLING_MODES.UNIT: return 'un';
+    default: return '';
+  }
+}
 
 const STORAGE_KEY = 'activeStoreProfileId';
 
@@ -223,6 +249,20 @@ export class VStoreProfileService {
   getPosConfig(profile?: StoreProfile | null): PosConfig {
     const p = profile ?? this.getActiveProfile();
     return { ...DEFAULT_POS_CONFIG, ...p?.posConfig };
+  }
+
+  /** Default selling mode from POS config (default: UNIT). */
+  getDefaultSellingMode(profile?: StoreProfile | null): SellingMode {
+    const config = this.getPosConfig(profile);
+    return (config.defaultSellingMode as SellingMode) || SELLING_MODES.UNIT;
+  }
+
+  /** Resolve the effective selling mode: product override → profile default → UNIT. */
+  resolveSellingMode(productSellingMode?: string | null, profile?: StoreProfile | null): SellingMode {
+    if (productSellingMode && Object.values(SELLING_MODES).includes(productSellingMode as SellingMode)) {
+      return productSellingMode as SellingMode;
+    }
+    return this.getDefaultSellingMode(profile);
   }
 
   private loadFromStorage(): number | null {

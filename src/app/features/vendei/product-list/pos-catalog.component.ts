@@ -8,6 +8,7 @@ import { VConfigService } from "../../../services/vendei/v-config.service";
 import { VStoreProfileService } from "../../../services/vendei/v-store-profile.service";
 import { VProductVariantService } from "../../../services/vendei/v-product-variant.service";
 import { VariantSelectDialogComponent } from "../variant-select-dialog/variant-select-dialog.component";
+import { QtyInputDialogComponent } from "./qty-input-dialog.component";
 import { Router } from "@angular/router";
 import { roundToCents } from "src/app/utils/money";
 import { resolvePresentationImageUrl } from "src/app/utils/product-image-url";
@@ -16,7 +17,7 @@ import {
   productLabelFromFullName,
   productTitleFromFullName,
 } from "src/app/utils/product-display-text";
-import { CAPABILITIES } from "src/app/services/vendei/v-store-profile.service";
+import { CAPABILITIES, SELLING_MODES, isDecimalSellingMode, sellingModeUnitLabel, SellingMode } from "src/app/services/vendei/v-store-profile.service";
 
 @Component({
     selector: "app-pos-catalog",
@@ -147,6 +148,18 @@ export class PosCatalogComponent implements OnInit, OnDestroy {
     }
 
     const productId = product.productId ?? product.Product?.id ?? product.id;
+
+    // Resolve selling mode: per-product override → profile default → UNIT
+    const sellingMode = this.profileSvc.resolveSellingMode(
+      product.sellingMode ?? product.Product?.sellingMode
+    );
+
+    // For WEIGHT / VARIABLE_QTY, prompt for decimal quantity
+    if (isDecimalSellingMode(sellingMode)) {
+      this.openQuantityDialog(product, sellingMode);
+      return;
+    }
+
     if (productId && this.hasVariantsEnabled) {
       this.variantSvc.getByProductId(productId).subscribe({
         next: (variants) => {
@@ -164,6 +177,24 @@ export class PosCatalogComponent implements OnInit, OnDestroy {
     } else {
       this.addProductToCart(product);
     }
+  }
+
+  private openQuantityDialog(product: any, sellingMode: SellingMode): void {
+    const unitLabel = sellingModeUnitLabel(sellingMode);
+    const dialogRef = this.dialog.open(QtyInputDialogComponent, {
+      width: '300px',
+      data: {
+        productName: this.displayProductName(product),
+        unitLabel,
+        initialQuantity: 0.25,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((qty) => {
+      if (qty && Number(qty) > 0) {
+        this.addProductToCart(product, undefined, sellingMode, Number(qty));
+      }
+    });
   }
 
   private openVariantDialog(product: any, variants: any[]): void {
@@ -188,21 +219,30 @@ export class PosCatalogComponent implements OnInit, OnDestroy {
     });
   }
 
-  private addProductToCart(product: any, variant?: any) {
+  private addProductToCart(product: any, variant?: any, sellingMode?: string, decimalQty?: number) {
     const list = this.selectedProducts;
     const lineId = variant ? `${product.id ?? product.productId}-v${variant.variantId}` : product.id;
     const existing = list.find(p => p.id == lineId);
     if (existing) {
-      existing.quantity = Number(existing.quantity) + 1;
+      if (decimalQty != null) {
+        existing.quantity = roundToCents(Number(existing.quantity) + decimalQty);
+      } else {
+        existing.quantity = Number(existing.quantity) + 1;
+      }
       existing.currentPrice = roundToCents(existing.currentPrice ?? existing.price);
     } else {
+      const mode = sellingMode || product.sellingMode || product.Product?.sellingMode || '';
+      const unitLabel = sellingModeUnitLabel(mode);
+      const qty = decimalQty != null ? decimalQty : 1;
       const selectedP = Object.assign({}, product, {
         id: lineId,
-        quantity: 1,
+        quantity: qty,
         currentPrice: variant ? roundToCents(variant.currentPrice) : roundToCents(product.currentPrice ?? product.price),
         variantId: variant?.variantId || null,
         variantName: variant?.variantName || null,
         variantSku: variant?.variantSku || null,
+        sellingMode: mode || null,
+        unitLabel: unitLabel || null,
       });
       list.push(selectedP);
     }

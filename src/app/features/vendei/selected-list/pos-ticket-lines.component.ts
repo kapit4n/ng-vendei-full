@@ -14,6 +14,7 @@ export interface DialogData {
   img: string;
   quantity: number;
   price: number;
+  unitLabel?: string;
 }
 
 @Component({
@@ -42,7 +43,8 @@ export class PosTicketLinesComponent implements OnInit {
         name: product.Product?.name || product.name,
         img: resolvePresentationImageUrl(product?.img, product?.Product?.img),
         quantity: product.quantity,
-        price: product.currentPrice
+        price: product.currentPrice,
+        unitLabel: product.unitLabel || null,
       }
     });
 

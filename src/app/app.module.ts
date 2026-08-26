@@ -79,6 +79,7 @@ import { CustomersDialogComponent } from './features/vendei/customers-dialog/cus
 import { StoreProfileSelectorComponent } from './features/vendei/store-profile-selector/store-profile-selector.component';
 import { ProfileSwitchDialogComponent } from './features/vendei/profile-switch-dialog/profile-switch-dialog.component';
 import { VariantSelectDialogComponent } from './features/vendei/variant-select-dialog/variant-select-dialog.component';
+import { QtyInputDialogComponent } from './features/vendei/product-list/qty-input-dialog.component';
 // reg comp
 
 import { VProductsService } from './services/vendei/v-products.service';
@@ -300,6 +301,7 @@ const appRoutes: Routes = [
     StoreProfileSelectorComponent,
     ProfileSwitchDialogComponent,
     VariantSelectDialogComponent,
+    QtyInputDialogComponent,
     RegProductComponent,
     RegProductPresentationComponent,
     RegCategoryComponent,

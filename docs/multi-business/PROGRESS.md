@@ -2,10 +2,10 @@
 
 Last Updated: 2026-08-26
 
-Current Phase: Phase 4 (Complete)
-In Progress: None (Phase 4 Complete)
+Current Phase: Phase 5 (Complete)
+In Progress: None (Phase 5 Complete)
 
-Current Task: MB-024 COMPLETED — Phase 4 done
+Current Task: MB-028 COMPLETED — Phase 5 done
 
 Overall Progress: 100%
 
@@ -64,10 +64,29 @@ Overall Progress: 100%
   - Discount input gated by DISCOUNTS capability
   - Customer card gated by CUSTOMERS capability
   - 9 new capability gating tests (5 catalog + 4 payment panel), all passing
+- MB-025: Define Selling Mode Types
+  - SELLING_MODES constants (UNIT, WEIGHT, VARIABLE_QTY, VARIANT, COMBO)
+  - SellingMode type, isDecimalSellingMode(), sellingModeUnitLabel()
+  - resolveSellingMode() on VStoreProfileService (product override → profile default → UNIT)
+  - 12 new unit tests for selling mode helpers
+- MB-026: Backend Selling Mode Support
+  - Migration adds sellingMode to Products (default: 'UNIT')
+  - Migration adds unitLabel to OrderDetails
+  - Product and OrderDetail models updated
+  - orderDetails controller saves unitLabel on create
+- MB-027: POS Selling Mode UI
+  - QtyInputDialogComponent for decimal quantity entry (WEIGHT/VARIABLE_QTY)
+  - Ticket lines show unit label (kg, m) next to quantity
+  - Edit dialog supports decimal quantities with unit label
+  - sellingMode and unitLabel stored on cart lines
+- MB-028: Price Calculation Per Mode
+  - Price = unitPrice × quantity (works for all modes)
+  - Invoice/receipt shows quantity with unit label
+  - Checkout passes unitLabel to backend on save
 
 ## In Progress
 
-- None (Phase 4 complete)
+- None (Phase 5 complete)
 
 ## Blocked
 
@@ -75,17 +94,17 @@ Overall Progress: 100%
 
 ## Next Task
 
-MB-025 (Phase 5 — Advanced Selling Modes): see ROADMAP.md
+MB-029 (Phase 6 — Configurable POS): see ROADMAP.md
 
 ## Tests
 
 Unit (frontend):
-- 587 tests
-- 12 pre-existing failures (AppComponent, Failure Scenarios x4, Reg*Components x4, VariantSelectDialogComponent, RegCustomerListComponent)
-- No regressions from MB-004 through MB-024
+- 599 tests
+- 12 pre-existing failures (AppComponent, Failure Scenarios x4, Reg*Components x4, PosCheckoutComponent x2, rep-product-sales-analytics)
+- No regressions from MB-004 through MB-028
 
 Backend:
-- Migration: PASS (24 migrations, db:migrate + db:seed:all)
+- Migration: PASS (25 migrations, db:migrate + db:seed:all)
 - API smoke test: PASS (GET list, GET by id, POST create)
 
 Build (frontend):
@@ -102,6 +121,6 @@ Build (frontend):
 
 ## Notes for Next Session
 
-1. MB-015 through MB-024 complete — Phases 3 and 4 done
-2. Phase 5 (Advanced Selling Modes) can begin
+1. MB-015 through MB-028 complete — Phases 3, 4, and 5 done
+2. Phase 6 (Configurable POS) can begin
 3. Read ROADMAP.md for remaining tasks

@@ -261,6 +261,9 @@ export class PosCheckoutComponent implements OnInit {
       if (p.variantId) {
         detail.productVariantId = p.variantId;
       }
+      if (p.unitLabel) {
+        detail.unitLabel = p.unitLabel;
+      }
       details.push(detail);
     });
 

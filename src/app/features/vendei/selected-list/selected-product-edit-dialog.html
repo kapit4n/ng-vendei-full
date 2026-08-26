@@ -1,12 +1,12 @@
 <h1 mat-dialog-title>Update Quantity</h1>
 <div mat-dialog-content>
-  <mat-form-field hintLabel="Max 10">
-    <input matInput #input max="10" placeholder="Enter quantity" [(ngModel)]="data.quantity">
-    <mat-hint align="end">{{input.value || 0}}/10</mat-hint>
+  <mat-form-field>
+    <mat-label>Quantity{{ data.unitLabel ? ' (' + data.unitLabel + ')' : '' }}</mat-label>
+    <input matInput type="number" [(ngModel)]="data.quantity" [step]="data.unitLabel ? 0.01 : 1" min="0.01">
   </mat-form-field>
   
   <mat-form-field>
-    <input matInput #input max="10" placeholder="Enter Price" [(ngModel)]="data.price">
+    <input matInput type="number" placeholder="Enter Price" [(ngModel)]="data.price" step="0.01" min="0">
   </mat-form-field>
 
 </div>

@@ -61,9 +61,10 @@ describe('Catalog & Product Selection — Integration', () => {
     variantSvcSpy = jasmine.createSpyObj('VProductVariantService', ['getByProductId']);
     dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
     activeProfileIdSubject = new BehaviorSubject<number | null>(1);
-    profileSvcSpy = jasmine.createSpyObj('VStoreProfileService', ['getProfiles', 'getActiveProfileId', 'setActiveProfile', 'getActiveProfile', 'hasCapability']);
+    profileSvcSpy = jasmine.createSpyObj('VStoreProfileService', ['getProfiles', 'getActiveProfileId', 'setActiveProfile', 'getActiveProfile', 'hasCapability', 'resolveSellingMode']);
     profileSvcSpy.getActiveProfileId.and.returnValue(1);
     profileSvcSpy.hasCapability.and.returnValue(true);
+    profileSvcSpy.resolveSellingMode.and.returnValue('UNIT');
     (profileSvcSpy as any).getActiveProfileId$ = () => activeProfileIdSubject.asObservable();
 
     variantSvcSpy.getByProductId.and.returnValue(of([]));

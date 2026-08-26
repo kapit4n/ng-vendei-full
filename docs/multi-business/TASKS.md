@@ -713,3 +713,68 @@ Gate POS UI features based on active profile capabilities.
 - PosCatalogComponent: `canScanBarcode` / `hasVariantsEnabled` getters gate quick code section and variant dialog
 - PosPaymentPanelComponent: `hasDiscounts` / `hasCustomers` getters gate discount input and customer card
 - 9 new capability gating tests (5 catalog + 4 payment panel), all passing
+
+## MB-025 — Define Selling Mode Types
+
+**Status:** COMPLETED
+**Priority:** HIGH
+**Phase:** 5
+
+**Objective:**
+Define well-known selling mode constants and utility functions.
+
+**Acceptance Criteria:**
+- [x] SELLING_MODES constants (UNIT, WEIGHT, VARIABLE_QTY, VARIANT, COMBO)
+- [x] SellingMode type derived from constants
+- [x] isDecimalSellingMode() helper function
+- [x] sellingModeUnitLabel() helper function
+- [x] resolveSellingMode() on VStoreProfileService
+- [x] 12 new unit tests for selling mode helpers
+
+## MB-026 — Backend Selling Mode Support
+
+**Status:** COMPLETED
+**Priority:** HIGH
+**Phase:** 5
+
+**Objective:**
+Add sellingMode to Product model and unitLabel to OrderDetail.
+
+**Acceptance Criteria:**
+- [x] Migration adds sellingMode column to Products (default: 'UNIT')
+- [x] Migration adds unitLabel column to OrderDetails
+- [x] Product model updated with sellingMode field
+- [x] OrderDetail model updated with unitLabel field
+- [x] orderDetails controller saves unitLabel on create
+
+## MB-027 — POS Selling Mode UI
+
+**Status:** COMPLETED
+**Priority:** HIGH
+**Phase:** 5
+
+**Objective:**
+POS UI adapts quantity input based on product selling mode.
+
+**Acceptance Criteria:**
+- [x] WEIGHT/VARIABLE_QTY products prompt decimal quantity dialog
+- [x] UNIT products increment by 1 (existing behavior)
+- [x] QtyInputDialogComponent for decimal quantity entry
+- [x] Ticket lines show unit label (kg, m) next to quantity
+- [x] Edit dialog supports decimal quantities with unit label
+- [x] sellingMode and unitLabel stored on cart lines
+
+## MB-028 — Price Calculation Per Mode
+
+**Status:** COMPLETED
+**Priority:** HIGH
+**Phase:** 5
+
+**Objective:**
+Ensure price calculation and receipt formatting work for all selling modes.
+
+**Acceptance Criteria:**
+- [x] Price = unitPrice × quantity (works for all modes)
+- [x] Invoice/receipt shows quantity with unit label
+- [x] Checkout passes unitLabel to backend on save
+- [x] Backend saves unitLabel on order detail

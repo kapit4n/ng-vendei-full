@@ -61,7 +61,8 @@ describe('PosCatalogComponent', () => {
     variantSvcSpy = jasmine.createSpyObj('VProductVariantService', ['getByProductId']);
     dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
     activeProfileIdSubject = new BehaviorSubject<number | null>(1);
-    profileSvcSpy = jasmine.createSpyObj('VStoreProfileService', ['getProfiles', 'getActiveProfileId', 'setActiveProfile', 'getActiveProfile', 'hasCapability']);
+    profileSvcSpy = jasmine.createSpyObj('VStoreProfileService', ['getProfiles', 'getActiveProfileId', 'setActiveProfile', 'getActiveProfile', 'hasCapability', 'resolveSellingMode']);
+    profileSvcSpy.resolveSellingMode.and.returnValue('UNIT');
     profileSvcSpy.getActiveProfileId.and.returnValue(1);
     profileSvcSpy.hasCapability.and.returnValue(true);
     (profileSvcSpy as any).getActiveProfileId$ = () => activeProfileIdSubject.asObservable();
