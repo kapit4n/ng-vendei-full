@@ -47,6 +47,7 @@
       </div>
     }
 
+    @if (hasCustomers) {
     <div class="customer-card">
       <div class="customer-card-top">
         <div class="customer-card-label">Client</div>
@@ -63,6 +64,7 @@
         Select or create client
       </button>
     </div>
+    }
   </section>
 
   <section class="payment-main" aria-label="Checkout">
@@ -167,6 +169,7 @@
     <details class="payment-adjustments">
       <summary class="adjustments-summary">Discount or change (optional)</summary>
       <div class="adjustment-rows">
+        @if (hasDiscounts) {
         <div class="adjustment-row">
           <mat-form-field appearance="outline" class="adjust-field" subscriptSizing="dynamic">
             <mat-label>Discount (Bs)</mat-label>
@@ -178,6 +181,7 @@
             Apply discount
           </button>
         </div>
+        }
         <div class="adjustment-row">
           <mat-form-field appearance="outline" class="adjust-field" subscriptSizing="dynamic">
             <mat-label>Change given (Bs)</mat-label>

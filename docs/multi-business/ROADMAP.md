@@ -81,7 +81,7 @@ Introduce CatalogTemplate, CatalogTemplateCategory, CatalogTemplateProduct.
 
 ## Phase 3 — Generic Product Attributes
 
-**Status:** IN_PROGRESS
+**Status:** COMPLETED
 
 Design a flexible product-attribute system for cross-industry product variation.
 
@@ -122,7 +122,7 @@ Design a flexible product-attribute system for cross-industry product variation.
 
 ## Phase 4 — Business Capabilities
 
-**Status:** NOT_STARTED
+**Status:** COMPLETED
 
 Create a capability system that controls which features are enabled per business.
 
@@ -150,12 +150,12 @@ TAX_CALCULATION      — tax computation
 LOYALTY              — loyalty program
 ```
 
-### Acceptance Criteria
+### Completion
 
-- Capabilities are configurable per business profile
-- POS UI adapts based on enabled capabilities
-- Disabling a capability hides relevant UI elements
-- Capabilities are stored in business profile
+- [x] MB-021: Capability constants (existing in v-store-profile.service.ts)
+- [x] MB-022: Backend capabilities field (existing in StoreProfiles model)
+- [x] MB-023: Frontend hasCapability/getCapabilities (existing in VStoreProfileService)
+- [x] MB-024: POS capability gating (catalog + payment panel, 9 new tests)
 
 ---
 

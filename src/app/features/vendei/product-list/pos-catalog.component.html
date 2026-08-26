@@ -22,6 +22,7 @@
         }
       </mat-form-field>
 
+      @if (canScanBarcode) {
       <div class="quick-code-group">
         <button mat-stroked-button type="button" class="quick-code-btn" (click)="focusQuickCode()"
           matTooltip="Focus barcode / product code field">
@@ -42,6 +43,7 @@
           }
         </mat-form-field>
       </div>
+      }
     </div>
   </div>
 

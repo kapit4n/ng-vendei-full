@@ -3,6 +3,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { CustomersDialogComponent } from "../customers-dialog/customers-dialog.component";
 import { roundToCents, isOrderReadyToSubmit, orderAmountDue } from "src/app/utils/money";
 import { PaymentType } from "src/app/features/vendei/payment-types";
+import { VStoreProfileService, CAPABILITIES } from "src/app/services/vendei/v-store-profile.service";
 
 /**
  * POS payment pattern: **single incoming lane** (cash vs QR only tags the line),
@@ -65,10 +66,20 @@ export class PosPaymentPanelComponent implements OnInit {
   discountAmountStr = "";
   changeAmountStr = "";
 
-  constructor(public dialog: MatDialog) {
+  constructor(public dialog: MatDialog, private profileSvc: VStoreProfileService) {
     this.payedItems = [];
     this.discountItems = [];
     this.returnItems = [];
+  }
+
+  /** Whether the active profile supports discounts. */
+  get hasDiscounts(): boolean {
+    return this.profileSvc.hasCapability(CAPABILITIES.DISCOUNTS);
+  }
+
+  /** Whether the active profile supports customer management. */
+  get hasCustomers(): boolean {
+    return this.profileSvc.hasCapability(CAPABILITIES.CUSTOMERS);
   }
 
   openDialog(): void {

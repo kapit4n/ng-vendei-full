@@ -16,6 +16,7 @@ import {
   productLabelFromFullName,
   productTitleFromFullName,
 } from "src/app/utils/product-display-text";
+import { CAPABILITIES } from "src/app/services/vendei/v-store-profile.service";
 
 @Component({
     selector: "app-pos-catalog",
@@ -146,7 +147,7 @@ export class PosCatalogComponent implements OnInit, OnDestroy {
     }
 
     const productId = product.productId ?? product.Product?.id ?? product.id;
-    if (productId) {
+    if (productId && this.hasVariantsEnabled) {
       this.variantSvc.getByProductId(productId).subscribe({
         next: (variants) => {
           const activeVariants = variants.filter((v) => v.active);
@@ -246,6 +247,16 @@ export class PosCatalogComponent implements OnInit, OnDestroy {
   /** Presentation image, else parent product image, else placeholder. */
   productCardImageUrl(product: any): string {
     return resolvePresentationImageUrl(product?.img, product?.Product?.img);
+  }
+
+  /** Whether the active profile supports barcode scanning / quick code entry. */
+  get canScanBarcode(): boolean {
+    return this.profileSvc.hasCapability(CAPABILITIES.BARCODE);
+  }
+
+  /** Whether the active profile supports product variants. */
+  get hasVariantsEnabled(): boolean {
+    return this.profileSvc.hasCapability(CAPABILITIES.PRODUCT_VARIANTS);
   }
 
   displayProductName(product: any): string {

@@ -9,11 +9,13 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PosPaymentPanelComponent } from './pos-payment-panel.component';
 import { CustomersDialogComponent } from '../customers-dialog/customers-dialog.component';
 import { PaymentType } from '../payment-types';
+import { VStoreProfileService } from '../../../services/vendei/v-store-profile.service';
 
 describe('PosPaymentPanelComponent', () => {
   let component: PosPaymentPanelComponent;
   let fixture: ComponentFixture<PosPaymentPanelComponent>;
   let dialogSpy: jasmine.SpyObj<MatDialog>;
+  let profileSvcSpy: jasmine.SpyObj<VStoreProfileService>;
   let payItSpy: jasmine.Spy;
   let removeItemSpy: jasmine.Spy;
   let calTotalsSpy: jasmine.Spy;
@@ -23,6 +25,8 @@ describe('PosPaymentPanelComponent', () => {
   beforeEach(waitForAsync(() => {
     dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
     dialogSpy.open.and.returnValue({ afterClosed: () => of(null) } as any);
+    profileSvcSpy = jasmine.createSpyObj('VStoreProfileService', ['hasCapability', 'getCapabilities', 'getActiveProfile']);
+    profileSvcSpy.hasCapability.and.returnValue(true);
 
     TestBed.configureTestingModule({
       declarations: [PosPaymentPanelComponent],
@@ -36,6 +40,7 @@ describe('PosPaymentPanelComponent', () => {
       ],
       providers: [
         { provide: MatDialog, useValue: dialogSpy },
+        { provide: VStoreProfileService, useValue: profileSvcSpy },
       ],
     }).compileComponents();
   }));
@@ -406,6 +411,28 @@ describe('PosPaymentPanelComponent', () => {
       component.customAmountStr = '-10';
       component.registerIncomingAmount();
       expect(payItSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('capability gating', () => {
+    it('hasDiscounts returns true when DISCOUNTS capability enabled', () => {
+      profileSvcSpy.hasCapability.and.callFake((cap: string) => cap === 'DISCOUNTS');
+      expect(component.hasDiscounts).toBe(true);
+    });
+
+    it('hasDiscounts returns false when DISCOUNTS capability disabled', () => {
+      profileSvcSpy.hasCapability.and.returnValue(false);
+      expect(component.hasDiscounts).toBe(false);
+    });
+
+    it('hasCustomers returns true when CUSTOMERS capability enabled', () => {
+      profileSvcSpy.hasCapability.and.callFake((cap: string) => cap === 'CUSTOMERS');
+      expect(component.hasCustomers).toBe(true);
+    });
+
+    it('hasCustomers returns false when CUSTOMERS capability disabled', () => {
+      profileSvcSpy.hasCapability.and.returnValue(false);
+      expect(component.hasCustomers).toBe(false);
     });
   });
 });

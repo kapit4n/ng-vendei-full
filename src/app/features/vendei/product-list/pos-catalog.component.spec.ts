@@ -61,8 +61,9 @@ describe('PosCatalogComponent', () => {
     variantSvcSpy = jasmine.createSpyObj('VProductVariantService', ['getByProductId']);
     dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
     activeProfileIdSubject = new BehaviorSubject<number | null>(1);
-    profileSvcSpy = jasmine.createSpyObj('VStoreProfileService', ['getProfiles', 'getActiveProfileId', 'setActiveProfile', 'getActiveProfile']);
+    profileSvcSpy = jasmine.createSpyObj('VStoreProfileService', ['getProfiles', 'getActiveProfileId', 'setActiveProfile', 'getActiveProfile', 'hasCapability']);
     profileSvcSpy.getActiveProfileId.and.returnValue(1);
+    profileSvcSpy.hasCapability.and.returnValue(true);
     (profileSvcSpy as any).getActiveProfileId$ = () => activeProfileIdSubject.asObservable();
 
     productsSvcSpy.getProducts.and.returnValue(of(sampleProducts));
@@ -547,6 +548,40 @@ describe('PosCatalogComponent', () => {
       tick();
       expect(focusSpy).toHaveBeenCalled();
       discardPeriodicTasks();
+    }));
+  });
+
+  describe('capability gating', () => {
+    it('canScanBarcode returns true when BARCODE capability enabled', () => {
+      profileSvcSpy.hasCapability = jasmine.createSpy('hasCapability').and.callFake((cap: string) => cap === 'BARCODE');
+      expect(component.canScanBarcode).toBe(true);
+    });
+
+    it('canScanBarcode returns false when BARCODE capability disabled', () => {
+      profileSvcSpy.hasCapability = jasmine.createSpy('hasCapability').and.returnValue(false);
+      expect(component.canScanBarcode).toBe(false);
+    });
+
+    it('hasVariantsEnabled returns true when PRODUCT_VARIANTS capability enabled', () => {
+      profileSvcSpy.hasCapability = jasmine.createSpy('hasCapability').and.callFake((cap: string) => cap === 'PRODUCT_VARIANTS');
+      expect(component.hasVariantsEnabled).toBe(true);
+    });
+
+    it('hasVariantsEnabled returns false when PRODUCT_VARIANTS capability disabled', () => {
+      profileSvcSpy.hasCapability = jasmine.createSpy('hasCapability').and.returnValue(false);
+      expect(component.hasVariantsEnabled).toBe(false);
+    });
+
+    it('skips variant dialog when PRODUCT_VARIANTS disabled', fakeAsync(() => {
+      profileSvcSpy.hasCapability = jasmine.createSpy('hasCapability').and.returnValue(false);
+      const mockVariant = { id: 10, productId: 1, name: 'XL Red', sku: '', barcode: '', price: 70, cost: 0, stock: 0, active: true };
+      variantSvcSpy.getByProductId.and.returnValue(of([mockVariant]));
+
+      component.addProduct(sampleProducts[0]);
+      tick();
+
+      expect(component.selectedProducts.length).toBe(1);
+      expect(dialogSpy.open).not.toHaveBeenCalled();
     }));
   });
 });

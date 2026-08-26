@@ -2,10 +2,10 @@
 
 Last Updated: 2026-08-26
 
-Current Phase: Phase 3
-In Progress: None (Phase 3 Complete)
+Current Phase: Phase 4 (Complete)
+In Progress: None (Phase 4 Complete)
 
-Current Task: MB-020 COMPLETED
+Current Task: MB-024 COMPLETED — Phase 4 done
 
 Overall Progress: 100%
 
@@ -53,10 +53,21 @@ Overall Progress: 100%
   - Backend: OrderDetail model + ProductVariant association
   - Backend: orderDetails controller saves/returns productVariantId with eager-loaded variant
   - 28 variant-related tests passing (8 dialog + 20 catalog), no regressions
+- MB-021: Define Capability Enum/Constants (already existed)
+- MB-022: Backend Capability Management (already existed)
+- MB-023: Frontend Capability-Aware UI (already existed)
+- MB-024: POS Capability Gating
+  - PosCatalogComponent: canScanBarcode / hasVariantsEnabled getters
+  - PosPaymentPanelComponent: hasDiscounts / hasCustomers getters
+  - Quick code section gated by BARCODE capability
+  - Variant dialog gated by PRODUCT_VARIANTS capability
+  - Discount input gated by DISCOUNTS capability
+  - Customer card gated by CUSTOMERS capability
+  - 9 new capability gating tests (5 catalog + 4 payment panel), all passing
 
 ## In Progress
 
-- None (Phase 3 complete)
+- None (Phase 4 complete)
 
 ## Blocked
 
@@ -64,14 +75,14 @@ Overall Progress: 100%
 
 ## Next Task
 
-MB-021 (Phase 4 — Business Capabilities): see ROADMAP.md
+MB-025 (Phase 5 — Advanced Selling Modes): see ROADMAP.md
 
 ## Tests
 
 Unit (frontend):
-- 578 tests
-- 12 pre-existing failures (InvProductsComponent scaffold, PosCheckoutComponent printInvoice, AppComponent, RegAttributeListComponent, RegCustomerListComponent, VStoreProfileService)
-- No regressions from MB-004 through MB-020
+- 587 tests
+- 12 pre-existing failures (AppComponent, Failure Scenarios x4, Reg*Components x4, VariantSelectDialogComponent, RegCustomerListComponent)
+- No regressions from MB-004 through MB-024
 
 Backend:
 - Migration: PASS (24 migrations, db:migrate + db:seed:all)
@@ -91,6 +102,6 @@ Build (frontend):
 
 ## Notes for Next Session
 
-1. MB-015 through MB-020 complete — Phase 3 done
-2. Phase 4 (Business Capabilities) can begin
+1. MB-015 through MB-024 complete — Phases 3 and 4 done
+2. Phase 5 (Advanced Selling Modes) can begin
 3. Read ROADMAP.md for remaining tasks

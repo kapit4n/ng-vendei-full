@@ -640,3 +640,76 @@ Allow POS to filter/select products by variant when selling.
 - [x] User can select variant before adding to cart
 - [x] Cart line item records selected variant
 - [x] Price reflects variant price when set
+
+---
+
+## MB-021 — Define Capability Enum/Constants
+
+**Status:** COMPLETED
+**Priority:** HIGH
+**Phase:** 4
+
+**Objective:**
+Define well-known capability string constants and a TypeScript type.
+
+**Acceptance Criteria:**
+- [x] CAPABILITIES constant object with all 12 capability strings
+- [x] Capability union type derived from constants
+- [x] DEFAULT_CAPABILITIES for new profiles
+
+---
+
+## MB-022 — Backend Capability Management
+
+**Status:** COMPLETED
+**Priority:** HIGH
+**Phase:** 4
+
+**Objective:**
+Store capabilities as JSON array on StoreProfile model.
+
+**Acceptance Criteria:**
+- [x] capabilities TEXT field on StoreProfiles with JSON getter/setter
+- [x] Default value: ["BARCODE","DISCOUNTS","CUSTOMERS"]
+- [x] Seeded per-profile with business-specific capabilities
+
+---
+
+## MB-023 — Frontend Capability-Aware UI
+
+**Status:** COMPLETED
+**Priority:** HIGH
+**Phase:** 4
+
+**Objective:**
+Expose capability checks to POS components via VStoreProfileService.
+
+**Acceptance Criteria:**
+- [x] getCapabilities() returns profile capabilities with defaults
+- [x] hasCapability() checks inclusion in capabilities array
+- [x] Existing tests for getCapabilities and hasCapability
+
+---
+
+## MB-024 — POS Capability Gating
+
+**Status:** COMPLETED
+**Priority:** HIGH
+**Phase:** 4
+
+**Objective:**
+Gate POS UI features based on active profile capabilities.
+
+**Dependencies:** MB-021, MB-022, MB-023
+
+**Acceptance Criteria:**
+- [x] Quick code / barcode input hidden when BARCODE disabled
+- [x] Variant selection disabled when PRODUCT_VARIANTS disabled
+- [x] Discount input hidden when DISCOUNTS disabled
+- [x] Customer selection hidden when CUSTOMERS disabled
+- [x] All features shown when capabilities are enabled (default behavior)
+
+**Implementation:**
+- PosCatalogComponent: `canScanBarcode` / `hasVariantsEnabled` getters gate quick code section and variant dialog
+- PosPaymentPanelComponent: `hasDiscounts` / `hasCustomers` getters gate discount input and customer card
+- 9 new capability gating tests (5 catalog + 4 payment panel), all passing
