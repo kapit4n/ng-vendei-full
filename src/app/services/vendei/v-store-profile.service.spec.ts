@@ -18,7 +18,7 @@ describe('VStoreProfileService', () => {
       taxId: '1234567', taxLabel: 'NIT', address: 'Cochabamba, Bolivia',
       capabilities: ['BARCODE', 'WEIGHT_PRODUCTS', 'DISCOUNTS', 'CUSTOMERS', 'LOT_TRACKING', 'EXPIRATION'],
       receiptConfig: { paperWidth: 80, logo: 'logo.png', headerLines: ['Welcome'], footerLines: ['Thank you'] },
-      posConfig: { catalogColumns: 5, showProductImages: true, quickProducts: [1, 2], defaultSellingMode: 'UNIT' },
+      posConfig: { catalogColumns: 5, showProductImages: true, quickProducts: [1, 2], defaultSellingMode: 'UNIT', enabledPaymentTypes: [1, 4] },
     },
     {
       id: 2, name: 'Chicken Store', slug: 'chicken-store', description: 'Chicken',

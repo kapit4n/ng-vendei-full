@@ -25,8 +25,9 @@ describe('PosPaymentPanelComponent', () => {
   beforeEach(waitForAsync(() => {
     dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
     dialogSpy.open.and.returnValue({ afterClosed: () => of(null) } as any);
-    profileSvcSpy = jasmine.createSpyObj('VStoreProfileService', ['hasCapability', 'getCapabilities', 'getActiveProfile']);
+    profileSvcSpy = jasmine.createSpyObj('VStoreProfileService', ['hasCapability', 'getCapabilities', 'getActiveProfile', 'getEnabledPaymentTypes']);
     profileSvcSpy.hasCapability.and.returnValue(true);
+    profileSvcSpy.getEnabledPaymentTypes.and.returnValue([1, 4]);
 
     TestBed.configureTestingModule({
       declarations: [PosPaymentPanelComponent],

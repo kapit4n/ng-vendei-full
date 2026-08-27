@@ -31,6 +31,13 @@ export class VInvoiceService {
     const taxLabel = this.profileSvc.getTaxLabel();
     const taxId = this.profileSvc.getTaxId();
 
+    const receiptConfig = this.profileSvc.getReceiptConfig();
+    const paperWidth = receiptConfig.paperWidth || 80;
+    const headerLines = receiptConfig.headerLines || [];
+    const footerLines = receiptConfig.footerLines?.length
+      ? receiptConfig.footerLines
+      : ['Quality software developed by experienced developers.', 'Thank you for your purchase!'];
+
     const productRows = data.products
       .map(
         (p) => `
@@ -70,7 +77,7 @@ export class VInvoiceService {
   body {
     font-family: 'Courier New', Courier, monospace;
     font-size: 12px;
-    width: 80mm;
+    width: ${paperWidth}mm;
     padding: 10px 15px;
     color: #222;
   }
@@ -78,6 +85,7 @@ export class VInvoiceService {
   .header { margin-bottom: 8px; }
   .header h2 { font-size: 16px; margin-bottom: 2px; }
   .header p { font-size: 11px; color: #555; line-height: 1.4; }
+  .header-extra { font-size: 10px; color: #666; line-height: 1.3; }
   .invoice-title { font-size: 14px; font-weight: bold; margin: 6px 0; }
   hr { border: none; border-top: 1px dashed #999; margin: 6px 0; }
   .info-line { font-size: 11px; margin: 2px 0; }
@@ -93,7 +101,7 @@ export class VInvoiceService {
   .grand-total { font-size: 14px; font-weight: bold; }
   .footer { text-align: center; margin-top: 10px; font-size: 10px; color: #888; }
   @media print {
-    @page { margin: 0; size: 80mm auto; }
+    @page { margin: 0; size: ${paperWidth}mm auto; }
     body { width: auto; }
   }
 </style>
@@ -102,6 +110,7 @@ export class VInvoiceService {
   <div class="center header">
     <h2>${businessName}</h2>
     <p>${address}<br>${taxLine}</p>
+    ${headerLines.map(l => `<p class="header-extra">${l}</p>`).join('\n    ')}
   </div>
   <hr>
   <div class="center invoice-title">INVOICE</div>
@@ -136,8 +145,7 @@ export class VInvoiceService {
   </div>
   <hr>
   <div class="footer">
-    <p>Quality software developed by experienced developers.</p>
-    <p>Thank you for your purchase!</p>
+    ${footerLines.map(l => `<p>${l}</p>`).join('\n    ')}
   </div>
 </body>
 </html>`;

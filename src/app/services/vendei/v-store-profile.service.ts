@@ -16,6 +16,7 @@ export interface PosConfig {
   showProductImages: boolean;
   quickProducts: number[];
   defaultSellingMode: SellingMode;
+  enabledPaymentTypes: number[];
 }
 
 export interface StoreProfile {
@@ -68,6 +69,7 @@ const DEFAULT_POS_CONFIG: PosConfig = {
   showProductImages: true,
   quickProducts: [],
   defaultSellingMode: 'UNIT',
+  enabledPaymentTypes: [1, 4],
 };
 
 /** Well-known capability constants. */
@@ -263,6 +265,12 @@ export class VStoreProfileService {
       return productSellingMode as SellingMode;
     }
     return this.getDefaultSellingMode(profile);
+  }
+
+  /** Enabled payment type IDs for the active profile (default: [1, 4] = Cash + QR). */
+  getEnabledPaymentTypes(profile?: StoreProfile | null): number[] {
+    const config = this.getPosConfig(profile);
+    return config.enabledPaymentTypes?.length ? config.enabledPaymentTypes : [1, 4];
   }
 
   private loadFromStorage(): number | null {

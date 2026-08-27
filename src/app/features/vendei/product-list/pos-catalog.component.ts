@@ -299,6 +299,32 @@ export class PosCatalogComponent implements OnInit, OnDestroy {
     return this.profileSvc.hasCapability(CAPABILITIES.PRODUCT_VARIANTS);
   }
 
+  /** Catalog grid columns from profile config (default: 4). */
+  get catalogColumns(): number {
+    const cols = this.profileSvc.getPosConfig().catalogColumns;
+    return cols >= 2 && cols <= 8 ? cols : 4;
+  }
+
+  /** Whether to show product images on catalog cards (default: true). */
+  get showProductImages(): boolean {
+    return this.profileSvc.getPosConfig().showProductImages !== false;
+  }
+
+  /** Inline style for grid template columns based on catalogColumns config. */
+  get gridStyle(): Record<string, string> {
+    return { 'grid-template-columns': `repeat(${this.catalogColumns}, 1fr)` };
+  }
+
+  /** Quick-access products resolved from profile config (by ID). */
+  get quickProductsList(): any[] {
+    const ids = this.profileSvc.getPosConfig().quickProducts;
+    if (!ids?.length) return [];
+    return ids
+      .map((id) => this.originalP.find((p) => (p.productId ?? p.Product?.id ?? p.id) == id))
+      .filter(Boolean)
+      .slice(0, 6);
+  }
+
   displayProductName(product: any): string {
     return product?.Product?.name || product?.name || "Product";
   }

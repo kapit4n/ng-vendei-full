@@ -67,6 +67,19 @@
     </div>
   }
 
+  @if (quickProductsList.length) {
+    <div class="quick-products-bar">
+      <span class="quick-products-label">Quick add</span>
+      <div class="quick-products-row">
+        @for (qp of quickProductsList; track qp.productId ?? qp.Product?.id ?? qp.id) {
+          <button type="button" mat-stroked-button class="quick-product-btn" (click)="addProduct(qp)">
+            {{ qp.Product?.name || qp.name || 'Product' }}
+          </button>
+        }
+      </div>
+    </div>
+  }
+
   @if (originalP.length) {
     <div class="search-meta">
       <span class="search-meta-count">Showing {{ products.length }} of {{ originalP.length }} products</span>
@@ -74,7 +87,7 @@
     </div>
   }
 
-  <div class="product-cards-box">
+  <div class="product-cards-box" [ngStyle]="gridStyle">
     @if (!products.length && originalP.length) {
       <div class="product-cards-empty">
         <mat-icon class="empty-icon">search_off</mat-icon>
@@ -89,9 +102,11 @@
     @for (product of products; track productRowTrack($index, product)) {
       <button type="button" class="product-list-item-t" (click)="addProduct(product)"
         [attr.aria-label]="'Add ' + displayProductName(product)">
+        @if (showProductImages) {
         <div class="product-card-media">
         <div class="product-card-image" [style.background-image]="'url(' + productCardImageUrl(product) + ')'"></div>
       </div>
+      }
       <div class="product-card-body">
         <span class="product-card-price">Bs {{ product.currentPrice | number:'1.2-2' }}</span>
         <span class="product-card-code" title="Product code">{{ product.Product?.code || product.code }}</span>

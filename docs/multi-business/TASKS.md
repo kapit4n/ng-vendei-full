@@ -777,4 +777,79 @@ Ensure price calculation and receipt formatting work for all selling modes.
 - [x] Price = unitPrice × quantity (works for all modes)
 - [x] Invoice/receipt shows quantity with unit label
 - [x] Checkout passes unitLabel to backend on save
+
+---
+
+## MB-029 — POS Configuration Model
+
+**Status:** COMPLETED
+**Priority:** HIGH
+**Phase:** 6
+
+**Objective:**
+Extend PosConfig type with payment method configuration.
+
+**Acceptance Criteria:**
+- [x] PosConfig includes enabledPaymentTypes (default: [1, 4])
+- [x] getEnabledPaymentTypes() helper on VStoreProfileService
+- [x] Default payment types preserved when config is empty
+
+## MB-030 — Configurable Catalog Layout
+
+**Status:** COMPLETED
+**Priority:** HIGH
+**Phase:** 6
+
+**Objective:**
+Make POS catalog grid use profile config for layout and images.
+
+**Acceptance Criteria:**
+- [x] catalogColumns from PosConfig drives grid-template-columns
+- [x] showProductImages from PosConfig conditionally shows/hides images
+- [x] Inline ngStyle binding replaces hardcoded CSS grid
+- [x] Default values when config is empty
+
+## MB-031 — Quick Products Configuration
+
+**Status:** COMPLETED
+**Priority:** HIGH
+**Phase:** 6
+
+**Objective:**
+Add quick-access product buttons based on profile config.
+
+**Acceptance Criteria:**
+- [x] quickProducts IDs from PosConfig resolved to product objects
+- [x] Quick-access button bar rendered in POS catalog
+- [x] Buttons add products to cart on click
+- [x] Hidden when quickProducts is empty
+
+## MB-032 — Payment Method Configuration
+
+**Status:** COMPLETED
+**Priority:** HIGH
+**Phase:** 6
+
+**Objective:**
+Make payment methods configurable per profile.
+
+**Acceptance Criteria:**
+- [x] Cash/QR toggle buttons conditionally shown based on enabledPaymentTypes
+- [x] Default method auto-selected when only one is enabled
+- [x] Payment lead text adapts to available methods
+
+## MB-033 — Receipt Template Configuration
+
+**Status:** COMPLETED
+**Priority:** HIGH
+**Phase:** 6
+
+**Objective:**
+Make invoice/receipt use profile config for paper size and content.
+
+**Acceptance Criteria:**
+- [x] paperWidth from ReceiptConfig drives CSS width and @page size
+- [x] headerLines from ReceiptConfig rendered as extra header paragraphs
+- [x] footerLines from ReceiptConfig replace hardcoded footer
+- [x] Default footer when config is empty
 - [x] Backend saves unitLabel on order detail

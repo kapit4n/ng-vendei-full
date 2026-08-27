@@ -82,6 +82,21 @@ export class PosPaymentPanelComponent implements OnInit {
     return this.profileSvc.hasCapability(CAPABILITIES.CUSTOMERS);
   }
 
+  /** Enabled payment type IDs from profile config. */
+  get enabledPaymentTypes(): number[] {
+    return this.profileSvc.getEnabledPaymentTypes();
+  }
+
+  /** Whether Cash (type 1) is enabled. */
+  get isCashEnabled(): boolean {
+    return this.enabledPaymentTypes.includes(PaymentType.PAYMONEY);
+  }
+
+  /** Whether QR (type 4) is enabled. */
+  get isQrEnabled(): boolean {
+    return this.enabledPaymentTypes.includes(PaymentType.PAYQR);
+  }
+
   openDialog(): void {
     if (this.isPrintLocked) {
       return;

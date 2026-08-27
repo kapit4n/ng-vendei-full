@@ -183,7 +183,7 @@ Support generic selling modes beyond simple unit sales.
 
 ## Phase 6 — Configurable POS
 
-**Status:** NOT_STARTED
+**Status:** COMPLETED
 
 Allow Business Profile configuration to control POS behavior.
 
@@ -194,6 +194,14 @@ Allow Business Profile configuration to control POS behavior.
 - MB-031: Quick products configuration
 - MB-032: Payment method configuration
 - MB-033: Receipt template configuration
+
+### Completion
+
+- [x] MB-029: POS config model (enabledPaymentTypes on PosConfig, getEnabledPaymentTypes helper)
+- [x] MB-030: Configurable catalog layout (catalogColumns + showProductImages from config, dynamic grid)
+- [x] MB-031: Quick products configuration (quickProducts from config, quick-access buttons in POS)
+- [x] MB-032: Payment method configuration (Cash/QR toggles respect enabledPaymentTypes from config)
+- [x] MB-033: Receipt template configuration (paperWidth, headerLines, footerLines from ReceiptConfig)
 
 ### Configurable Elements
 

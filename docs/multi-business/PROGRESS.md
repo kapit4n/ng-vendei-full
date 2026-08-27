@@ -2,10 +2,10 @@
 
 Last Updated: 2026-08-26
 
-Current Phase: Phase 5 (Complete)
-In Progress: None (Phase 5 Complete)
+Current Phase: Phase 6 (Complete)
+In Progress: None (Phase 6 Complete)
 
-Current Task: MB-028 COMPLETED — Phase 5 done
+Current Task: MB-033 COMPLETED — Phase 6 done
 
 Overall Progress: 100%
 
@@ -83,10 +83,27 @@ Overall Progress: 100%
   - Price = unitPrice × quantity (works for all modes)
   - Invoice/receipt shows quantity with unit label
   - Checkout passes unitLabel to backend on save
+- MB-029: POS Configuration Model
+  - Extended PosConfig with enabledPaymentTypes (default [1, 4] = Cash + QR)
+  - Added getEnabledPaymentTypes() helper on VStoreProfileService
+- MB-030: Configurable Catalog Layout
+  - catalogColumns from PosConfig drives grid-template-columns
+  - showProductImages from PosConfig conditionally shows/hides product images
+  - Inline ngStyle binding replaces hardcoded CSS grid
+- MB-031: Quick Products Configuration
+  - quickProducts IDs from PosConfig resolved to product objects
+  - Quick-access button bar in POS catalog
+- MB-032: Payment Method Configuration
+  - Cash/QR toggle buttons conditionally shown based on enabledPaymentTypes
+  - Single method auto-selected when only one is enabled
+- MB-033: Receipt Template Configuration
+  - paperWidth from ReceiptConfig drives CSS width and @page size
+  - headerLines from ReceiptConfig rendered as extra header paragraphs
+  - footerLines from ReceiptConfig replace hardcoded footer
 
 ## In Progress
 
-- None (Phase 5 complete)
+- None (Phase 6 complete)
 
 ## Blocked
 
@@ -121,6 +138,6 @@ Build (frontend):
 
 ## Notes for Next Session
 
-1. MB-015 through MB-028 complete — Phases 3, 4, and 5 done
-2. Phase 6 (Configurable POS) can begin
+1. MB-029 through MB-033 complete — Phase 6 done
+2. Phase 7 (Business Template Validation) can begin
 3. Read ROADMAP.md for remaining tasks

@@ -101,22 +101,34 @@
     <div class="payment-standard">
       <div class="section-label">Payment</div>
       <p class="section-lead">
-        Choose <strong>Cash</strong> or <strong>QR</strong>, then add each amount (quick keys or field).
+        @if (isCashEnabled && isQrEnabled) {
+          Choose <strong>Cash</strong> or <strong>QR</strong>, then add each amount (quick keys or field).
+        } @else if (isCashEnabled) {
+          Add each <strong>Cash</strong> amount (quick keys or field).
+        } @else if (isQrEnabled) {
+          Add each <strong>QR</strong> payment amount (quick keys or field).
+        }
         Lines appear on the left; tap one to remove it.
       </p>
 
+      @if (isCashEnabled || isQrEnabled) {
       <div class="method-toggle" role="group" aria-label="Payment method">
+        @if (isCashEnabled) {
         <button type="button" class="method-btn" [class.method-btn--active]="incomingMethod === 'cash'"
           (click)="setIncomingMethod('cash')" [disabled]="isPrintLocked">
           <mat-icon>payments</mat-icon>
           Cash
         </button>
+        }
+        @if (isQrEnabled) {
         <button type="button" class="method-btn" [class.method-btn--active]="incomingMethod === 'qr'"
           (click)="setIncomingMethod('qr')" [disabled]="isPrintLocked">
           <mat-icon>qr_code_2</mat-icon>
           QR
         </button>
+        }
       </div>
+      }
 
       <div class="custom-amount-block">
         <mat-form-field appearance="outline" class="custom-amount-field" subscriptSizing="dynamic">
