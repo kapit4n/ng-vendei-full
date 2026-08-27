@@ -1,0 +1,7 @@
+dist/
+node_modules/
+coverage/
+*.svg
+src/assets/
+e2e/
+package-lock.json
