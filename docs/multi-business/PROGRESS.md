@@ -2,10 +2,10 @@
 
 Last Updated: 2026-08-26
 
-Current Phase: Phase 6 (Complete)
-In Progress: None (Phase 6 Complete)
+Current Phase: Phase 7 (Complete)
+In Progress: None (Phase 7 Complete)
 
-Current Task: MB-033 COMPLETED — Phase 6 done
+Current Task: MB-037 COMPLETED — Phase 7 done
 
 Overall Progress: 100%
 
@@ -100,6 +100,23 @@ Overall Progress: 100%
   - paperWidth from ReceiptConfig drives CSS width and @page size
   - headerLines from ReceiptConfig rendered as extra header paragraphs
   - footerLines from ReceiptConfig replace hardcoded footer
+- MB-034: Supermarket Template Validation
+  - 6 capabilities, 5 categories, 15 products, UNIT selling mode
+  - posConfig: 4 columns, images on, Cash+QR payments
+  - Backend validation script confirms all fields correct
+- MB-035: Chicken Store Template Validation
+  - 5 capabilities, 5 categories, 15 products, UNIT selling mode
+  - posConfig: 3 columns, images on, Cash+QR payments
+- MB-036: Butcher Template Validation
+  - 6 capabilities, 5 categories, 15 products, WEIGHT selling mode
+  - posConfig: 3 columns, images on, Cash+QR payments
+  - Capabilities include LOT_TRACKING, EXPIRATION, WEIGHT_PRODUCTS
+- MB-037: Clothing Template Validation
+  - 6 capabilities, 5 categories, 15 products, VARIANT selling mode
+  - posConfig: 4 columns, images on, Cash+QR payments
+  - Capabilities include PRODUCT_VARIANTS, LOYALTY
+- 30 SVG images created for missing butcher-shop and clothing-store templates
+- All template seeders updated with enabledPaymentTypes
 
 ## In Progress
 
@@ -138,6 +155,6 @@ Build (frontend):
 
 ## Notes for Next Session
 
-1. MB-029 through MB-033 complete — Phase 6 done
-2. Phase 7 (Business Template Validation) can begin
+1. MB-034 through MB-037 complete — Phase 7 done
+2. Phase 8 (Architecture Hardening) can begin (lazy-load, ESLint, Prettier, route guards)
 3. Read ROADMAP.md for remaining tasks

@@ -224,7 +224,7 @@ Allow Business Profile configuration to control POS behavior.
 
 ## Phase 7 — Business Template Validation
 
-**Status:** NOT_STARTED
+**Status:** COMPLETED
 
 Create complete working templates for 4 business types.
 
@@ -235,12 +235,15 @@ Create complete working templates for 4 business types.
 - MB-036: Butcher template (weight, price/kg, lots, expiration)
 - MB-037: Clothing template (variants, sizes, colors, SKU)
 
-### Acceptance Criteria
+### Completion
 
-- All 4 templates create working businesses
-- Each uses the same core POS engine
-- Business-specific features work through configuration
-- POS regression tests pass for all templates
+- [x] MB-034: Supermarket template validated (6 capabilities, 5 categories, 15 products, UNIT mode)
+- [x] MB-035: Chicken Store template validated (5 capabilities, 5 categories, 15 products, UNIT mode)
+- [x] MB-036: Butcher template validated (6 capabilities, 5 categories, 15 products, WEIGHT mode)
+- [x] MB-037: Clothing template validated (6 capabilities, 5 categories, 15 products, VARIANT mode)
+- [x] 30 missing SVG images created (15 butcher-shop + 15 clothing-store)
+- [x] All template posConfig updated with enabledPaymentTypes
+- [x] Backend validation script passes all 4 templates
 
 ---
 

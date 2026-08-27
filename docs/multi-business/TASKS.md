@@ -853,3 +853,66 @@ Make invoice/receipt use profile config for paper size and content.
 - [x] footerLines from ReceiptConfig replace hardcoded footer
 - [x] Default footer when config is empty
 - [x] Backend saves unitLabel on order detail
+
+---
+
+## MB-034 — Supermarket Template Validation
+
+**Status:** COMPLETED
+**Priority:** HIGH
+**Phase:** 7
+
+**Objective:**
+Validate supermarket template creates a working POS business.
+
+**Acceptance Criteria:**
+- [x] Template has 5 categories, 15 products, 6 capabilities
+- [x] posConfig: 4 columns, images enabled, UNIT selling mode, Cash+QR payments
+- [x] receiptConfig: 80mm paper, header/footer lines set
+- [x] Backend validation script passes
+
+## MB-035 — Chicken Store Template Validation
+
+**Status:** COMPLETED
+**Priority:** HIGH
+**Phase:** 7
+
+**Objective:**
+Validate chicken store template creates a working POS business.
+
+**Acceptance Criteria:**
+- [x] Template has 5 categories, 15 products, 5 capabilities
+- [x] posConfig: 3 columns, images enabled, UNIT selling mode
+- [x] Capabilities include COMBOS, BARCODE
+- [x] Backend validation script passes
+
+## MB-036 — Butcher Template Validation
+
+**Status:** COMPLETED
+**Priority:** HIGH
+**Phase:** 7
+
+**Objective:**
+Validate butcher template creates a working POS business with weight-based selling.
+
+**Acceptance Criteria:**
+- [x] Template has 5 categories, 15 products, 6 capabilities
+- [x] posConfig: 3 columns, images enabled, WEIGHT selling mode
+- [x] Capabilities include WEIGHT_PRODUCTS, LOT_TRACKING, EXPIRATION
+- [x] Backend validation script passes
+
+## MB-037 — Clothing Template Validation
+
+**Status:** COMPLETED
+**Priority:** HIGH
+**Phase:** 7
+
+**Objective:**
+Validate clothing template creates a working POS business with variant support.
+
+**Acceptance Criteria:**
+- [x] Template has 5 categories, 15 products, 6 capabilities
+- [x] posConfig: 4 columns, images enabled, VARIANT selling mode
+- [x] Capabilities include PRODUCT_VARIANTS, LOYALTY
+- [x] 15 SVG product images created for clothing-store
+- [x] Backend validation script passes
