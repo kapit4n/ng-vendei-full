@@ -1,0 +1,7 @@
+node_modules/
+dist/
+coverage/
+database.sqlite
+.git/
+npm-debug.log
+.DS_Store

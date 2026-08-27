@@ -1,11 +1,18 @@
 import { Component, OnInit, Input } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatIconModule } from "@angular/material/icon";
+import { MatInputModule } from "@angular/material/input";
+import { MatListModule } from "@angular/material/list";
 import { VCustomersService } from "../../../services/vendei/v-customers.service";
 
 @Component({
   selector: "app-customer-list",
   templateUrl: "./customer-list.component.html",
   styleUrls: ["./customer-list.component.css"],
-  standalone: false,
+  standalone: true,
+  imports: [CommonModule, FormsModule, MatFormFieldModule, MatIconModule, MatInputModule, MatListModule],
 })
 export class CustomerListComponent implements OnInit {
   @Input() selectCustomer: (c: any) => void;
