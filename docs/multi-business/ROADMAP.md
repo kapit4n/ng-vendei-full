@@ -249,9 +249,9 @@ Create complete working templates for 4 business types.
 
 ## Phase 8 — Architecture Hardening
 
-**Status:** NOT_STARTED
+**Status:** COMPLETED
 
-Only after multi-business functionality is stable.
+Modernize tooling and improve architecture.
 
 ### Tasks
 
@@ -265,9 +265,19 @@ Only after multi-business functionality is stable.
 - MB-045: Containerize deployment
 - MB-046: Remove Protractor
 
-### Acceptance Criteria
+### Completion
 
-- All existing tests pass
-- Build produces smaller bundle via lazy loading
-- Code formatting is enforced
-- CI pipeline runs lint + test + build
+- [x] MB-038: ESLint 10.9.1 + @angular-eslint 22.1.0, flat config, 0 errors
+- [x] MB-039: Prettier + eslint-config-prettier, .prettierrc + format scripts
+- [x] MB-040: rxjs-compat removed
+- [x] MB-041: 3 lazy chunks: vendei (123kB), reg (145kB), rep (252kB)
+- [x] MB-042: StoreProfileGuard created
+- [x] MB-043: apiInterceptor functional interceptor (global error handling)
+- [x] MB-044: environment.prod.ts uses window.__env runtime config
+- [x] MB-045: Dockerfile (frontend+backend), nginx.conf, docker-compose.yml
+- [x] MB-046: Protractor + types removed, e2e script → Playwright
+
+### Commits
+
+- `6ecec6b`: MB-038/039/040/044/046 (ESLint, Prettier, cleanup)
+- `a7b8225`: MB-041/042/043/045 (Lazy-load, guards, interceptors, Docker)

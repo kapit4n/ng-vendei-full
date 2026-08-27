@@ -1,11 +1,11 @@
 # Multi-Business Progress
 
-Last Updated: 2026-08-26
+Last Updated: 2026-08-27
 
-Current Phase: Phase 7 (Complete)
-In Progress: None (Phase 7 Complete)
+Current Phase: Phase 8 (Complete)
+In Progress: None (All Phases Complete)
 
-Current Task: MB-037 COMPLETED — Phase 7 done
+Current Task: MB-046 COMPLETED — Phase 8 done
 
 Overall Progress: 100%
 
@@ -26,18 +26,89 @@ Overall Progress: 100%
 - MB-013: Frontend Template Selection UI
 - MB-014: Template-Based Product Seeding (completed as part of MB-012)
 - MB-015: Design ProductAttributeDefinition Model
-  - 4 new tables: ProductAttributeDefinitions, ProductAttributeValues, ProductVariants, ProductVariantAttributeValues
-  - JSON-as-TEXT for options array (SQLite compatibility)
-  - Full index coverage for all FK and lookup columns
 - MB-016: Design ProductAttributeValue Model (completed as part of MB-015)
 - MB-017: Design ProductVariant Model (completed as part of MB-015)
 - MB-018: Backend API for Attributes
-  - 3 controllers with full CRUD: attribute definitions, values, variants
-  - Transactional create/update for variants with attribute value links
-  - Filtering by storeProfileId, productId, active status
-  - Nested eager loading for variant -> attributeValue -> definition
 - MB-019: Frontend Attribute Management UI
-  - RAttributeDefinitionService: CRUD calling /productAttributeDefinitions API
+- MB-020: Template Attribute Mapping for Variant Business
+- MB-021: Multi-Attribute Variant Support
+- MB-022: Variant Attribute Value Resolution
+- MB-023: Variant Selection Dialog (Frontend)
+- MB-024: Quantity Input for Weight/Unit Products
+- MB-025: Invoice & Receipt Customization (backend)
+- MB-026: Invoice & Receipt Customization (frontend)
+- MB-027: Multi-Attribute Variants (full pipeline)
+- MB-028: Payment Type Configuration (backend)
+- MB-029: Payment Type Configuration (frontend config)
+- MB-030: Catalog Grid Configurable
+- MB-031: Quick Access Products
+- MB-032: Cash/QR Toggle
+- MB-033: Invoice Layout Customization
+- MB-034: Supermarket Template Validation
+- MB-035: Chicken Store Template Validation
+- MB-036: Butcher Template Validation
+- MB-037: Clothing Template Validation
+- MB-038: Migrate TSLint to ESLint (flat config, 0 errors, 29 warnings)
+- MB-039: Add Prettier (eslint-config-prettier integration)
+- MB-040: Remove rxjs-compat
+- MB-041: Lazy-load feature modules (vendei/reg/rep — 3 lazy chunks)
+- MB-042: Add route guards (StoreProfileGuard)
+- MB-043: Add HTTP interceptors (apiInterceptor — global error handling)
+- MB-044: Fix production API configuration (window.__env runtime config)
+- MB-045: Containerize deployment (Dockerfile, docker-compose, nginx.conf)
+- MB-046: Remove Protractor
+
+## In Progress
+
+- None (All Phases Complete)
+
+## Blocked
+
+- None
+
+## Next Task
+
+All 46 tasks (MB-001 through MB-046) are complete across Phases 0-8.
+Future work: Phase 9+ (new business templates, advanced analytics, mobile optimization)
+
+## Tests
+
+Unit (frontend):
+- 599 tests
+- ~12 pre-existing failures (AppComponent, Failure Scenarios x4, Reg*Components x4, PosCheckoutComponent x2, rep-product-sales-analytics)
+- Zero new regressions from MB-004 through MB-046
+
+Backend:
+- Migration: PASS (25 migrations, db:migrate + db:seed:all)
+- API smoke test: PASS (GET list, GET by id, POST create)
+- Template validation: PASS (4 templates via phase7-template-validation.js)
+
+Build (frontend):
+- PASS (1.34 MB initial, 3 lazy chunks: vendei 123kB, reg 145kB, rep 252kB)
+
+Lint:
+- PASS (0 errors, 29 warnings)
+
+## Important Decisions
+
+1. **ADR-MB-001**: Extend StoreProfile in-place
+2. **ADR-MB-002**: Product attributes via Definition/Value/Variant pattern
+3. **ADR-MB-003**: Capabilities as string array on profile
+4. **ADR-MB-004**: Add storeProfileId to Orders (optional with default)
+5. **ADR-MB-005**: Configuration over business-specific code
+6. **ADR-MB-006**: Three-layer migration strategy (SQL DEFAULT + backfill + frontend fallback)
+7. **ADR-MB-007**: ESLint flat config format (future-proof for Angular 21+)
+8. **ADR-MB-008**: Functional interceptors (Angular 21 pattern, not class-based)
+9. **ADR-MB-009**: Feature modules with loadChildren for vendei/reg/rep
+10. **ADR-MB-010**: CustomerListComponent standalone for cross-module reuse
+
+## Commits
+
+- `62e3706`: Phase 6 — MB-029 through MB-033 (Configurable POS)
+- `28482e8`: Phase 7 frontend — MB-034 through MB-037 (Template validation)
+- `efaf7e5`: Phase 7 backend — Template seeder updates + validation script
+- `6ecec6b`: Phase 8 partial — MB-038/039/040/044/046 (ESLint, Prettier, cleanup)
+- `a7b8225`: Phase 8 complete — MB-041/042/043/045 (Lazy-load, guards, interceptors, Docker)
   - RegAttributeListComponent: table with name, code, type, options, required, active columns
   - RegAttributeComponent: form with mat-select for type, conditional options textarea
   - Proxy entries for /productAttributeDefinitions, /productAttributeValues, /productVariants

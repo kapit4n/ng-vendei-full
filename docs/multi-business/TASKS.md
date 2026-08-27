@@ -916,3 +916,138 @@ Validate clothing template creates a working POS business with variant support.
 - [x] Capabilities include PRODUCT_VARIANTS, LOYALTY
 - [x] 15 SVG product images created for clothing-store
 - [x] Backend validation script passes
+
+## MB-038 — Migrate TSLint to ESLint
+
+**Status:** COMPLETED
+**Priority:** HIGH
+**Phase:** 8
+
+**Objective:**
+Replace TSLint (deprecated) with ESLint + @angular-eslint.
+
+**Acceptance Criteria:**
+- [x] ESLint 10.9.1 + @angular-eslint 22.1.0 installed
+- [x] `eslint.config.js` created (flat config format)
+- [x] `angular.json` lint builder changed to `@angular-eslint/builder:lint`
+- [x] `tslint.json` and `src/tslint.json` deleted
+- [x] `tslint` package uninstalled
+- [x] `npx ng lint` passes: 0 errors, 29 warnings (pre-existing code style)
+
+## MB-039 — Add Prettier
+
+**Status:** COMPLETED
+**Priority:** MEDIUM
+**Phase:** 8
+
+**Objective:**
+Add consistent code formatting with Prettier.
+
+**Acceptance Criteria:**
+- [x] Prettier installed with `eslint-config-prettier`
+- [x] `.prettierrc` created (single quotes, trailing commas, 120 print width)
+- [x] `.prettierignore` excludes dist/node_modules/coverage/assets
+- [x] `format` and `format:check` scripts added to package.json
+- [x] `eslint-config-prettier` added to ESLint config to avoid conflicts
+
+## MB-040 — Remove rxjs-compat
+
+**Status:** COMPLETED
+**Priority:** HIGH
+**Phase:** 8
+
+**Objective:**
+Remove dead rxjs-compat dependency (rxjs 7.5.6 already in use).
+
+**Acceptance Criteria:**
+- [x] `rxjs-compat` removed from package.json
+- [x] Build passes without rxjs-compat
+
+## MB-041 — Lazy-load Feature Modules
+
+**Status:** COMPLETED
+**Priority:** HIGH
+**Phase:** 8
+
+**Objective:**
+Split monolithic AppModule into lazy-loaded feature modules.
+
+**Acceptance Criteria:**
+- [x] VendeiFeatureModule: POS components + dialogs (lazy chunk: 123 kB)
+- [x] RegFeatureModule: Product/category/customer/attribute management (lazy chunk: 145 kB)
+- [x] RepFeatureModule: Reports and analytics (lazy chunk: 252 kB)
+- [x] AppModule retains shared/ang/inv/tools components
+- [x] CustomerListComponent made standalone for cross-module reuse
+- [x] Build produces 3 lazy chunks, initial bundle reduced to 1.34 MB
+
+## MB-042 — Add Route Guards
+
+**Status:** COMPLETED
+**Priority:** HIGH
+**Phase:** 8
+
+**Objective:**
+Add guard infrastructure for protected routes.
+
+**Acceptance Criteria:**
+- [x] StoreProfileGuard created (ready for future auth integration)
+- [x] Guard is `providedIn: 'root'`
+
+## MB-043 — Add HTTP Interceptors
+
+**Status:** COMPLETED
+**Priority:** MEDIUM
+**Phase:** 8
+
+**Objective:**
+Add global HTTP error handling.
+
+**Acceptance Criteria:**
+- [x] `apiInterceptor` functional interceptor created
+- [x] Handles network errors (status 0), 404, 500+, and backend error messages
+- [x] Registered via `provideHttpClient(withInterceptors([apiInterceptor]))` in AppModule
+- [x] All existing services already handle their own base URL prefixing
+
+## MB-044 — Fix Production API Configuration
+
+**Status:** COMPLETED
+**Priority:** HIGH
+**Phase:** 8
+
+**Objective:**
+Fix hardcoded localhost URL in production environment config.
+
+**Acceptance Criteria:**
+- [x] `environment.prod.ts` uses `(window as any).__env?.apiBaseUrl ?? ''` for runtime config
+- [x] Dev environment unchanged (localhost:3000)
+
+## MB-045 — Containerize Deployment
+
+**Status:** COMPLETED
+**Priority:** MEDIUM
+**Phase:** 8
+
+**Objective:**
+Add Docker support for frontend and backend.
+
+**Acceptance Criteria:**
+- [x] Frontend Dockerfile (multi-stage: node build + nginx runtime)
+- [x] Backend Dockerfile (node:22-alpine)
+- [x] nginx.conf with SPA fallback and API proxy to backend
+- [x] docker-compose.yml at project root
+- [x] .dockerignore files for both repos
+
+## MB-046 — Remove Protractor
+
+**Status:** COMPLETED
+**Priority:** MEDIUM
+**Phase:** 8
+
+**Objective:**
+Remove deprecated Protractor test framework.
+
+**Acceptance Criteria:**
+- [x] `e2e/protractor.conf.js`, `e2e/src/`, `e2e/tsconfig.e2e.json` deleted
+- [x] Protractor + @types/jasminewd2 uninstalled
+- [x] angular.json protractor project removed
+- [x] `e2e` script updated to `npx playwright test`
