@@ -281,3 +281,29 @@ Modernize tooling and improve architecture.
 
 - `6ecec6b`: MB-038/039/040/044/046 (ESLint, Prettier, cleanup)
 - `a7b8225`: MB-041/042/043/045 (Lazy-load, guards, interceptors, Docker)
+
+---
+
+## Phase 9 — Advanced Templates and Platform Growth
+
+**Status:** IN PROGRESS
+
+Validate the remaining business templates (seed data already exists) and expand platform capabilities.
+
+### Tasks
+
+- MB-047: Bakery template validation
+- MB-048: Hardware Store template validation
+
+### Completion
+
+- [x] MB-047: Bakery validated (6 capabilities incl. WEIGHT_PRODUCTS + COMBOS, 5 categories, 15 products, UNIT mode, 3 columns, 57mm receipt)
+- [x] MB-048: Hardware Store validated (5 capabilities incl. VARIABLE_QUANTITY, 5 categories, 15 products, UNIT mode, 4 columns, 80mm receipt)
+- [x] Hardware SVGs moved to `hardware-store/` (matches seeder slug paths)
+- [x] Validation script extended to all 6 templates (renamed `template-validation.js`) — 6/6 PASS
+- [x] All 90 template product images verified present
+
+### Candidate Directions (not yet scoped)
+
+- Advanced analytics
+- Mobile optimization

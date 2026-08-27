@@ -1051,3 +1051,55 @@ Remove deprecated Protractor test framework.
 - [x] Protractor + @types/jasminewd2 uninstalled
 - [x] angular.json protractor project removed
 - [x] `e2e` script updated to `npx playwright test`
+
+---
+
+## MB-047 — Bakery Template Validation
+
+**Status:** COMPLETED
+**Priority:** HIGH
+**Phase:** 9
+
+**Objective:**
+Validate the bakery template creates a working POS business.
+
+**Acceptance Criteria:**
+- [x] Template has 5 categories, 15 products, 6 capabilities
+- [x] Capabilities include WEIGHT_PRODUCTS, COMBOS, LOYALTY
+- [x] posConfig: 3 columns, images enabled, UNIT selling mode, Cash+QR payments
+- [x] receiptConfig: 57mm paper with header/footer lines
+- [x] All 15 product SVG images present in `assets/vendei/catalog/bakery/`
+- [x] Backend validation script passes (6/6 templates)
+
+**Implementation Notes:**
+- Extended `test/phase7-template-validation.js` → `test/template-validation.js` to cover all 6 templates (MB-047/048 together)
+- Bakery: 6 capabilities (WEIGHT_PRODUCTS, COMBOS, DISCOUNTS, CUSTOMERS, TAX_CALCULATION, LOYALTY)
+
+**Tests:**
+- Backend validation: 6/6 PASS
+
+---
+
+## MB-048 — Hardware Store Template Validation
+
+**Status:** COMPLETED
+**Priority:** HIGH
+**Phase:** 9
+
+**Objective:**
+Validate the hardware store template creates a working POS business.
+
+**Acceptance Criteria:**
+- [x] Template has 5 categories, 15 products, 5 capabilities
+- [x] Capabilities include VARIABLE_QUANTITY, BARCODE
+- [x] posConfig: 4 columns, images enabled, UNIT selling mode, Cash+QR payments
+- [x] receiptConfig: 80mm paper with header/footer lines
+- [x] All 15 product SVG images present in `assets/vendei/catalog/hardware-store/`
+- [x] Backend validation script passes (6/6 templates)
+
+**Implementation Notes:**
+- Hardware SVGs were in `assets/vendei/catalog/hardware/` but the seeder generates img paths under `hardware-store/` — moved the directory to match
+- Hardware: 5 capabilities (BARCODE, VARIABLE_QUANTITY, DISCOUNTS, CUSTOMERS, TAX_CALCULATION)
+
+**Tests:**
+- Backend validation: 6/6 PASS
