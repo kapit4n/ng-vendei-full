@@ -7,10 +7,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { PosCheckoutComponent } from '../../pages/vendei/shopping-cart/pos-checkout.component';
 import { PosCatalogComponent } from './product-list/pos-catalog.component';
@@ -48,10 +50,12 @@ const routes: Routes = [
     MatDialogModule,
     MatFormFieldModule,
     MatIconModule,
+    MatInputModule,
     MatListModule,
     MatProgressSpinnerModule,
     MatSelectModule,
     MatTabsModule,
+    MatTooltipModule,
     CustomerListComponent,
   ],
 })
