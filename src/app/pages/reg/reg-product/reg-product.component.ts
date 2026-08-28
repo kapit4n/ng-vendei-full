@@ -18,6 +18,12 @@ import {
   coerceUnitOfMeasureRows,
   uomOptionLabel,
 } from 'src/app/utils/reg-catalog-entities';
+import {
+  CAPABILITIES,
+  SELLING_MODES,
+  SellingMode,
+  VStoreProfileService,
+} from '../../../services/vendei/v-store-profile.service';
 
 const PLACEHOLDER_IMG = 'assets/vendei/placeholders/product-card.svg';
 
@@ -34,10 +40,17 @@ export class RegProductComponent implements OnInit, OnDestroy {
   categories: ICategory[];
   allUnitOfMeasures: IUnitOfMeasure[] = [];
   saveError = '';
+  availableSellingModes: SellingMode[] = [];
+  defaultSellingMode: SellingMode = SELLING_MODES.UNIT;
+  canTrackExpiry = false;
+  isBarcodeBusiness = false;
+  businessName = '';
+  businessType = '';
 
   constructor(private productSvc: RProductService, private router: Router,
     private categorySvc: RCategoryService, private route: ActivatedRoute,
     private uomSvc: RUnitOfMeasureService,
+    private profileSvc: VStoreProfileService,
     private cdr: ChangeDetectorRef) {
     this.productInfo = {
       unitOfMeasureIds: [],
@@ -70,6 +83,51 @@ export class RegProductComponent implements OnInit, OnDestroy {
 
   isEditing(): boolean {
     return !!this.route.snapshot.paramMap.get('id');
+  }
+
+  sellingModeLabel(mode: SellingMode | string | null | undefined): string {
+    switch (mode) {
+      case SELLING_MODES.WEIGHT: return 'Weight (kg)';
+      case SELLING_MODES.VARIABLE_QTY: return 'Variable quantity (m)';
+      case SELLING_MODES.VARIANT: return 'Variant (size/color)';
+      case SELLING_MODES.COMBO: return 'Combo / bundle';
+      default: return 'Unit';
+    }
+  }
+
+  /** Map the active business profile onto this form (capability-driven fields). */
+  private applyBusinessProfile(): void {
+    const profile = this.profileSvc.getActiveProfile();
+    const caps = this.profileSvc.getCapabilities(profile);
+
+    const modes: SellingMode[] = [SELLING_MODES.UNIT];
+    if (caps.includes(CAPABILITIES.WEIGHT_PRODUCTS)) {
+      modes.push(SELLING_MODES.WEIGHT);
+    }
+    if (caps.includes(CAPABILITIES.VARIABLE_QUANTITY)) {
+      modes.push(SELLING_MODES.VARIABLE_QTY);
+    }
+    if (caps.includes(CAPABILITIES.PRODUCT_VARIANTS)) {
+      modes.push(SELLING_MODES.VARIANT);
+    }
+    if (caps.includes(CAPABILITIES.COMBOS)) {
+      modes.push(SELLING_MODES.COMBO);
+    }
+    this.availableSellingModes = modes;
+    this.defaultSellingMode = this.profileSvc.getDefaultSellingMode(profile);
+    this.canTrackExpiry = this.profileSvc.hasCapability(CAPABILITIES.EXPIRATION, profile);
+    this.isBarcodeBusiness = this.profileSvc.hasCapability(CAPABILITIES.BARCODE, profile);
+    this.businessName = profile ? this.profileSvc.getBusinessName(profile) : '';
+    this.businessType = profile ? this.profileSvc.getBusinessType(profile) : '';
+
+    if (!this.canTrackExpiry) {
+      this.productInfo.trackExpiry = false;
+      this.productInfo.defaultShelfLifeDays = null;
+    }
+    const current = String(this.productInfo.sellingMode || '').toUpperCase() as SellingMode;
+    if (!modes.includes(current)) {
+      this.productInfo.sellingMode = this.defaultSellingMode;
+    }
   }
 
   /** Mat-select compare when API mixes string/number ids. */
@@ -178,6 +236,7 @@ export class RegProductComponent implements OnInit, OnDestroy {
           this.productInfo.categoryId = String(this.categories[0].id);
         }
 
+        this.applyBusinessProfile();
         this.cdr.detectChanges();
         queueMicrotask(() => this.cdr.detectChanges());
       });
@@ -223,10 +282,21 @@ export class RegProductComponent implements OnInit, OnDestroy {
       payload.vendorId = Number(p.vendorId);
     }
 
-    payload.trackExpiry = Boolean(this.productInfo.trackExpiry);
+    const allowedModes = new Set<string>(this.availableSellingModes);
+    const rawMode = String(p.sellingMode || '').trim().toUpperCase();
+    payload.sellingMode = allowedModes.has(rawMode) ? rawMode : SELLING_MODES.UNIT;
+
+    payload.trackExpiry = this.canTrackExpiry ? Boolean(this.productInfo.trackExpiry) : false;
     const shelfRaw = this.productInfo.defaultShelfLifeDays;
     const shelfNum = Number(shelfRaw);
-    if (payload.trackExpiry && shelfRaw != null && shelfRaw !== ('' as unknown) && Number.isFinite(shelfNum) && shelfNum >= 0) {
+    if (
+      this.canTrackExpiry &&
+      payload.trackExpiry &&
+      shelfRaw != null &&
+      shelfRaw !== ('' as unknown) &&
+      Number.isFinite(shelfNum) &&
+      shelfNum >= 0
+    ) {
       payload.defaultShelfLifeDays = Math.floor(shelfNum);
     } else {
       payload.defaultShelfLifeDays = null;

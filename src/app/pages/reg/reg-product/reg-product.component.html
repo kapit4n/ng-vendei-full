@@ -19,6 +19,12 @@
         </div>
 
         <div class="fields-panel">
+          @if (businessName) {
+            <p class="business-context">
+              This form adapts to your {{ businessName }}{{ businessType ? ' (' + businessType + ')' : '' }} profile.
+            </p>
+          }
+
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Category</mat-label>
             <mat-select [(ngModel)]="productInfo.categoryId" name="categoryId" required
@@ -28,6 +34,21 @@
               }
             </mat-select>
           </mat-form-field>
+
+          @if (availableSellingModes.length > 1) {
+            <mat-form-field appearance="outline" class="full-width selling-mode-field" subscriptSizing="dynamic">
+              <mat-label>Selling mode</mat-label>
+              <mat-select [(ngModel)]="productInfo.sellingMode" name="sellingMode">
+                <mat-select-trigger>
+                  {{ sellingModeLabel(productInfo.sellingMode ?? defaultSellingMode) }}
+                </mat-select-trigger>
+                @for (mode of availableSellingModes; track mode) {
+                  <mat-option [value]="mode">{{ sellingModeLabel(mode) }}</mat-option>
+                }
+              </mat-select>
+              <mat-hint>How this product is priced and entered at the POS for your business.</mat-hint>
+            </mat-form-field>
+          }
 
           <mat-form-field appearance="outline" class="full-width uom-multi-field" subscriptSizing="dynamic">
             <mat-label>Allowed units of measure</mat-label>
@@ -47,9 +68,12 @@
           </mat-form-field>
 
           <div class="field-row">
-            <mat-form-field appearance="outline" class="flex-1">
+            <mat-form-field appearance="outline" class="flex-1" subscriptSizing="dynamic">
               <mat-label>Code</mat-label>
               <input matInput type="text" [(ngModel)]="productInfo.code" name="code" required autocomplete="off" />
+              @if (isBarcodeBusiness) {
+                <mat-hint>Scanned at the POS as barcode / quick code.</mat-hint>
+              }
             </mat-form-field>
           </div>
 
@@ -64,30 +88,32 @@
             <textarea matInput rows="4" [(ngModel)]="productInfo.description" name="description"></textarea>
           </mat-form-field>
 
-          <div class="expiry-block">
-            <mat-slide-toggle [(ngModel)]="productInfo.trackExpiry" name="trackExpiry" color="primary">
-              Track expiry (perishable)
-            </mat-slide-toggle>
-            <p class="expiry-hint">
-              When enabled, each stock receipt stores an expiry date; sales use earliest expiry first (FEFO).
-            </p>
-            @if (productInfo.trackExpiry) {
-              <mat-form-field appearance="outline" class="full-width shelf-life-field" subscriptSizing="dynamic">
-                <mat-label>Default shelf life (days)</mat-label>
-                <input
-                  matInput
-                  type="number"
-                  min="0"
-                  step="1"
-                  [(ngModel)]="productInfo.defaultShelfLifeDays"
-                  name="defaultShelfLifeDays"
-                  autocomplete="off"
-                  placeholder="Optional"
-                  />
-                <mat-hint>If set, inventory receive can omit expiry (server uses today + this many days).</mat-hint>
-              </mat-form-field>
-            }
-          </div>
+          @if (canTrackExpiry) {
+            <div class="expiry-block">
+              <mat-slide-toggle [(ngModel)]="productInfo.trackExpiry" name="trackExpiry" color="primary">
+                Track expiry (perishable)
+              </mat-slide-toggle>
+              <p class="expiry-hint">
+                When enabled, each stock receipt stores an expiry date; sales use earliest expiry first (FEFO).
+              </p>
+              @if (productInfo.trackExpiry) {
+                <mat-form-field appearance="outline" class="full-width shelf-life-field" subscriptSizing="dynamic">
+                  <mat-label>Default shelf life (days)</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    min="0"
+                    step="1"
+                    [(ngModel)]="productInfo.defaultShelfLifeDays"
+                    name="defaultShelfLifeDays"
+                    autocomplete="off"
+                    placeholder="Optional"
+                    />
+                  <mat-hint>If set, inventory receive can omit expiry (server uses today + this many days).</mat-hint>
+                </mat-form-field>
+              }
+            </div>
+          }
         </div>
       </div>
     </mat-card-content>
