@@ -22,6 +22,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { PageNotFoundComponent } from './pages/vendei/page-not-found/page-not-found.component';
 import { MainScreenshotComponent } from './pages/vendei/main-screenshot/main-screenshot.component';
@@ -162,6 +163,7 @@ const appRoutes: Routes = [
     MatSelectModule,
     MatTableModule,
     MatTabsModule,
+    MatTooltipModule,
     CustomerListComponent,
   ],
   providers: [

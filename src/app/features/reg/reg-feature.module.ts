@@ -13,6 +13,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { RegProductComponent } from '../../pages/reg/reg-product/reg-product.component';
 import { RegProductPresentationComponent } from '../../pages/reg/reg-product-presentation/reg-product-presentation.component';
@@ -81,6 +82,7 @@ const routes: Routes = [
     MatSelectModule,
     MatSlideToggleModule,
     MatTabsModule,
+    MatTooltipModule,
   ],
 })
 export class RegFeatureModule {}
