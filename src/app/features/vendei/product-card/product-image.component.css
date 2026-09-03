@@ -1,0 +1,20 @@
+:host {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: #e8edf3;
+}
+
+.product-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.product-image:is(.ng-lazy) {
+  /* placeholder / any image shares the same tile size regardless of load state */
+}

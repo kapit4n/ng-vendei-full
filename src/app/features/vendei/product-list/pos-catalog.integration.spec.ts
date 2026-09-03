@@ -13,6 +13,8 @@ import { VStoreProfileService } from '../../../services/vendei/v-store-profile.s
 import { VProductVariantService } from '../../../services/vendei/v-product-variant.service';
 import { MatDialog } from '@angular/material/dialog';
 import { PosCatalogComponent } from './pos-catalog.component';
+import { ProductCardComponent } from '../product-card/product-card.component';
+import { ProductImageComponent } from '../product-card/product-image.component';
 
 /**
  * CATALOG & PRODUCT SELECTION REGRESSION — INTEGRATION TEST
@@ -61,10 +63,11 @@ describe('Catalog & Product Selection — Integration', () => {
     variantSvcSpy = jasmine.createSpyObj('VProductVariantService', ['getByProductId']);
     dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
     activeProfileIdSubject = new BehaviorSubject<number | null>(1);
-    profileSvcSpy = jasmine.createSpyObj('VStoreProfileService', ['getProfiles', 'getActiveProfileId', 'setActiveProfile', 'getActiveProfile', 'hasCapability', 'resolveSellingMode', 'getPosConfig', 'getEnabledPaymentTypes']);
+    profileSvcSpy = jasmine.createSpyObj('VStoreProfileService', ['getProfiles', 'getActiveProfileId', 'setActiveProfile', 'getActiveProfile', 'hasCapability', 'resolveSellingMode', 'getPosConfig', 'getEnabledPaymentTypes', 'getCurrencySymbol']);
     profileSvcSpy.getActiveProfileId.and.returnValue(1);
     profileSvcSpy.hasCapability.and.returnValue(true);
     profileSvcSpy.resolveSellingMode.and.returnValue('UNIT');
+    profileSvcSpy.getCurrencySymbol.and.returnValue('Bs');
     profileSvcSpy.getPosConfig.and.returnValue({ catalogColumns: 4, showProductImages: true, quickProducts: [], defaultSellingMode: 'UNIT', enabledPaymentTypes: [1, 4] });
     profileSvcSpy.getEnabledPaymentTypes.and.returnValue([1, 4]);
     (profileSvcSpy as any).getActiveProfileId$ = () => activeProfileIdSubject.asObservable();
@@ -72,7 +75,7 @@ describe('Catalog & Product Selection — Integration', () => {
     variantSvcSpy.getByProductId.and.returnValue(of([]));
 
     TestBed.configureTestingModule({
-      declarations: [PosCatalogComponent],
+      declarations: [PosCatalogComponent, ProductCardComponent, ProductImageComponent],
       imports: [FormsModule, MatIconModule, MatInputModule, MatTooltipModule, BrowserAnimationsModule],
       providers: [
         VConfigService,
@@ -257,6 +260,43 @@ describe('Catalog & Product Selection — Integration', () => {
       component.productCode = 'CC-001';
       component.addByCodeField();
       expect(component.selectedProducts.length).toBe(0);
+    });
+  });
+
+  // ─── ROOT-CAUSE REGRESSION: CARD LAYOUT NOT CLIPPED ───
+  describe('Card layout regression', () => {
+    beforeEach(() => {
+      setupWithProducts([{
+        id: 1,
+        currentPrice: 12,
+        price: 12,
+        img: 'assets/vendei/catalog/supermarket/coca-cola-2l.svg',
+        Product: { name: 'Coca Cola 2L', code: 'SEED-PRD-SU-01', stock: 100, sellingMode: 'UNIT', img: 'assets/vendei/catalog/supermarket/coca-cola-2l.svg' },
+      }], supermarketCategories);
+      createComponent();
+    });
+
+    it('renders an app-product-card with name, price, and sku', () => {
+      const card = fixture.nativeElement.querySelector('app-product-card');
+      expect(card).toBeTruthy();
+      const text = card.textContent;
+      expect(text).toContain('Coca Cola 2L');
+      expect(text).toContain('12.00');
+      expect(text).toContain('SEED-PRD-SU-01');
+    });
+
+    it('renders a real <img> inside the card (not a background div)', () => {
+      const img = fixture.nativeElement.querySelector('app-product-card img');
+      expect(img).toBeTruthy();
+      expect(img.getAttribute('src')).toContain('coca-cola-2l.svg');
+    });
+
+    it('places the grid on a start row track so content is not clipped', () => {
+      const box = fixture.nativeElement.querySelector('.product-cards-grid');
+      const style = getComputedStyle(box);
+      // The grid previously collapsed rows with the default stretch alignment;
+      // a start alignment lets each card grow to its natural height.
+      expect(style.alignItems).toBe('start');
     });
   });
 });

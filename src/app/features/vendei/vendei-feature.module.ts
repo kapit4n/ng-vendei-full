@@ -24,6 +24,8 @@ import { ProfileSwitchDialogComponent } from './profile-switch-dialog/profile-sw
 import { VariantSelectDialogComponent } from './variant-select-dialog/variant-select-dialog.component';
 import { QtyInputDialogComponent } from './product-list/qty-input-dialog.component';
 import { CustomerListComponent } from './customer-list/customer-list.component';
+import { ProductCardComponent } from './product-card/product-card.component';
+import { ProductImageComponent } from './product-card/product-image.component';
 
 const routes: Routes = [
   { path: '', component: PosCheckoutComponent, data: { title: 'POS Checkout' } },
@@ -41,6 +43,8 @@ const routes: Routes = [
     ProfileSwitchDialogComponent,
     VariantSelectDialogComponent,
     QtyInputDialogComponent,
+    ProductCardComponent,
+    ProductImageComponent,
   ],
   imports: [
     CommonModule,

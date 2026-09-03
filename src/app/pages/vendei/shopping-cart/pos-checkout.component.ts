@@ -27,6 +27,12 @@ export class PosCheckoutComponent implements OnInit {
   printTwice = false;
   printIt = false;
 
+  /** Collapse the payment panel (default collapsed) so an empty ticket gets more room. */
+  paymentCollapsed = true;
+  togglePaymentPanel(): void {
+    this.paymentCollapsed = !this.paymentCollapsed;
+  }
+
   total: number;
   /** Anonymous walk-in; omit document so the UI can show a placeholder ID line. */
   emptyCustomer = { id: 1, name: "Anonymous", ci: null as number | null, code: null as string | null };

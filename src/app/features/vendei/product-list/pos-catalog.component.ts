@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
-import { forkJoin, Subject } from "rxjs";
-import { switchMap, takeUntil } from "rxjs/operators";
+import { forkJoin, of, Subject } from "rxjs";
+import { catchError, switchMap, takeUntil } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import { VProductsService } from "../../../services/vendei/v-products.service";
 import { VCategoriesService } from "../../../services/vendei/v-categories.service";
@@ -41,6 +41,10 @@ export class PosCatalogComponent implements OnInit, OnDestroy {
   categories: { id: number; name: string }[] = [];
   /** When set, filters by category id; null means all categories. */
   activeCategory: { id: number; name: string } | null = null;
+  /** True while the initial catalog load is in flight. */
+  loading = true;
+  /** Error loading the initial catalog. */
+  loadError = "";
 
   private destroy$ = new Subject<void>();
 
@@ -58,25 +62,58 @@ export class PosCatalogComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.profileSvc.getActiveProfileId$().pipe(
       takeUntil(this.destroy$),
-      switchMap((profileId) => {
-        return forkJoin({
-          products: this.productsSvc.getProducts(profileId || undefined),
-          categories: this.categoriesSvc.getAll(profileId || undefined),
-        });
+      switchMap((profileId) => this.loadCatalog(profileId))
+    ).subscribe({
+      next: () => this.cdr.detectChanges(),
+      error: () => {
+        this.loading = false;
+        this.originalP = [];
+        this.products = [];
+        this.categories = [];
+        this.loadError = "Unable to load products.";
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  /** Fetch products + categories for a profile and populate the catalog. */
+  private loadCatalog(profileId: number | null): any {
+    this.loading = true;
+    this.loadError = "";
+    return forkJoin({
+      products: this.productsSvc.getProducts(profileId || undefined),
+      categories: this.categoriesSvc.getAll(profileId || undefined),
+    }).pipe(
+      switchMap(({ products, categories }) => {
+        const normalized = (products || []).map((p: any) => ({
+          ...p,
+          currentPrice: roundToCents(p.currentPrice ?? p.price),
+        }));
+        this.originalP = normalized;
+        const list = Array.isArray(categories) ? categories : [];
+        /** Sentinel -1 avoids clashing with a real category id of 0 from the API. */
+        this.categories = [{ id: -1, name: "All" }, ...list];
+        this.activeCategory = null;
+        this.searchQuery = "";
+        this.applyFilters();
+        this.loading = false;
+        return of({});
+      }),
+      catchError((err) => {
+        throw err;
       })
-    ).subscribe(({ products, categories }) => {
-      const normalized = (products || []).map((p: any) => ({
-        ...p,
-        currentPrice: roundToCents(p.currentPrice ?? p.price),
-      }));
-      this.originalP = normalized;
-      const list = Array.isArray(categories) ? categories : [];
-      /** Sentinel -1 avoids clashing with a real category id of 0 from the API. */
-      this.categories = [{ id: -1, name: "All" }, ...list];
-      this.activeCategory = null;
-      this.searchQuery = "";
-      this.applyFilters();
-      this.cdr.detectChanges();
+    );
+  }
+
+  /** Re-run the catalog load after an error. */
+  retry(): void {
+    this.loadCatalog(this.profileSvc.getActiveProfileId()).subscribe({
+      next: () => this.cdr.detectChanges(),
+      error: () => {
+        this.loading = false;
+        this.loadError = "Unable to load products.";
+        this.cdr.detectChanges();
+      },
     });
   }
 
@@ -299,6 +336,11 @@ export class PosCatalogComponent implements OnInit, OnDestroy {
     return this.profileSvc.hasCapability(CAPABILITIES.PRODUCT_VARIANTS);
   }
 
+  /** Whether sold-out products should be shown as disabled (per profile). */
+  get respectStock(): boolean {
+    return this.profileSvc.getPosConfig().respectStock !== false;
+  }
+
   /** Catalog grid columns from profile config (default: 4). */
   get catalogColumns(): number {
     const cols = this.profileSvc.getPosConfig().catalogColumns;
@@ -327,6 +369,12 @@ export class PosCatalogComponent implements OnInit, OnDestroy {
 
   displayProductName(product: any): string {
     return product?.Product?.name || product?.name || "Product";
+  }
+
+  /** Placeholder count for the loading skeleton grid (enough to fill one screen). */
+  skeletonCards(): number[] {
+    const cols = this.catalogColumns;
+    return new Array(Math.max(cols, cols * 3)).fill(0).map((_, i) => i);
   }
 
   productCardTitle(product: any): string {

@@ -74,12 +74,24 @@
     </div>
 
     @if (displayCal) {
-      <app-pos-payment-panel class="cal-table" [selectCustomer]="selectCustomer.bind(this)"
-        [selectedCustomer]="selectedCustomer" [orderTotal]="total" [payedItems]="payedItems"
-        [discountItems]="discountItems" [returnItems]="returnItems" [totalPayed]="totalPayed"
-        [totalDiscount]="totalDiscount" [totalReturn]="totalReturn" [calTotals]="calTotals.bind(this)"
-        [payIt]="payIt.bind(this)" [removeItem]="removeItem.bind(this)" [printOrderCount]="printOrderCount"
-        [finalizeOrder]="submitOrder.bind(this)"></app-pos-payment-panel>
+      <div class="payment-section" [class.payment-section--collapsed]="paymentCollapsed">
+        <button type="button" class="payment-toggle" (click)="togglePaymentPanel()"
+          [attr.aria-expanded]="!paymentCollapsed" aria-label="Toggle payment panel">
+          <mat-icon>{{ paymentCollapsed ? 'expand_less' : 'expand_more' }}</mat-icon>
+          <span class="payment-toggle-label">Payment</span>
+          @if (paymentCollapsed && total > 0 && !isOrderPaid) {
+            <span class="payment-toggle-badge">Due {{ currencySymbol }} {{ amountDue | number:'1.2-2' }}</span>
+          }
+        </button>
+        @if (!paymentCollapsed) {
+          <app-pos-payment-panel class="cal-table" [selectCustomer]="selectCustomer.bind(this)"
+            [selectedCustomer]="selectedCustomer" [orderTotal]="total" [payedItems]="payedItems"
+            [discountItems]="discountItems" [returnItems]="returnItems" [totalPayed]="totalPayed"
+            [totalDiscount]="totalDiscount" [totalReturn]="totalReturn" [calTotals]="calTotals.bind(this)"
+            [payIt]="payIt.bind(this)" [removeItem]="removeItem.bind(this)" [printOrderCount]="printOrderCount"
+            [finalizeOrder]="submitOrder.bind(this)"></app-pos-payment-panel>
+        }
+      </div>
     }
 
     <footer class="pos-cart-footer">

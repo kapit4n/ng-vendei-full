@@ -11,7 +11,7 @@
         <mat-icon matPrefix class="search-prefix">search</mat-icon>
         <input matInput type="search" autocomplete="off" [ngModel]="searchQuery"
           (ngModelChange)="onSearchChange($event)"
-          placeholder="Search products by name or scan barcode…" [ngModelOptions]="{ standalone: true }" />
+          placeholder="Search products by name or code…" [ngModelOptions]="{ standalone: true }" />
         @if (searchQuery) {
           <button mat-icon-button matSuffix type="button" (click)="clearSearch()"
             aria-label="Clear search">
@@ -83,39 +83,58 @@
   @if (originalP.length) {
     <div class="search-meta">
       <span class="search-meta-count">Showing {{ products.length }} of {{ originalP.length }} products</span>
-      <span class="search-meta-view" aria-hidden="true">Grid</span>
     </div>
   }
 
   <div class="product-cards-box" [ngStyle]="gridStyle">
-    @if (!products.length && originalP.length) {
+
+    @if (loading) {
+      <div class="product-cards-skeletons" [ngStyle]="gridStyle">
+        @for (s of skeletonCards(); track s) {
+          <div class="skeleton-card">
+            <div class="skeleton-card__media"></div>
+            <div class="skeleton-card__body">
+              <div class="skeleton-line skeleton-line--price"></div>
+              <div class="skeleton-line"></div>
+              <div class="skeleton-line skeleton-line--short"></div>
+            </div>
+          </div>
+        }
+      </div>
+    } @else if (loadError) {
+      <div class="product-cards-empty product-cards-error">
+        <mat-icon class="empty-icon">cloud_off</mat-icon>
+        <p class="empty-title">{{ loadError }}</p>
+        <p class="empty-hint">Check your connection and try again.</p>
+        <button mat-stroked-button type="button" color="primary" (click)="retry()">
+          Retry
+        </button>
+      </div>
+    } @else if (!products.length && originalP.length) {
       <div class="product-cards-empty">
         <mat-icon class="empty-icon">search_off</mat-icon>
         <p class="empty-title">No matches</p>
-        <p class="empty-hint">Try another search or pick a different category.</p>
+        <p class="empty-hint">No products match your search or this category.</p>
         <button mat-stroked-button type="button" color="primary" (click)="resetFilters()">
           Reset filters
         </button>
       </div>
+    } @else if (!products.length) {
+      <div class="product-cards-empty">
+        <mat-icon class="empty-icon">category</mat-icon>
+        <p class="empty-title">No products</p>
+        <p class="empty-hint">There are no products in this catalog yet.</p>
+      </div>
+    } @else {
+      <div class="product-cards-grid" [ngStyle]="gridStyle">
+        @for (product of products; track productRowTrack($index, product)) {
+          <app-product-card [product]="product" [showImage]="showProductImages"
+            [disabled]="printOrderCount !== 0" [respectStock]="respectStock"
+            (addProduct)="addProduct(product)">
+          </app-product-card>
+        }
+      </div>
     }
 
-    @for (product of products; track productRowTrack($index, product)) {
-      <button type="button" class="product-list-item-t" (click)="addProduct(product)"
-        [attr.aria-label]="'Add ' + displayProductName(product)">
-        @if (showProductImages) {
-        <div class="product-card-media">
-        <div class="product-card-image" [style.background-image]="'url(' + productCardImageUrl(product) + ')'"></div>
-      </div>
-      }
-      <div class="product-card-body">
-        <span class="product-card-price">Bs {{ product.currentPrice | number:'1.2-2' }}</span>
-        <span class="product-card-code" title="Product code">{{ product.Product?.code || product.code }}</span>
-          <span class="product-card-name">{{ productCardTitle(product) }}</span>
-          @if (productCardLabel(product); as label) {
-            <span class="product-card-label">{{ label }}</span>
-          }
-        </div>
-      </button>
-    }
   </div>
 </div>

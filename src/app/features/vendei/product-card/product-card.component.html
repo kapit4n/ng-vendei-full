@@ -1,0 +1,25 @@
+<button type="button" class="product-card" [class.product-card--disabled]="isDisabled"
+  [class.product-card--noshow]="!showImage" [attr.aria-label]="'Add ' + productName"
+  [attr.aria-disabled]="isDisabled" [disabled]="isDisabled" (click)="onActivate()"
+  (keydown.enter)="onActivate()" (keydown.space)="onActivate(); $event.preventDefault()">
+
+  @if (showImage) {
+    <div class="product-card__media">
+      <app-product-image [src]="imageUrl" [alt]="productName"></app-product-image>
+    </div>
+  }
+
+  <div class="product-card__body">
+    @if (isSoldOut) {
+      <span class="product-card__stock product-card__stock--out">Out of stock</span>
+    }
+    <span class="product-card__price">{{ currencySymbol }} {{ price | number:'1.2-2' }}</span>
+    @if (sku) {
+      <span class="product-card__sku" title="Product code">{{ sku }}</span>
+    }
+    <span class="product-card__name">{{ title }}</span>
+    @if (label || unitLabel) {
+      <span class="product-card__label">{{ label || unitLabel }}</span>
+    }
+  </div>
+</button>

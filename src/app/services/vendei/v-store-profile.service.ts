@@ -17,6 +17,8 @@ export interface PosConfig {
   quickProducts: number[];
   defaultSellingMode: SellingMode;
   enabledPaymentTypes: number[];
+  /** When true, POS cards disable out-of-stock products. Optional; default true. */
+  respectStock?: boolean;
 }
 
 export interface StoreProfile {
@@ -70,6 +72,7 @@ const DEFAULT_POS_CONFIG: PosConfig = {
   quickProducts: [],
   defaultSellingMode: 'UNIT',
   enabledPaymentTypes: [1, 4],
+  respectStock: true,
 };
 
 /** Well-known capability constants. */

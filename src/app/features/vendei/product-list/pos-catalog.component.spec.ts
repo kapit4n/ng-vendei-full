@@ -13,6 +13,8 @@ import { VConfigService } from '../../../services/vendei/v-config.service';
 import { VStoreProfileService } from '../../../services/vendei/v-store-profile.service';
 import { VProductVariantService } from '../../../services/vendei/v-product-variant.service';
 import { PosCatalogComponent } from './pos-catalog.component';
+import { ProductCardComponent } from '../product-card/product-card.component';
+import { ProductImageComponent } from '../product-card/product-image.component';
 
 describe('PosCatalogComponent', () => {
   let component: PosCatalogComponent;
@@ -61,10 +63,11 @@ describe('PosCatalogComponent', () => {
     variantSvcSpy = jasmine.createSpyObj('VProductVariantService', ['getByProductId']);
     dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
     activeProfileIdSubject = new BehaviorSubject<number | null>(1);
-    profileSvcSpy = jasmine.createSpyObj('VStoreProfileService', ['getProfiles', 'getActiveProfileId', 'setActiveProfile', 'getActiveProfile', 'hasCapability', 'resolveSellingMode', 'getPosConfig', 'getEnabledPaymentTypes']);
+    profileSvcSpy = jasmine.createSpyObj('VStoreProfileService', ['getProfiles', 'getActiveProfileId', 'setActiveProfile', 'getActiveProfile', 'hasCapability', 'resolveSellingMode', 'getPosConfig', 'getEnabledPaymentTypes', 'getCurrencySymbol']);
     profileSvcSpy.resolveSellingMode.and.returnValue('UNIT');
     profileSvcSpy.getActiveProfileId.and.returnValue(1);
     profileSvcSpy.hasCapability.and.returnValue(true);
+    profileSvcSpy.getCurrencySymbol.and.returnValue('Bs');
     profileSvcSpy.getPosConfig.and.returnValue({ catalogColumns: 4, showProductImages: true, quickProducts: [], defaultSellingMode: 'UNIT', enabledPaymentTypes: [1, 4] });
     profileSvcSpy.getEnabledPaymentTypes.and.returnValue([1, 4]);
     (profileSvcSpy as any).getActiveProfileId$ = () => activeProfileIdSubject.asObservable();
@@ -74,7 +77,7 @@ describe('PosCatalogComponent', () => {
     variantSvcSpy.getByProductId.and.returnValue(of([]));
 
     TestBed.configureTestingModule({
-      declarations: [PosCatalogComponent],
+      declarations: [PosCatalogComponent, ProductCardComponent, ProductImageComponent],
       imports: [
         FormsModule,
         MatIconModule,
