@@ -81,3 +81,36 @@ Verified: cards now render at natural 311–318px height, `scrollHeight == clien
 - Grid/empty/error/skeleton → `features/vendei/product-list/pos-catalog.component.*`
 - Collapsible payment → `pages/vendei/shopping-cart/pos-checkout.component.*`
 - `respectStock` PosConfig flag → `services/vendei/v-store-profile.service.ts`
+
+## Default Business Configuration (Task #25)
+
+The POS starts on a configured default business/catalog instead of a hardcoded one.
+The default lives in the backend's `StoreProfile.defaultProfile` flag and is managed
+from a new **Business settings** page (`/settings`, lazy `SettingsFeatureModule`,
+reached from a hub tile on `/main`).
+
+- Backend: `PUT /storeProfiles/:id/default` atomically clears `defaultProfile` on all
+  profiles and sets it on the target (`storeprofiles.controller.js#setDefault`).
+- Service (`services/vendei/v-store-profile.service.ts`):
+  - `resolveInitialProfileId()` — startup resolution: a valid stored temporary
+    selection wins, then the configured default (if active), then the first
+    active profile, then the first profile, else `null`.
+  - `mapFallbackReason()` — labelled fallback so a swallowed preference is visible
+    in the console instead of silently ignored.
+  - `setDefaultProfile(profile)` (PUT) updates the profiles cache only; it never
+    touches the active-session state, so an open POS keeps its current session.
+- UI (`pages/settings/business-settings/`): lists profiles, marks the current
+  default, `[value]`/`(selectionChange)` mat-select, inline save feedback.
+- The in-POS business switcher remains a **temporary, per-session** override; the
+  UI copy and the service document that it does not overwrite the default.
+- Note: components rendering after async HTTP call `ChangeDetectorRef.detectChanges()`
+  (the app-wide pattern, cf. `pos-catalog.component.ts`) because several pages
+  otherwise fail to refresh their view in headless environments.
+
+## Verification summary (Task #25)
+
+- `ng build --configuration production` ✅ (settings feature emitted as a lazy chunk)
+- ESLint: 0 errors ✅
+- Karma: 27 new tests (service + component) all pass; only the documented
+  pre-existing failures remain ✅
+- `npx playwright test`: 16/16 pass (including the two new business-settings specs) ✅

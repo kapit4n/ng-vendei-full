@@ -156,5 +156,19 @@ export class MainComponent {
         },
       ],
     },
+    {
+      id: 'settings',
+      label: 'Settings',
+      subtitle: 'Application defaults and business configuration',
+      matIcon: 'tune',
+      tiles: [
+        {
+          title: 'Business settings',
+          description: 'Choose the default business the POS opens with',
+          path: '/settings',
+          matIcon: 'storefront',
+        },
+      ],
+    },
   ];
 }

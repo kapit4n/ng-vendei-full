@@ -121,6 +121,53 @@ export function sellingModeUnitLabel(mode: string | undefined | null): string {
 
 const STORAGE_KEY = 'activeStoreProfileId';
 
+/**
+ * Deterministically resolve which profile the POS should use at startup.
+ * Single source of truth for default/business selection so POS pages and
+ * settings screens never diverge:
+ *   1. an existing stored (temporary) selection wins;
+ *   2. otherwise the configured default business if it exists and is active;
+ *   3. otherwise the first available active profile;
+ *   4. otherwise the first profile;
+ *   5. otherwise null (no profiles).
+ * Prefers active profiles so an admin-deactivated default never wedges POS startup.
+ */
+export function resolveInitialProfileId(
+  profiles: StoreProfile[],
+  storedId: number | null
+): number | null {
+  if (storedId !== null && profiles.some((p) => p.id === storedId)) return storedId;
+  const isActive = (p: StoreProfile) => p.active;
+  const configuredDefault = profiles.find((p) => p.defaultProfile && isActive(p));
+  if (configuredDefault) return configuredDefault.id;
+  const firstActive = profiles.find(isActive);
+  if (firstActive) return firstActive.id;
+  return profiles.length > 0 ? profiles[0].id : null;
+}
+
+/**
+ * Whether the resolved profile differs from the previously stored selection,
+ * meaning a fallback occurred and should be reported. A valid stored (manual)
+ * selection is a deliberate choice and never a fallback, even when it differs
+ * from the configured default.
+ */
+export function mapFallbackReason(
+  profiles: StoreProfile[],
+  storedId: number | null,
+  resolvedId: number | null
+): string | null {
+  if (resolvedId === null) return null;
+  if (storedId !== null) {
+    if (storedId === resolvedId) return null;
+    return `stored profile id ${storedId} no longer exists; fell back to profile ${resolvedId}`;
+  }
+  const configuredDefault = profiles.find((p) => p.defaultProfile);
+  if (configuredDefault && resolvedId !== configuredDefault.id) {
+    return `configured default profile ${configuredDefault.id} is unavailable; fell back to profile ${resolvedId}`;
+  }
+  return null;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -142,18 +189,45 @@ export class VStoreProfileService {
       }),
       tap((profiles) => {
         this.profiles = profiles;
-        const currentId = this.activeProfileId$.getValue();
-        if (currentId === null && profiles.length > 0) {
-          const def = profiles.find((p: StoreProfile) => p.defaultProfile) || profiles[0];
-          this.setActiveProfile(def);
-        } else if (currentId !== null && !profiles.find((p: StoreProfile) => p.id === currentId)) {
-          const def = profiles.find((p: StoreProfile) => p.defaultProfile) || profiles[0];
-          if (def) this.setActiveProfile(def);
+        const storedId = this.activeProfileId$.getValue();
+        const resolvedId = resolveInitialProfileId(profiles, storedId);
+        if (resolvedId !== null && resolvedId !== storedId) {
+          const reason = mapFallbackReason(profiles, storedId, resolvedId);
+          if (reason) console.warn(`[VStoreProfileService] ${reason}`);
+          this.setActiveProfile(profiles.find((p: StoreProfile) => p.id === resolvedId)!);
         }
       }),
       catchError((err) => {
         console.error('[VStoreProfileService] getProfiles failed', err);
         return of([]);
+      })
+    );
+  }
+
+  /** The configured default business/catalog profile from the given list (or cache). */
+  getDefaultProfile(profiles?: StoreProfile[]): StoreProfile | null {
+    const list = profiles ?? this.profiles;
+    return list.find((p) => p.defaultProfile) || null;
+  }
+
+  /**
+   * Persist the default business type (catalog the POS opens with) for this
+   * application. Persisted via the backend so it survives reload and login.
+   * The current POS session is intentionally untouched: only startup uses it.
+   */
+  setDefaultProfile(profile: StoreProfile): Observable<StoreProfile> {
+    return this.http.put<any>(`${this.configSvc.baseUrl}/storeProfiles/${profile.id}/default`, null).pipe(
+      map((body) => {
+        const data: StoreProfile | undefined =
+          (body && typeof body === 'object' && (body.data ?? body.profile)) ?? body;
+        return data as StoreProfile;
+      }),
+      tap((updated) => {
+        if (!updated || typeof updated.id !== 'number') return;
+        this.profiles = this.profiles.map((p) => ({
+          ...p,
+          defaultProfile: p.id === updated.id,
+        }));
       })
     );
   }

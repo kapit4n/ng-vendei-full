@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { VStoreProfileService, StoreProfile, CAPABILITIES, isDecimalSellingMode, sellingModeUnitLabel } from './v-store-profile.service';
+import { VStoreProfileService, StoreProfile, CAPABILITIES, isDecimalSellingMode, sellingModeUnitLabel, resolveInitialProfileId, mapFallbackReason } from './v-store-profile.service';
 import { VConfigService } from './v-config.service';
 
 describe('VStoreProfileService', () => {
@@ -145,6 +145,144 @@ describe('VStoreProfileService', () => {
       req.flush(mockProfiles);
 
       expect(freshService.getActiveProfileId()).toBe(1);
+    });
+  });
+
+  describe('resolveInitialProfileId', () => {
+    it('keeps a valid stored (temporary) selection', () => {
+      const id = resolveInitialProfileId(mockProfiles, 2);
+      expect(id).toBe(2);
+    });
+
+    it('uses the configured default when nothing is stored', () => {
+      const id = resolveInitialProfileId(mockProfiles, null);
+      expect(id).toBe(1);
+    });
+
+    it('falls back to the configured default when stored id is stale', () => {
+      localStorage.setItem('activeStoreProfileId', '999');
+      const id = resolveInitialProfileId(mockProfiles, 999);
+      expect(id).toBe(1);
+    });
+
+    it('skips an inactive configured default and picks the first active profile', () => {
+      const profiles: StoreProfile[] = [
+        { ...mockProfiles[0], active: false },
+        mockProfiles[1],
+        mockProfiles[2],
+      ];
+      const id = resolveInitialProfileId(profiles, null);
+      expect(id).toBe(2);
+    });
+
+    it('falls back to the first active profile when no default exists', () => {
+      const profiles = mockProfiles.map((p) => ({ ...p, defaultProfile: false }));
+      const id = resolveInitialProfileId(profiles, null);
+      expect(id).toBe(1);
+    });
+
+    it('returns the first profile when nothing is configured and none are active', () => {
+      const profiles = mockProfiles.map((p) => ({ ...p, active: false, defaultProfile: false }));
+      const id = resolveInitialProfileId(profiles, null);
+      expect(id).toBe(1);
+    });
+
+    it('returns null when there are no profiles', () => {
+      expect(resolveInitialProfileId([], null)).toBeNull();
+      expect(resolveInitialProfileId([], 5)).toBeNull();
+    });
+  });
+
+  describe('mapFallbackReason', () => {
+    it('reports a stale stored id fallback', () => {
+      const reason = mapFallbackReason(mockProfiles, 999, 1);
+      expect(reason).toBeDefined();
+      expect(reason).toContain('999');
+    });
+
+    it('reports an unavailable configured default fallback', () => {
+      const reason = mapFallbackReason(mockProfiles, null, 2);
+      expect(reason).toBeDefined();
+      expect(reason).toContain('default profile');
+    });
+
+    it('returns null when no fallback occurred', () => {
+      expect(mapFallbackReason(mockProfiles, null, 1)).toBeNull();
+      expect(mapFallbackReason(mockProfiles, 2, 2)).toBeNull();
+    });
+  });
+
+  describe('default profile configuration', () => {
+    it('getDefaultProfile returns the configured default after fetch', () => {
+      service.getProfiles().subscribe();
+      const req = httpMock.expectOne(`${configSvc.baseUrl}/storeProfiles`);
+      req.flush(mockProfiles);
+
+      const def = service.getDefaultProfile();
+      expect(def).toBeTruthy();
+      expect(def!.id).toBe(1);
+    });
+
+    it('getDefaultProfile returns null before any fetch', () => {
+      expect(service.getDefaultProfile()).toBeNull();
+    });
+
+    it('getDefaultProfile honors an explicit profile list', () => {
+      const list = [{ ...mockProfiles[1] }];
+      expect(service.getDefaultProfile(list)).toBeNull();
+    });
+
+    it('setDefaultProfile persists via the backend endpoint', () => {
+      service.getProfiles().subscribe();
+      httpMock.expectOne(`${configSvc.baseUrl}/storeProfiles`).flush(mockProfiles);
+      service.setActiveProfile(mockProfiles[0]);
+
+      let updated: StoreProfile | undefined;
+      service.setDefaultProfile(mockProfiles[1]).subscribe((p) => (updated = p));
+      const req = httpMock.expectOne(`${configSvc.baseUrl}/storeProfiles/2/default`);
+      expect(req.request.method).toBe('PUT');
+      req.flush({ ...mockProfiles[1], defaultProfile: true });
+
+      expect(updated).toBeTruthy();
+      expect(updated!.defaultProfile).toBe(true);
+    });
+
+    it('setDefaultProfile updates the cached default flags', () => {
+      service.getProfiles().subscribe();
+      httpMock.expectOne(`${configSvc.baseUrl}/storeProfiles`).flush(mockProfiles);
+
+      service.setDefaultProfile(mockProfiles[1]).subscribe();
+      httpMock.expectOne(`${configSvc.baseUrl}/storeProfiles/2/default`)
+        .flush({ ...mockProfiles[1], defaultProfile: true });
+
+      expect(service.getDefaultProfile()!.id).toBe(2);
+      expect(service.getProfilesSnapshot().filter((p) => p.defaultProfile).length).toBe(1);
+    });
+
+    it('handles a nested { data } response from the endpoint', () => {
+      service.getProfiles().subscribe();
+      httpMock.expectOne(`${configSvc.baseUrl}/storeProfiles`).flush(mockProfiles);
+
+      let updated: StoreProfile | undefined;
+      service.setDefaultProfile(mockProfiles[2]).subscribe((p) => (updated = p));
+      httpMock.expectOne(`${configSvc.baseUrl}/storeProfiles/3/default`)
+        .flush({ data: { ...mockProfiles[2], defaultProfile: true } });
+
+      expect(updated).toBeTruthy();
+      expect(updated!.defaultProfile).toBe(true);
+    });
+
+    it('does not touch the active profile or localStorage', () => {
+      service.getProfiles().subscribe();
+      httpMock.expectOne(`${configSvc.baseUrl}/storeProfiles`).flush(mockProfiles);
+      service.setActiveProfile(mockProfiles[0]);
+
+      service.setDefaultProfile(mockProfiles[2]).subscribe();
+      httpMock.expectOne(`${configSvc.baseUrl}/storeProfiles/3/default`)
+        .flush({ ...mockProfiles[2], defaultProfile: true });
+
+      expect(service.getActiveProfileId()).toBe(1);
+      expect(localStorage.getItem('activeStoreProfileId')).toBe('1');
     });
   });
 

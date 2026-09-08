@@ -56,6 +56,11 @@ const appRoutes: Routes = [
     data: { title: 'Main' }
   },
   {
+    path: 'settings',
+    loadChildren: () => import('./features/settings/settings-feature.module').then(m => m.SettingsFeatureModule),
+    data: { title: 'Business Settings' }
+  },
+  {
     path: 'tools/backend-api',
     component: BackendApiPageComponent,
     data: { title: 'Backend API' }

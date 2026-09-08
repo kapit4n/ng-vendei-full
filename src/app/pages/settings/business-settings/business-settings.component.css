@@ -1,0 +1,91 @@
+.business-settings-page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.page-header h2 {
+  margin: 0 0 0.25rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.subtitle {
+  color: #64748b;
+  margin: 0 0 1.5rem;
+  font-size: 0.9rem;
+}
+
+.loading-state,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 3rem;
+  color: #64748b;
+}
+
+.empty-state mat-icon {
+  font-size: 3rem;
+  width: 3rem;
+  height: 3rem;
+}
+
+.settings-card {
+  margin-bottom: 1rem;
+}
+
+.settings-card mat-card-header {
+  margin-bottom: 0.5rem;
+}
+
+.business-select {
+  width: 100%;
+  margin-top: 0.75rem;
+}
+
+.option-badge {
+  font-size: 0.72rem;
+  margin-left: 0.35rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 0.6rem;
+  vertical-align: middle;
+}
+
+.option-badge--inactive {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.option-badge--default {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.settings-card mat-card-actions {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem 1rem;
+}
+
+.feedback-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.feedback-message--success {
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.feedback-message--error {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}

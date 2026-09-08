@@ -1,0 +1,83 @@
+<div class="business-settings-page">
+  <div class="page-header">
+    <h2>Business Settings</h2>
+    <p class="subtitle">Configure which business the POS opens with</p>
+  </div>
+
+  @if (loading) {
+    <div class="loading-state">
+      <mat-spinner diameter="40"></mat-spinner>
+      <span>Loading settings...</span>
+    </div>
+  }
+
+  @if (!loading && loadFailed) {
+    <div class="empty-state">
+      <mat-icon>error_outline</mat-icon>
+      <p>Could not load business profiles. Make sure the server is reachable.</p>
+      <button mat-stroked-button (click)="retry()">
+        <mat-icon>refresh</mat-icon> Retry
+      </button>
+    </div>
+  }
+
+  @if (!loading && profiles.length) {
+    <mat-card class="settings-card" appearance="outlined">
+      <mat-card-header>
+        <mat-card-title>Default Business Type</mat-card-title>
+        <mat-card-subtitle>
+          Select the business/catalog that will be loaded automatically when the POS starts.
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-form-field appearance="outline" class="business-select">
+          <mat-label>Default Business Type</mat-label>
+          <mat-select
+            [value]="selectedProfileId"
+            (selectionChange)="onSelectionChange($event.value)"
+          >
+            @for (profile of profiles; track profile.id) {
+              <mat-option [value]="profile.id" [disabled]="!profile.active">
+                {{ displayName(profile) }}
+                @if (!profile.active) {
+                  <span class="option-badge option-badge--inactive">inactive</span>
+                }
+                @if (profile.id === currentDefault?.id) {
+                  <span class="option-badge option-badge--default">current default</span>
+                }
+              </mat-option>
+            }
+          </mat-select>
+          <mat-hint>
+            The POS opens with this catalog on startup. The business switcher inside the POS
+            temporarily changes the business for the current session only.
+          </mat-hint>
+        </mat-form-field>
+      </mat-card-content>
+      <mat-card-actions>
+        <button
+          mat-raised-button
+          color="primary"
+          [disabled]="saving || selectedProfileId === null"
+          (click)="save()"
+        >
+          <mat-icon>save</mat-icon>
+          {{ saving ? 'Saving...' : 'Save' }}
+        </button>
+      </mat-card-actions>
+    </mat-card>
+
+    @if (savedMessage) {
+      <div class="feedback-message feedback-message--success" role="status">
+        <mat-icon>check_circle</mat-icon>
+        <span>{{ savedMessage }}</span>
+      </div>
+    }
+    @if (errorMessage) {
+      <div class="feedback-message feedback-message--error" role="alert">
+        <mat-icon>error</mat-icon>
+        <span>{{ errorMessage }}</span>
+      </div>
+    }
+  }
+</div>
