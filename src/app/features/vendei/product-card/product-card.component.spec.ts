@@ -34,13 +34,14 @@ describe('ProductCardComponent', () => {
   }));
 
   /** Create the component with the given inputs already applied before the first render. */
-  function create(product: any = baseProduct, opts: Partial<{ showImage: boolean; disabled: boolean; respectStock: boolean }> = {}) {
+  function create(product: any = baseProduct, opts: Partial<{ showImage: boolean; disabled: boolean; respectStock: boolean; cardSize: string }> = {}) {
     fixture = TestBed.createComponent(ProductCardComponent);
     component = fixture.componentInstance;
     component.product = product;
     component.showImage = opts.showImage ?? true;
     component.disabled = opts.disabled ?? false;
     component.respectStock = opts.respectStock ?? false;
+    component.cardSize = (opts.cardSize as any) ?? 'medium';
     fixture.detectChanges();
     return component;
   }
@@ -139,5 +140,52 @@ describe('ProductCardComponent', () => {
     const btn = fixture.nativeElement.querySelector('button.product-card');
     expect(btn).toBeTruthy();
     expect(btn.getAttribute('aria-label')).toBe('Add Coca Cola 2L');
+  });
+
+  describe('card size density variants', () => {
+    it('defaults to medium (no variant class)', () => {
+      create();
+      const btn: HTMLElement = fixture.nativeElement.querySelector('button.product-card');
+      expect(component.cardSize).toBe('medium');
+      expect(btn.classList.contains('product-card--small')).toBe(false);
+      expect(btn.classList.contains('product-card--large')).toBe(false);
+    });
+
+    it('applies the small variant class', () => {
+      create(baseProduct, { cardSize: 'small' });
+      const btn: HTMLElement = fixture.nativeElement.querySelector('button.product-card');
+      expect(btn.classList.contains('product-card--small')).toBe(true);
+    });
+
+    it('applies the large variant class', () => {
+      create(baseProduct, { cardSize: 'large' });
+      const btn: HTMLElement = fixture.nativeElement.querySelector('button.product-card');
+      expect(btn.classList.contains('product-card--large')).toBe(true);
+    });
+
+    it('small hides the SKU via the small variant style', () => {
+      create(baseProduct, { cardSize: 'small' });
+      const sku: HTMLElement = fixture.nativeElement.querySelector('.product-card__sku');
+      expect(sku).toBeTruthy();
+      expect(getComputedStyle(sku).display).toBe('none');
+    });
+
+    it('medium and large keep the SKU visible', () => {
+      create(baseProduct, { cardSize: 'medium' });
+      let sku: HTMLElement = fixture.nativeElement.querySelector('.product-card__sku');
+      expect(sku).toBeTruthy();
+      expect(getComputedStyle(sku).display).not.toBe('none');
+      create(baseProduct, { cardSize: 'large' });
+      sku = fixture.nativeElement.querySelector('.product-card__sku');
+      expect(getComputedStyle(sku).display).not.toBe('none');
+    });
+
+    it('small keeps image, name and price visible', () => {
+      create(baseProduct, { cardSize: 'small' });
+      const el: HTMLElement = fixture.nativeElement;
+      expect(el.querySelector('app-product-image')).toBeTruthy();
+      expect(el.textContent).toContain('Coca Cola 2L');
+      expect(el.textContent).toContain('Bs 12.00');
+    });
   });
 });

@@ -63,11 +63,13 @@ describe('PosCatalogComponent', () => {
     variantSvcSpy = jasmine.createSpyObj('VProductVariantService', ['getByProductId']);
     dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
     activeProfileIdSubject = new BehaviorSubject<number | null>(1);
-    profileSvcSpy = jasmine.createSpyObj('VStoreProfileService', ['getProfiles', 'getActiveProfileId', 'setActiveProfile', 'getActiveProfile', 'hasCapability', 'resolveSellingMode', 'getPosConfig', 'getEnabledPaymentTypes', 'getCurrencySymbol']);
+    profileSvcSpy = jasmine.createSpyObj('VStoreProfileService', ['getProfiles', 'getActiveProfileId', 'setActiveProfile', 'getActiveProfile', 'hasCapability', 'resolveSellingMode', 'getPosConfig', 'getEnabledPaymentTypes', 'getCurrencySymbol', 'getCatalogCardSize', 'setCatalogCardSize']);
     profileSvcSpy.resolveSellingMode.and.returnValue('UNIT');
     profileSvcSpy.getActiveProfileId.and.returnValue(1);
     profileSvcSpy.hasCapability.and.returnValue(true);
     profileSvcSpy.getCurrencySymbol.and.returnValue('Bs');
+    profileSvcSpy.getCatalogCardSize.and.returnValue('medium');
+    profileSvcSpy.setCatalogCardSize.and.returnValue(of(null));
     profileSvcSpy.getPosConfig.and.returnValue({ catalogColumns: 4, showProductImages: true, quickProducts: [], defaultSellingMode: 'UNIT', enabledPaymentTypes: [1, 4] });
     profileSvcSpy.getEnabledPaymentTypes.and.returnValue([1, 4]);
     (profileSvcSpy as any).getActiveProfileId$ = () => activeProfileIdSubject.asObservable();
@@ -539,6 +541,70 @@ describe('PosCatalogComponent', () => {
     it('productCardLabel returns parenthetical suffix', () => {
       const label = component.productCardLabel(sampleProducts[1]);
       expect(label).toBe('(1 lb)');
+    });
+  });
+
+  describe('card size / grid density', () => {
+    it('defaults to medium', () => {
+      expect(component.cardSize).toBe('medium');
+      expect(component.gridVariantClass).toBe('product-cards-grid--medium');
+    });
+
+    it('grid style uses small min track when size is small', () => {
+      component.setCardSize('small');
+      expect(component.gridStyle['grid-template-columns']).toContain('minmax(186px, 1fr)');
+      expect(component.gridVariantClass).toBe('product-cards-grid--small');
+    });
+
+    it('grid style uses medium min track by default', () => {
+      expect(component.gridStyle['grid-template-columns']).toContain('minmax(228px, 1fr)');
+    });
+
+    it('grid style uses large min track when size is large', () => {
+      component.setCardSize('large');
+      expect(component.gridStyle['grid-template-columns']).toContain('minmax(296px, 1fr)');
+      expect(component.gridVariantClass).toBe('product-cards-grid--large');
+    });
+
+    it('persists the chosen size for the active profile', () => {
+      component.setCardSize('large');
+      expect(profileSvcSpy.setCatalogCardSize).toHaveBeenCalledWith('large');
+    });
+
+    it('does not reload products or categories when changing size', () => {
+      productsSvcSpy.getProducts.calls.reset();
+      categoriesSvcSpy.getAll.calls.reset();
+      component.setCardSize('small');
+      expect(productsSvcSpy.getProducts).not.toHaveBeenCalled();
+      expect(categoriesSvcSpy.getAll).not.toHaveBeenCalled();
+    });
+
+    it('invalid size falls back to medium', () => {
+      component.setCardSize('huge' as any);
+      expect(component.cardSize).toBe('medium');
+      expect(profileSvcSpy.setCatalogCardSize).toHaveBeenCalledWith('medium');
+    });
+
+    it('changing size keeps ticket, search, categories and products untouched', () => {
+      component.searchQuery = 'Or';
+      component.selectCategoryChip({ id: 2, name: 'Beverages' });
+      component.addProduct(sampleProducts[2]);
+      const productsBefore = component.products;
+      const ticketBefore = component.selectedProducts;
+
+      component.setCardSize('large');
+
+      expect(component.searchQuery).toBe('Or');
+      expect(component.activeCategory).toEqual({ id: 2, name: 'Beverages' });
+      expect(component.products).toBe(productsBefore);
+      expect(component.selectedProducts).toBe(ticketBefore);
+      expect(component.products.length).toBe(1);
+    });
+
+    it('sizeLabel returns a human-friendly label', () => {
+      expect(component.sizeLabel('small')).toBe('Small');
+      expect(component.sizeLabel('medium')).toBe('Medium');
+      expect(component.sizeLabel('large')).toBe('Large');
     });
   });
 

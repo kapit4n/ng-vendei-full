@@ -1,6 +1,11 @@
 import { Component, ChangeDetectorRef, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { VStoreProfileService, StoreProfile } from 'src/app/services/vendei/v-store-profile.service';
+import {
+  VStoreProfileService,
+  StoreProfile,
+  ProductCardSize,
+  PRODUCT_CARD_SIZES,
+} from 'src/app/services/vendei/v-store-profile.service';
 
 @Component({
   selector: 'app-business-settings',
@@ -17,6 +22,11 @@ export class BusinessSettingsComponent implements OnInit, OnDestroy {
   savedMessage = '';
   errorMessage = '';
 
+  cardSize: ProductCardSize = 'medium';
+  savingCardSize = false;
+  savedCardSizeMessage = '';
+  errorCardSizeMessage = '';
+
   private subs = new Subscription();
 
   constructor(
@@ -30,6 +40,18 @@ export class BusinessSettingsComponent implements OnInit, OnDestroy {
 
   get currentDefault(): StoreProfile | null {
     return this.profileSvc.getDefaultProfile(this.profiles);
+  }
+
+  get cardSizes(): ProductCardSize[] {
+    return PRODUCT_CARD_SIZES;
+  }
+
+  sizeLabel(size: ProductCardSize): string {
+    switch (size) {
+      case 'small': return 'Small';
+      case 'large': return 'Large';
+      default: return 'Medium';
+    }
   }
 
   private load(): void {
@@ -47,6 +69,7 @@ export class BusinessSettingsComponent implements OnInit, OnDestroy {
         }
         const def = this.profileSvc.getDefaultProfile(profiles);
         this.selectedProfileId = def ? def.id : profiles[0].id;
+        this.cardSize = this.profileSvc.getCatalogCardSize(def ?? profiles[0]);
         this.cdr.detectChanges();
       })
     );
@@ -91,8 +114,38 @@ export class BusinessSettingsComponent implements OnInit, OnDestroy {
     );
   }
 
-  displayName(profile: StoreProfile): string {
-    return profile.businessName || profile.name;
+  selectCardSize(size: ProductCardSize): void {
+    this.cardSize = size;
+    this.savedCardSizeMessage = '';
+    this.errorCardSizeMessage = '';
+  }
+
+  saveCardSize(): void {
+    const target = this.currentDefault ?? this.profiles[0];
+    if (!target) return;
+    this.savingCardSize = true;
+    this.savedCardSizeMessage = '';
+    this.errorCardSizeMessage = '';
+    this.subs.add(
+      this.profileSvc.setCatalogCardSize(this.cardSize, target).subscribe({
+        next: (updated) => {
+          this.savingCardSize = false;
+          this.savedCardSizeMessage =
+            `"Product Card Size" saved. POS cards for ${this.displayName(updated ?? target)} will use the ${this.sizeLabel(this.cardSize).toLowerCase()} layout.`;
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          this.savingCardSize = false;
+          this.errorCardSizeMessage =
+            'Could not save the product card size. ' + (err?.message || 'Please try again.');
+          this.cdr.detectChanges();
+        },
+      })
+    );
+  }
+
+  displayName(profile: StoreProfile | null | undefined): string {
+    return profile?.businessName || profile?.name || 'the default business';
   }
 
   ngOnDestroy(): void {

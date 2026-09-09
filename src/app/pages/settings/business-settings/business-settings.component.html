@@ -67,6 +67,43 @@
       </mat-card-actions>
     </mat-card>
 
+    <mat-card class="settings-card" appearance="outlined">
+      <mat-card-header>
+        <mat-card-title>Product Card Size</mat-card-title>
+        <mat-card-subtitle>
+          POS card density for {{ displayName(currentDefault) }}. Applies to the product grid that
+          this business opens with; saved per business (small | medium | large).
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="card-size-control" role="group" aria-label="Product card size">
+          @for (size of cardSizes; track size) {
+            <button type="button" class="card-size-btn"
+              [class.card-size-btn--active]="cardSize === size"
+              [attr.aria-pressed]="cardSize === size"
+              (click)="selectCardSize(size)">
+              {{ sizeLabel(size) }}
+            </button>
+          }
+        </div>
+        <mat-hint>
+          Small compacts cards (SKU and label hidden); Large shows fuller details. Changing it does not
+          reset the POS ticket, search or category filters.
+        </mat-hint>
+      </mat-card-content>
+      <mat-card-actions>
+        <button
+          mat-raised-button
+          color="primary"
+          [disabled]="savingCardSize"
+          (click)="saveCardSize()"
+        >
+          <mat-icon>save</mat-icon>
+          {{ savingCardSize ? 'Saving...' : 'Save' }}
+        </button>
+      </mat-card-actions>
+    </mat-card>
+
     @if (savedMessage) {
       <div class="feedback-message feedback-message--success" role="status">
         <mat-icon>check_circle</mat-icon>
@@ -77,6 +114,18 @@
       <div class="feedback-message feedback-message--error" role="alert">
         <mat-icon>error</mat-icon>
         <span>{{ errorMessage }}</span>
+      </div>
+    }
+    @if (savedCardSizeMessage) {
+      <div class="feedback-message feedback-message--success" role="status">
+        <mat-icon>check_circle</mat-icon>
+        <span>{{ savedCardSizeMessage }}</span>
+      </div>
+    }
+    @if (errorCardSizeMessage) {
+      <div class="feedback-message feedback-message--error" role="alert">
+        <mat-icon>error</mat-icon>
+        <span>{{ errorCardSizeMessage }}</span>
       </div>
     }
   }

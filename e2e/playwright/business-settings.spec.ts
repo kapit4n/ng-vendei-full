@@ -22,10 +22,19 @@ test.describe('Default Business Type configuration', () => {
     return Array.isArray(body) ? body : body.data ?? [];
   }
 
+  /** The "Default Business Type" card (the page also has a "Product Card Size" card). */
+  function defaultCard(page: any) {
+    return page
+      .locator('mat-card')
+      .filter({ has: page.getByText('Default Business Type', { exact: false }).first() })
+      .first();
+  }
+
   test('settings page loads and lists business profiles', async ({ page }) => {
     await page.goto('/settings');
     await page.locator('mat-card-title').filter({ hasText: 'Default Business Type' }).waitFor();
-    await expect(page.locator('mat-card-subtitle')).toContainText('loaded automatically when the POS starts.');
+    const card = defaultCard(page);
+    await expect(card.locator('mat-card-subtitle')).toContainText('loaded automatically when the POS starts.');
 
     await page.locator('mat-select').click();
     const options = page.locator('mat-option');
@@ -57,7 +66,7 @@ test.describe('Default Business Type configuration', () => {
     await settingsPage.locator('mat-card-title').filter({ hasText: 'Default Business Type' }).waitFor();
     await settingsPage.locator('mat-select').click();
     await settingsPage.getByRole('option', { name: targetLabel, exact: true }).first().click();
-    await settingsPage.locator('button').filter({ hasText: 'Save' }).click();
+    await defaultCard(settingsPage).locator('button').filter({ hasText: 'Save' }).click();
     await expect(settingsPage.locator('.feedback-message--success')).toContainText(targetLabel);
 
     // The backend must now report exactly one default, and it must be `target`.
@@ -84,7 +93,7 @@ test.describe('Default Business Type configuration', () => {
     await expect(settingsPage.locator('mat-card-title').filter({ hasText: 'Default Business Type' })).toBeVisible();
     await settingsPage.locator('mat-select').click();
     await settingsPage.getByRole('option', { name: originalLabel, exact: true }).first().click();
-    await settingsPage.locator('button').filter({ hasText: 'Save' }).click();
+    await defaultCard(settingsPage).locator('button').filter({ hasText: 'Save' }).click();
     await expect(settingsPage.locator('.feedback-message--success')).toContainText(originalLabel);
     const restored = await fetchProfiles(request);
     expect(restored.filter((p) => p.defaultProfile)[0]?.id).toBe(original!.id);

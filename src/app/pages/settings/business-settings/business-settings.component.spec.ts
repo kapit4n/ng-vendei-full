@@ -21,9 +21,13 @@ describe('BusinessSettingsComponent', () => {
       'getProfiles',
       'getDefaultProfile',
       'setDefaultProfile',
+      'getCatalogCardSize',
+      'setCatalogCardSize',
     ]);
     profileSvcSpy.getProfiles.and.returnValue(of(mockProfiles));
     profileSvcSpy.setDefaultProfile.and.callFake((p: StoreProfile) => of({ ...p, defaultProfile: true }));
+    profileSvcSpy.getCatalogCardSize.and.returnValue('medium');
+    profileSvcSpy.setCatalogCardSize.and.callFake(() => of({ ...mockProfiles[0], posConfig: { catalogColumns: 4, showProductImages: true, quickProducts: [], defaultSellingMode: 'UNIT', enabledPaymentTypes: [1, 4], catalogCardSize: 'medium' } } as StoreProfile));
 
     TestBed.configureTestingModule({
       declarations: [BusinessSettingsComponent],
@@ -119,5 +123,71 @@ describe('BusinessSettingsComponent', () => {
     component.selectedProfileId = null;
     component.save();
     expect(profileSvcSpy.setDefaultProfile).not.toHaveBeenCalled();
+  });
+
+  describe('product card size', () => {
+    it('loads the card size from the default business (defaults to medium)', () => {
+      expect(profileSvcSpy.getCatalogCardSize).toHaveBeenCalled();
+      expect(component.cardSize).toBe('medium');
+    });
+
+    it('renders a card size control with the three sizes', () => {
+      fixture.detectChanges();
+      const group = fixture.debugElement.query(By.css('.card-size-control'));
+      expect(group).toBeTruthy();
+      const btns = fixture.debugElement.queryAll(By.css('.card-size-btn'));
+      expect(btns.length).toBe(3);
+      expect(btns[0].nativeElement.textContent.trim()).toBe('Small');
+      expect(btns[1].nativeElement.textContent.trim()).toBe('Medium');
+      expect(btns[2].nativeElement.textContent.trim()).toBe('Large');
+      expect(btns[1].nativeElement.getAttribute('aria-pressed')).toBe('true');
+    });
+
+    it('saves small for the default business', () => {
+      component.selectCardSize('small');
+      component.saveCardSize();
+      expect(profileSvcSpy.setCatalogCardSize).toHaveBeenCalledWith('small', jasmine.objectContaining({ id: 1 }));
+      fixture.detectChanges();
+      const success = fixture.debugElement.query(By.css('.feedback-message--success'));
+      expect(success).toBeTruthy();
+      expect(success.nativeElement.textContent).toContain('small');
+    });
+
+    it('saves medium for the default business', () => {
+      component.selectCardSize('medium');
+      component.saveCardSize();
+      expect(profileSvcSpy.setCatalogCardSize).toHaveBeenCalledWith('medium', jasmine.objectContaining({ id: 1 }));
+    });
+
+    it('saves large for the default business', () => {
+      component.selectCardSize('large');
+      component.saveCardSize();
+      expect(profileSvcSpy.setCatalogCardSize).toHaveBeenCalledWith('large', jasmine.objectContaining({ id: 1 }));
+    });
+
+    it('shows an error message when saving the card size fails', () => {
+      profileSvcSpy.setCatalogCardSize.and.returnValue(throwError(() => new Error('Server down')));
+      component.selectCardSize('large');
+      component.saveCardSize();
+      fixture.detectChanges();
+      const error = fixture.debugElement.query(By.css('.feedback-message--error'));
+      expect(error).toBeTruthy();
+      expect(error.nativeElement.textContent).toContain('Could not save the product card size');
+    });
+
+    it('selectCardSize clears previous messages', () => {
+      component.savedCardSizeMessage = 'Previous';
+      component.errorCardSizeMessage = 'Previous error';
+      component.selectCardSize('small');
+      expect(component.cardSize).toBe('small');
+      expect(component.savedCardSizeMessage).toBe('');
+      expect(component.errorCardSizeMessage).toBe('');
+    });
+
+    it('is a no-op when no card size target profile exists', () => {
+      component.profiles = [];
+      component.saveCardSize();
+      expect(profileSvcSpy.setCatalogCardSize).not.toHaveBeenCalled();
+    });
   });
 });

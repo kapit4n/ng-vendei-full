@@ -214,6 +214,22 @@
     align-content: start;
 }
 
+/* Card-density gaps (columns are size-driven via the inline gridStyle). */
+.product-cards-grid--small,
+.product-cards-skeletons--small {
+    gap: 10px;
+}
+
+.product-cards-grid--medium,
+.product-cards-skeletons--medium {
+    gap: 16px;
+}
+
+.product-cards-grid--large,
+.product-cards-skeletons--large {
+    gap: 20px;
+}
+
 /* Captures the same column count used by pos-catalog gridStyle. */
 @media (max-width: 480px) {
     .product-cards-grid {
@@ -364,4 +380,51 @@
     padding: 4px 12px;
     border-radius: 16px !important;
     min-height: 32px;
+}
+
+/* Display-density quick control (persisted product card size) */
+.display-density {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+}
+
+.display-density-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(15, 23, 42, 0.45);
+    margin-right: 2px;
+    white-space: nowrap;
+}
+
+.density-btn {
+    min-width: 0;
+    padding: 3px 10px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    line-height: 1.2;
+    border: 1px solid rgba(15, 23, 42, 0.18);
+    border-radius: 999px;
+    background: #fff;
+    color: rgba(15, 23, 42, 0.65);
+    cursor: pointer;
+    transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+.density-btn:hover {
+    border-color: rgba(15, 23, 42, 0.35);
+}
+
+.density-btn:focus-visible {
+    outline: 2px solid #1976d2;
+    outline-offset: 2px;
+}
+
+.density-btn--active {
+    background: #1976d2;
+    border-color: #1976d2;
+    color: #fff;
 }

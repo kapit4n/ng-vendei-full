@@ -11,6 +11,16 @@ export interface ReceiptConfig {
   footerLines: string[];
 }
 
+/** Stable lowercase identifiers for the POS product card density. */
+export type ProductCardSize = 'small' | 'medium' | 'large';
+
+export const PRODUCT_CARD_SIZES: ProductCardSize[] = ['small', 'medium', 'large'];
+
+/** Coerce any input into a valid card size; unknown/invalid values fall back to medium. */
+export function normalizeCatalogCardSize(value: unknown): ProductCardSize {
+  return PRODUCT_CARD_SIZES.includes(value as ProductCardSize) ? (value as ProductCardSize) : 'medium';
+}
+
 export interface PosConfig {
   catalogColumns: number;
   showProductImages: boolean;
@@ -19,6 +29,11 @@ export interface PosConfig {
   enabledPaymentTypes: number[];
   /** When true, POS cards disable out-of-stock products. Optional; default true. */
   respectStock?: boolean;
+  /**
+   * Product card density for the POS grid (small | medium | large).
+   * Presentation-only: never changes product/selling logic. Optional; default medium.
+   */
+  catalogCardSize?: ProductCardSize;
 }
 
 export interface StoreProfile {
@@ -73,6 +88,7 @@ const DEFAULT_POS_CONFIG: PosConfig = {
   defaultSellingMode: 'UNIT',
   enabledPaymentTypes: [1, 4],
   respectStock: true,
+  catalogCardSize: 'medium',
 };
 
 /** Well-known capability constants. */
@@ -328,6 +344,52 @@ export class VStoreProfileService {
   getPosConfig(profile?: StoreProfile | null): PosConfig {
     const p = profile ?? this.getActiveProfile();
     return { ...DEFAULT_POS_CONFIG, ...p?.posConfig };
+  }
+
+  /**
+   * Product card density used by the POS product grid (default: medium).
+   * Returns a valid size for any stored value, falling back to medium.
+   */
+  getCatalogCardSize(profile?: StoreProfile | null): ProductCardSize {
+    const config = this.getPosConfig(profile);
+    return normalizeCatalogCardSize(config.catalogCardSize);
+  }
+
+  /**
+   * Persist the POS product card size for a profile (default: active profile).
+   * Presentation-only change: the shared config is updated in the local cache so
+   * the running POS session is never reloaded, reset, or re-fetched; the active
+   * business, search, ticket, categories and payments are all preserved.
+   */
+  setCatalogCardSize(
+    size: ProductCardSize,
+    profile?: StoreProfile | null
+  ): Observable<StoreProfile | null> {
+    const target = profile ?? this.getActiveProfile();
+    if (!target) return of(null);
+    const normalized = normalizeCatalogCardSize(size);
+    const posConfig = { ...this.getPosConfig(target), catalogCardSize: normalized };
+    return this.http
+      .put<any>(`${this.configSvc.baseUrl}/storeProfiles/${target.id}`, {
+        name: target.name,
+        slug: target.slug,
+        posConfig,
+      })
+      .pipe(
+        map((body) => {
+          const data: StoreProfile | undefined =
+            (body && typeof body === 'object' && (body.data ?? body.profile)) ?? body;
+          return (data ?? null) as StoreProfile | null;
+        }),
+        tap((updated) => {
+          if (!updated || typeof updated.id !== 'number') return;
+          this.profiles = this.profiles.map((p) =>
+            p.id === updated.id
+              ? { ...p, posConfig: { ...(p.posConfig as PosConfig), catalogCardSize: normalized } }
+              : p
+          );
+        })
+      );
   }
 
   /** Default selling mode from POS config (default: UNIT). */

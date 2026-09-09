@@ -17,7 +17,7 @@ import {
   productLabelFromFullName,
   productTitleFromFullName,
 } from "src/app/utils/product-display-text";
-import { CAPABILITIES, SELLING_MODES, isDecimalSellingMode, sellingModeUnitLabel, SellingMode } from "src/app/services/vendei/v-store-profile.service";
+import { CAPABILITIES, SELLING_MODES, isDecimalSellingMode, sellingModeUnitLabel, SellingMode, ProductCardSize, PRODUCT_CARD_SIZES } from "src/app/services/vendei/v-store-profile.service";
 
 @Component({
     selector: "app-pos-catalog",
@@ -45,6 +45,8 @@ export class PosCatalogComponent implements OnInit, OnDestroy {
   loading = true;
   /** Error loading the initial catalog. */
   loadError = "";
+  /** Current product card density (synced from the profile config). */
+  private _cardSize: ProductCardSize = "medium";
 
   private destroy$ = new Subject<void>();
 
@@ -60,6 +62,7 @@ export class PosCatalogComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    this._cardSize = this.profileSvc.getCatalogCardSize();
     this.profileSvc.getActiveProfileId$().pipe(
       takeUntil(this.destroy$),
       switchMap((profileId) => this.loadCatalog(profileId))
@@ -95,6 +98,7 @@ export class PosCatalogComponent implements OnInit, OnDestroy {
         this.categories = [{ id: -1, name: "All" }, ...list];
         this.activeCategory = null;
         this.searchQuery = "";
+        this._cardSize = this.profileSvc.getCatalogCardSize();
         this.applyFilters();
         this.loading = false;
         return of({});
@@ -347,14 +351,62 @@ export class PosCatalogComponent implements OnInit, OnDestroy {
     return cols >= 2 && cols <= 8 ? cols : 4;
   }
 
+  /** Current product card density (medium fallback). */
+  get cardSize(): ProductCardSize {
+    return this._cardSize;
+  }
+
+  /** Available densities for the quick display control. */
+  get cardSizes(): ProductCardSize[] {
+    return PRODUCT_CARD_SIZES;
+  }
+
+  /** Human-friendly label for a card size (internal ids stay lowercase). */
+  sizeLabel(size: ProductCardSize): string {
+    switch (size) {
+      case "small": return "Small";
+      case "large": return "Large";
+      default: return "Medium";
+    }
+  }
+
+  /**
+   * Apply a product card size and persist it for the active profile.
+   * Presentation-only: no products/ticket/search/category are reloaded or reset.
+   */
+  setCardSize(size: ProductCardSize): void {
+    if (!PRODUCT_CARD_SIZES.includes(size)) {
+      size = "medium";
+    }
+    this._cardSize = size;
+    this.cdr.detectChanges();
+    this.profileSvc.setCatalogCardSize(size).subscribe({
+      error: () => this.cdr.detectChanges(),
+    });
+  }
+
+  /** Minimum grid track width for the active card size (auto-fill remains responsive). */
+  get minColumnWidth(): number {
+    switch (this._cardSize) {
+      case "small": return 186;
+      case "large": return 296;
+      default: return 228;
+    }
+  }
+
+  /** Grid variant class used to theme gaps per card size. */
+  get gridVariantClass(): string {
+    return `product-cards-grid--${this._cardSize}`;
+  }
+
   /** Whether to show product images on catalog cards (default: true). */
   get showProductImages(): boolean {
     return this.profileSvc.getPosConfig().showProductImages !== false;
   }
 
-  /** Inline style for grid template columns based on catalogColumns config. */
+  /** Inline style for responsive grid template columns driven by card size. */
   get gridStyle(): Record<string, string> {
-    return { 'grid-template-columns': `repeat(${this.catalogColumns}, 1fr)` };
+    return { 'grid-template-columns': `repeat(auto-fill, minmax(${this.minColumnWidth}px, 1fr))` };
   }
 
   /** Quick-access products resolved from profile config (by ID). */
@@ -373,7 +425,7 @@ export class PosCatalogComponent implements OnInit, OnDestroy {
 
   /** Placeholder count for the loading skeleton grid (enough to fill one screen). */
   skeletonCards(): number[] {
-    const cols = this.catalogColumns;
+    const cols = this._cardSize === "small" ? 5 : this._cardSize === "large" ? 3 : 4;
     return new Array(Math.max(cols, cols * 3)).fill(0).map((_, i) => i);
   }
 

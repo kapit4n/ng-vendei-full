@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { VStoreProfileService, StoreProfile, CAPABILITIES, isDecimalSellingMode, sellingModeUnitLabel, resolveInitialProfileId, mapFallbackReason } from './v-store-profile.service';
+import { VStoreProfileService, StoreProfile, CAPABILITIES, isDecimalSellingMode, sellingModeUnitLabel, resolveInitialProfileId, mapFallbackReason, normalizeCatalogCardSize } from './v-store-profile.service';
 import { VConfigService } from './v-config.service';
 
 describe('VStoreProfileService', () => {
@@ -480,6 +480,90 @@ describe('VStoreProfileService', () => {
 
     it('resolveSellingMode ignores invalid mode', () => {
       expect(service.resolveSellingMode('INVALID')).toBe('UNIT');
+    });
+
+    it('getCatalogCardSize returns stored size for a profile', () => {
+      const p = { ...mockProfiles[0], posConfig: { ...mockProfiles[0].posConfig, catalogCardSize: 'large' as const } };
+      expect(service.getCatalogCardSize(p)).toBe('large');
+    });
+
+    it('getCatalogCardSize defaults to medium for legacy profiles', () => {
+      expect(service.getCatalogCardSize(mockProfiles[2])).toBe('medium');
+    });
+
+    it('getCatalogCardSize falls back to medium for invalid stored value', () => {
+      const p = { ...mockProfiles[0], posConfig: { ...mockProfiles[0].posConfig, catalogCardSize: 'XL' as any } };
+      expect(service.getCatalogCardSize(p)).toBe('medium');
+    });
+
+    it('setCatalogCardSize persists size for the active profile', () => {
+      const updated = { ...mockProfiles[0], posConfig: { ...mockProfiles[0].posConfig, catalogCardSize: 'small' as const } };
+      service.setCatalogCardSize('small').subscribe((result) => {
+        expect(result!.id).toBe(1);
+      });
+      const req = httpMock.expectOne(`${configSvc.baseUrl}/storeProfiles/1`);
+      expect(req.request.method).toBe('PUT');
+      const body = req.request.body;
+      expect(body.name).toBe('Supermarket');
+      expect(body.slug).toBe('supermarket');
+      expect(body.posConfig.catalogCardSize).toBe('small');
+      expect(body.posConfig.catalogColumns).toBe(5);
+      req.flush(updated);
+      expect(service.getCatalogCardSize()).toBe('small');
+    });
+
+    it('setCatalogCardSize normalizes an invalid size to medium', () => {
+      service.setCatalogCardSize('XL' as any).subscribe();
+      const req = httpMock.expectOne(`${configSvc.baseUrl}/storeProfiles/1`);
+      expect(req.request.method).toBe('PUT');
+      expect(req.request.body.posConfig.catalogCardSize).toBe('medium');
+      req.flush({ name: 'Supermarket', slug: 'supermarket', posConfig: { catalogCardSize: 'medium' } });
+      expect(service.getCatalogCardSize()).toBe('medium');
+    });
+  });
+
+  describe('normalizeCatalogCardSize', () => {
+    it('keeps valid sizes', () => {
+      expect(normalizeCatalogCardSize('small')).toBe('small');
+      expect(normalizeCatalogCardSize('medium')).toBe('medium');
+      expect(normalizeCatalogCardSize('large')).toBe('large');
+    });
+
+    it('falls back to medium for anything else', () => {
+      expect(normalizeCatalogCardSize('XL')).toBe('medium');
+      expect(normalizeCatalogCardSize('')).toBe('medium');
+      expect(normalizeCatalogCardSize(null)).toBe('medium');
+      expect(normalizeCatalogCardSize(undefined)).toBe('medium');
+    });
+  });
+
+  describe('setCatalogCardSize with an explicit profile', () => {
+    beforeEach(() => {
+      service.getProfiles().subscribe();
+      const req = httpMock.expectOne(`${configSvc.baseUrl}/storeProfiles`);
+      req.flush(mockProfiles);
+      service.setActiveProfile(mockProfiles[0]);
+    });
+
+    it('persists for the given profile without changing the active session', () => {
+      const updated = {
+        ...mockProfiles[2],
+        posConfig: { catalogColumns: 4, showProductImages: true, quickProducts: [], defaultSellingMode: 'UNIT', enabledPaymentTypes: [1, 4], catalogCardSize: 'large' as const },
+      };
+      service.setCatalogCardSize('large', mockProfiles[2]).subscribe((result) => {
+        expect(result!.id).toBe(3);
+      });
+      const req = httpMock.expectOne(`${configSvc.baseUrl}/storeProfiles/3`);
+      expect(req.request.method).toBe('PUT');
+      expect(req.request.body.name).toBe('Legacy Store');
+      expect(req.request.body.slug).toBe('legacy');
+      expect(req.request.body.posConfig.catalogCardSize).toBe('large');
+      req.flush(updated);
+
+      expect(service.getCatalogCardSize(mockProfiles[0])).toBe('medium');
+      const cachedIdx2 = service.getProfilesSnapshot().find((p) => p.id === 3)!;
+      expect(service.getCatalogCardSize(cachedIdx2)).toBe('large');
+      expect(service.getActiveProfileId()).toBe(1);
     });
   });
 

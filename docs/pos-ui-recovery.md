@@ -114,3 +114,79 @@ reached from a hub tile on `/main`).
 - Karma: 27 new tests (service + component) all pass; only the documented
   pre-existing failures remain ✅
 - `npx playwright test`: 16/16 pass (including the two new business-settings specs) ✅
+
+## POS Product Card Size (Task #26)
+
+Persisted, restart-safe product card density for the POS grid. Three sizes
+(Small | Medium | Large) with stable lowercase ids (`small` / `medium` / `large`,
+default `medium`), stored per business in the existing settings architecture.
+
+### Configuration model
+
+No new generic settings table was created — the size lives in the shared
+per-profile POS config JSON, exactly like `catalogColumns` / `showProductImages`:
+
+- `PosConfig.catalogCardSize?: ProductCardSize` (`'small' | 'medium' | 'large'`)
+- `DEFAULT_POS_CONFIG.catalogCardSize = 'medium'` (unknown/missing/invalid values
+  fall back to medium without persisting a junk value: `normalizeCatalogCardSize`)
+- Backend: `StoreProfile.posConfig` default/get/set now include
+  `catalogCardSize: 'medium'` (`inventory-nod/models/storeprofile.js`) and the
+  store-profile seeder carries it per profile.
+- Persisted with the standard update flow: `PUT /storeProfiles/:id` carrying
+  `{ name, slug, posConfig }` (name/slug are required by the backend guard).
+- Backend fix (regression): `controllers/storeprofiles.js` `pickProfilePayload`
+  no longer forces `defaultProfile: false` on partial updates; the flag is only
+  written when the caller explicitly sends it, so a card-size save can never
+  silently clear the configured default business.
+
+### Service (`v-store-profile.service.ts`)
+
+- `getCatalogCardSize(profile?)` — reads the effective size, normalizing to medium.
+- `setCatalogCardSize(size, profile?)` — persists via PUT and updates only the
+  shared config *cache*. It never touches `activeProfileId$`, localStorage or any
+  session state, so an open POS keeps its ticket/search/business.
+
+### POS UI (`pos-catalog.component.*`, `product-card.component.*`)
+
+- Toolbar quick control `.display-density` (role=group "Product card size"): three
+  buttons with `aria-pressed`, visible focus and keyboard access; always mirrors
+  the persisted size for the active business and persists on click.
+- Grid columns are size-driven and responsive: `repeat(auto-fill, minmax(Npx, 1fr))`
+  with per-size min tracks (small 186px ≈ 5 cols, medium 228px ≈ 4, large 296px
+  ≈ 3 on a desktop catalog area). Gap variants via grid classes
+  `product-cards-grid--small|--medium|--large`.
+- `ProductCardComponent` gains `@Input() cardSize` (default `medium`) with
+  presentation-only classes: small hides SKU/label and slims the panel; large
+  shows full details (SKU, label, stock) in a roomier panel. Image tile stays
+  square (`aspect-ratio: 1/1`, `object-fit: contain`) across sizes, with padding
+  driven by `--product-image-padding`.
+- Changing size never reloads products/categories and never resets
+  search/category/ticket — asserted in unit + e2e tests.
+
+### Settings (`/settings` — `business-settings.component.*`)
+
+New "Product Card Size" card edits the default business's size (the catalog the
+POS opens with) with an accessible segmented control; same save/feedback pattern
+as the existing default-business card.
+
+### Tests
+
+- Unit: service (`get`/`set`/invalid→medium/no-active-profile), pos-catalog (grid
+  columns, variant class, no reload on change, ticket/search/category preserved,
+  invalid→medium), product-card (variant classes, small hides SKU, name/price/
+  image always visible), business-settings (default medium, save all three sizes,
+  error + fallback paths).
+- e2e (`e2e/playwright/product-card-size.spec.ts`): default medium, size switch
+  without reload, preservation of search/ticket/category, distinct grid densities,
+  persistence across full reload, plus Playwright visual screenshots for each size.
+
+### Progress checklist
+
+- [x] Backend posConfig default + seeder include `catalogCardSize`
+- [x] Service: type, default, `getCatalogCardSize`, `setCatalogCardSize`
+- [x] POS grid + toolbar quick control (no reload on change)
+- [x] Product card small/medium/large variants
+- [x] Settings page "Product Card Size" for the default business
+- [x] Unit tests (service, pos-catalog, product-card, business-settings)
+- [x] e2e visual regression + persistence + no-reset assertions
+- [x] Full verification (build, lint, unit, e2e)

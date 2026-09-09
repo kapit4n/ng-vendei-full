@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { VStoreProfileService } from 'src/app/services/vendei/v-store-profile.service';
+import { VStoreProfileService, ProductCardSize } from 'src/app/services/vendei/v-store-profile.service';
 import { roundToCents } from 'src/app/utils/money';
 import {
   productLabelFromFields,
@@ -15,6 +15,9 @@ import { sellingModeUnitLabel } from 'src/app/services/vendei/v-store-profile.se
  *
  * Emits `addProduct` when activated (click or keyboard Enter/Space). The card does
  * not mutate the ticket itself — the parent decides how to add the item.
+ *
+ * Density variants: `cardSize` picks small (compact, SKU/label hidden), medium
+ * (default) or large (spacious, full details) purely via presentation classes.
  */
 @Component({
   selector: 'app-product-card',
@@ -30,6 +33,8 @@ export class ProductCardComponent {
   @Input() disabled = false;
   /** Whether stock level should gate the card (per business rules). */
   @Input() respectStock = false;
+  /** Product card density (small | medium | large). Default: medium. */
+  @Input() cardSize: ProductCardSize = 'medium';
 
   @Output() addProduct = new EventEmitter<void>();
 

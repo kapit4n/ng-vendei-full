@@ -83,13 +83,25 @@
   @if (originalP.length) {
     <div class="search-meta">
       <span class="search-meta-count">Showing {{ products.length }} of {{ originalP.length }} products</span>
+      <div class="display-density" role="group" aria-label="Product card size">
+        <span class="display-density-label" id="product-card-size-label">Cards</span>
+        @for (size of cardSizes; track size) {
+          <button type="button" class="density-btn"
+            [attr.aria-pressed]="cardSize === size"
+            [class.density-btn--active]="cardSize === size"
+            (click)="setCardSize(size)"
+            [attr.aria-label]="'Product card size: ' + size">
+            {{ sizeLabel(size) }}
+          </button>
+        }
+      </div>
     </div>
   }
 
   <div class="product-cards-box" [ngStyle]="gridStyle">
 
     @if (loading) {
-      <div class="product-cards-skeletons" [ngStyle]="gridStyle">
+      <div class="product-cards-skeletons" [ngStyle]="gridStyle" [ngClass]="gridVariantClass">
         @for (s of skeletonCards(); track s) {
           <div class="skeleton-card">
             <div class="skeleton-card__media"></div>
@@ -126,10 +138,11 @@
         <p class="empty-hint">There are no products in this catalog yet.</p>
       </div>
     } @else {
-      <div class="product-cards-grid" [ngStyle]="gridStyle">
+      <div class="product-cards-grid" [ngStyle]="gridStyle" [ngClass]="gridVariantClass">
         @for (product of products; track productRowTrack($index, product)) {
           <app-product-card [product]="product" [showImage]="showProductImages"
             [disabled]="printOrderCount !== 0" [respectStock]="respectStock"
+            [cardSize]="cardSize"
             (addProduct)="addProduct(product)">
           </app-product-card>
         }
