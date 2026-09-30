@@ -71,9 +71,23 @@
 - [x] `ng build` — clean ✅
 - [x] `ng test` — no new failures ✅
 
+### Step 13 — Chicken Store Real Photography
+- [x] Replaced the 15 generated chicken-store SVGs with real product photos from `~/Desktop/chicken`
+- [x] Added `scripts/import-catalog-photos.sh` — center-crops to square, caps at 512px, re-encodes to JPEG (`-q:v 3`, ~q82)
+- [x] `scripts/generate-catalog-images.js` now skips profiles listed in `PHOTO_PROFILES` so it cannot clobber the photos
+- [x] Seeders switched chicken-store to `.jpg` via `IMG_EXT_BY_PROFILE` in both
+      `20260819120000-seed-store-profiles.js` and `20260825130000-seed-catalog-templates.js`
+- [x] 2.9 MB of source photos → 988 KB of shipped assets
+- [ ] **Action required:** re-seed the DB, otherwise existing rows still point at the removed `.svg` files
+      (`cd inventory-nod && npx sequelize-cli db:migrate:undo && npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all`)
+
 ## Known Issues
 - Pre-existing test failures: `RegCategoryComponent`, `RegProductComponent`, `InvProductsInvComponent`, `AppComponent`, `RegCustomerComponent`, `RegProductPresentationComponent`, `CustomersDialogComponent`, `PosCheckoutComponent` (print/save/submit) — not related to this feature
 - The `VInvoiceService` hardcodes "Codigo Casero" branding — could be made profile-aware later
+- **`hardware` vs `hardware-store` (pre-existing, unrelated to Step 13):** the StoreProfile seeder and
+  `generate-catalog-images.js` both key on `hardware`, but the committed SVGs live in `catalog/hardware-store/`
+  (where the CatalogTemplate seeder points). All 15 hardware products therefore 404 to the placeholder.
+  Either rename the asset dir to `hardware/` or change the seeder to `hardware-store` — pick one and align all three.
 
 ## Steps Completed
 

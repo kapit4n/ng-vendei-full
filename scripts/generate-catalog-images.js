@@ -6,6 +6,11 @@ const path = require('path');
 
 const ASSETS_DIR = path.join(__dirname, '..', 'src', 'assets', 'vendei', 'catalog');
 
+// Profiles that ship real photography rather than generated placeholders.
+// Their assets are maintained by scripts/import-catalog-photos.sh, so this
+// generator must leave them alone or it will clobber the photos.
+const PHOTO_PROFILES = new Set(['chicken-store']);
+
 const CATEGORIES = {
   supermarket: {
     'Beverages': { bg: '#e8f5e9', accent: '#2e7d32', icon: '🥤' },
@@ -111,6 +116,8 @@ const products = {
     { name: 'Toilet Paper 4-pack', cat: 'Cleaning', slug: 'toilet-paper-4-pack' },
     { name: 'Dish Soap 500ml', cat: 'Cleaning', slug: 'dish-soap-500ml' },
   ],
+  // Slug list is kept in sync with scripts/import-catalog-photos.sh. Not
+  // generated — see PHOTO_PROFILES above.
   'chicken-store': [
     { name: 'Whole Chicken', cat: 'Whole Chicken', slug: 'whole-chicken' },
     { name: 'Grilled Chicken', cat: 'Whole Chicken', slug: 'grilled-chicken' },
@@ -183,6 +190,10 @@ const products = {
 
 let total = 0;
 for (const [profileSlug, items] of Object.entries(products)) {
+  if (PHOTO_PROFILES.has(profileSlug)) {
+    console.log(`${profileSlug}: skipped (uses photography, see scripts/import-catalog-photos.sh)`);
+    continue;
+  }
   const dir = path.join(ASSETS_DIR, profileSlug);
   fs.mkdirSync(dir, { recursive: true });
   for (const p of items) {
