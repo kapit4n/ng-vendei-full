@@ -1,4 +1,8 @@
-import { defineConfig, devices } from '@playwright/test';
+// Playwright base URL.
+//
+// Overridable so the same suite can run against a dev server, a container, or
+// any deployed server — the app must never assume localhost.
+const baseURL = process.env['E2E_BASE_URL'] ?? 'http://localhost:4200';
 
 export default defineConfig({
   testDir: './e2e/playwright',
@@ -9,7 +13,7 @@ export default defineConfig({
   reporter: 'list',
   timeout: 60000,
   use: {
-    baseURL: 'http://localhost:4200',
+    baseURL,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },
@@ -19,10 +23,13 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-  webServer: {
-    command: 'ng serve --port 4200',
-    url: 'http://localhost:4200',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120000,
-  },
+  // Only manage a dev server when one was not supplied via E2E_BASE_URL.
+  webServer: process.env['E2E_BASE_URL']
+    ? undefined
+    : {
+        command: 'ng serve --port 4200',
+        url: 'http://localhost:4200',
+        reuseExistingServer: !process.env.CI,
+        timeout: 120000,
+      },
 });
