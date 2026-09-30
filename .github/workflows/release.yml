@@ -84,11 +84,26 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci
 
-      # Stages src-tauri/backend and src-tauri/runtime, which tauri.conf.json
-      # declares as bundle resources. `tauri build` would fail without them, but
-      # it would not explain why, so this runs as its own visible step.
+      # Run as its own step and tee to the log: a staging failure is otherwise
+      # silent, because output is redirected inside the script and the job logs
+      # need admin rights to read.
       - name: Stage the backend and Node runtime
-        run: bash scripts/prepare-bundle-resources.sh --backend-ref "$BACKEND_REF"
+        run: |
+          set -o pipefail
+          bash scripts/prepare-bundle-resources.sh --backend-ref "$BACKEND_REF" 2>&1 \
+            | grep -v 'npm warn'
+
+      - name: Report what is staged
+        if: always()
+        run: |
+          {
+            echo "### Staged bundle resources"
+            echo '```'
+            echo "backend size: $(du -sh src-tauri/backend 2>/dev/null | cut -f1 || echo missing)"
+            echo "runtime size: $(du -sh src-tauri/runtime 2>/dev/null | cut -f1 || echo missing)"
+            echo "bundled node: $(src-tauri/runtime/bin/node --version 2>&1 || echo missing)"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Build the installers
         run: npm run tauri:build -- --bundles deb,appimage

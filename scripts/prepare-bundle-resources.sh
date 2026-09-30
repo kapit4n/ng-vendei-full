@@ -24,9 +24,12 @@ BACKEND_DIR="$TAURI_DIR/backend"
 RUNTIME_DIR="$TAURI_DIR/runtime"
 STAMP_DIR="$TAURI_DIR/.bundle-stamps"
 
-# Pinned on purpose. Both values are recorded in src-tauri/.gitignore-adjacent
-# stamps so a version bump re-stages rather than silently reusing stale bits.
-NODE_VERSION="${NODE_VERSION:-v22.23.3}"
+# Accepted with or without a leading "v", because the workflow passes 22.23.3
+# while the dist URLs need v22.23.3. A mismatch here is a silent 404 several
+# steps later, which is exactly how the first installer run failed.
+NODE_VERSION_RAW="${NODE_VERSION:-v22.23.3}"
+NODE_VERSION="${NODE_VERSION_RAW#v}"
+NODE_VERSION="v$NODE_VERSION"
 
 # Checksums from https://nodejs.org/dist/v22.23.3/SHASUMS256.txt. Verifying the
 # tarball is what stops a compromised mirror from becoming a shipped runtime.
@@ -99,6 +102,13 @@ stage_backend() {
     return 0
   fi
 
+  # Checked *before* any long download so a wrong ref fails in seconds. Without
+  # this, an unreachable ref (a backend commit that was never pushed, say) only
+  # surfaces after the clone and after npm has spent minutes fetching packages.
+  if ! git ls-remote --exit-code "$BACKEND_REPO" >/dev/null 2>&1; then
+    die "$BACKEND_REPO is not reachable; check BACKEND_REPO and network access"
+  fi
+
   if [ ! -d "$BACKEND_DIR/.git" ]; then
     log "cloning $BACKEND_REPO at $backend_ref"
     rm -rf "$BACKEND_DIR"
@@ -112,9 +122,12 @@ stage_backend() {
   git -C "$BACKEND_DIR" checkout --quiet --force "$backend_ref"
   resolved="$(git -C "$BACKEND_DIR" rev-parse HEAD)"
 
-  # Production dependencies only: the bundle ships a runtime, not a test runner.
+  # `npm ci` needs the *exact* lockfile tree, and the backend's own tree has
+  # peer conflicts too. It is staged with the same relaxation the frontend uses
+  # (.npmrc is not committed here, because this is a different repository), so
+  # keep the two in step rather than letting them diverge.
   log "installing backend production dependencies"
-  ( cd "$BACKEND_DIR" && npm ci --omit=dev --no-audit --no-fund >/dev/null )
+  ( cd "$BACKEND_DIR" && npm ci --omit=dev --no-audit --no-fund --legacy-peer-deps >/dev/null )
 
   # sequelize-cli is a devDependency of the backend (it is only reached through
   # npm scripts there), but the shell runs it directly to migrate a fresh
@@ -126,12 +139,14 @@ stage_backend() {
   # the command still exits 0.
   log "adding sequelize-cli for first-launch migrations"
   ( cd "$BACKEND_DIR" && npm install --no-save --no-audit --no-fund \
-      "sequelize-cli@$SEQUELIZE_CLI_VERSION" >/dev/null )
+      --legacy-peer-deps "sequelize-cli@$SEQUELIZE_CLI_VERSION" >/dev/null )
 
   # Never ship the developer's database or git metadata: the first launch
   # creates its own, and a stale sqlite file would silently override it.
   rm -f "$BACKEND_DIR/database.sqlite"
   rm -rf "$BACKEND_DIR/.git"
+  rm -f "$BACKEND_DIR/.gitignore" 2>/dev/null || true
+  rm -f "$BACKEND_DIR/.gitattributes" 2>/dev/null || true
 
   local missing=()
   local rel
