@@ -1,3 +1,5 @@
+import { defineConfig, devices } from '@playwright/test';
+
 // Playwright base URL.
 //
 // Overridable so the same suite can run against a dev server, a container, or
@@ -27,7 +29,7 @@ export default defineConfig({
   webServer: process.env['E2E_BASE_URL']
     ? undefined
     : {
-        command: 'ng serve --port 4200',
+        command: 'npx ng serve --port 4200',
         url: 'http://localhost:4200',
         reuseExistingServer: !process.env.CI,
         timeout: 120000,

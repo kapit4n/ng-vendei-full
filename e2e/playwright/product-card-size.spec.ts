@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
 /**
  * POS product card size (Small | Medium | Large).
@@ -8,8 +8,34 @@ import { test, expect } from '@playwright/test';
  * across a full page reload (the value lives in the store profile config).
  */
 test.describe('POS product card size', () => {
+  /**
+   * The card size is persisted per store profile on the server, so it survives
+   * between runs — which is what makes the app work, and also what made this
+   * suite order-dependent: a run that left 'Small' set made the next run's
+   * "defaults to medium" assertion fail.
+   *
+   * Each test therefore states its own starting density instead of assuming
+   * one. The reset goes through the same PUT the settings screen issues.
+   */
+  const setPersistedCardSize = async (page: Page, size: 'small' | 'medium' | 'large') => {
+    const activeId = await page.evaluate(() => window.localStorage.getItem('activeStoreProfileId'));
+    const profiles = await (await page.request.get('/storeProfiles')).json();
+    const active = profiles.find((p: any) => String(p.id) === String(activeId)) ?? profiles[0];
+    const response = await page.request.put(`/storeProfiles/${active.id}`, {
+      data: {
+        name: active.name,
+        slug: active.slug,
+        posConfig: { ...(active.posConfig ?? {}), catalogCardSize: size },
+      },
+    });
+    expect(response.ok(), `could not reset card size: ${response.status()}`).toBe(true);
+  };
+
   test('defaults to medium and switches sizes without reloading', async ({ page }) => {
     await page.goto('/');
+    await page.locator('app-product-card').first().waitFor({ state: 'visible' });
+    await setPersistedCardSize(page, 'medium');
+    await page.reload();
     await page.locator('app-product-card').first().waitFor({ state: 'visible' });
 
     const density = page.locator('.display-density');
