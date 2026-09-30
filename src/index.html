@@ -8,6 +8,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <!-- Material Icons font-face lives in angular.json styles: src/assets/general/icon.css -->
+
+  <!--
+    Runtime deployment configuration. Must load before the app bundle so
+    `window.__VENDEI_CONFIG__` is populated when AppConfigService resolves.
+    This file is deployment-owned: rewrite it to re-point the app at a
+    different API host without rebuilding. Never put secrets here.
+  -->
+  <script src="assets/config/runtime-config.js"></script>
 </head>
 <body>
   <app-root></app-root>
