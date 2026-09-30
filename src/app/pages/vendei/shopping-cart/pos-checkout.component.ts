@@ -1,14 +1,14 @@
 import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from "@angular/core";
 import { Router } from "@angular/router";
-import { concatMap, forkJoin } from "rxjs";
 import { MatDialog } from "@angular/material/dialog";
-import { VOrdersService } from "../../../services/vendei/v-orders.service";
-import { VInventoryService } from "../../../services/vendei/v-inventory.service";
+import { AppConfigService } from "src/app/core/config/app-config.service";
+import { PrintService } from "src/app/core/platform/print.service";
 import { VInvoiceService } from "../../../services/vendei/v-invoice.service";
 import { VConfigService } from "src/app/services/vendei/v-config.service";
+import { PosSaleService, SaleDraft } from "src/app/services/vendei/pos-sale.service";
 import { VStoreProfileService, StoreProfile } from "src/app/services/vendei/v-store-profile.service";
 import { ProfileSwitchDialogComponent } from "src/app/features/vendei/profile-switch-dialog/profile-switch-dialog.component";
-import { roundToCents, isOrderReadyToSubmit, orderAmountDue } from "src/app/utils/money";
+import { roundToCents, isOrderReadyToSubmit, orderAmountDue, orderChangeDue } from "src/app/utils/money";
 import { PaymentType } from "src/app/features/vendei/payment-types";
 
 /** Shown in POS footer; align with product branding rather than package.json patch noise. */
@@ -57,10 +57,11 @@ export class PosCheckoutComponent implements OnInit {
   printOrderCount = 0;
 
   constructor(
-    private ordersSvc: VOrdersService,
-    private inventorySvc: VInventoryService,
+    private readonly saleSvc: PosSaleService,
     private invoiceSvc: VInvoiceService,
     public config: VConfigService,
+    private readonly appConfig: AppConfigService,
+    private readonly printer: PrintService,
     private readonly cdr: ChangeDetectorRef,
     private readonly router: Router,
     private readonly dialog: MatDialog,
@@ -101,8 +102,7 @@ export class PosCheckoutComponent implements OnInit {
   }
 
   printOrder() {
-    let popupWindow;
-    var todayTime = new Date();
+    const todayTime = new Date();
     const locale = this.profileSvc.getLocale();
     const businessName = this.profileSvc.getBusinessName() || 'Codigo Casero';
     const address = this.profileSvc.getAddress() || 'Cochabamba Bolivia, Times St 1414';
@@ -119,7 +119,7 @@ export class PosCheckoutComponent implements OnInit {
     const innerContents = [
       `<div style='padding-left: 20px;'><div>`,
       `<p style="font-size: 13px;">`,
-      `<img style="float: left;" src="http://localhost:4200/assets/vendei/print-logo.png" alt="Logo" height="120" width="120">`,
+      `<img style="float: left;" src="${this.appConfig.absoluteAssetUrl('assets/vendei/print-logo.png')}" alt="Logo" height="120" width="120">`,
       `${businessName}:<br>Software development company offers you web page development,`,
       `Billing software, Accounting, and customisable software.`,
       `</p>`,
@@ -136,13 +136,7 @@ export class PosCheckoutComponent implements OnInit {
       `<p style="font-size: 13px;">Quality software developed by experienced developers.</p>`,
       `</div>`,
     ].join("");
-    popupWindow = window.open(
-      "",
-      "_blank",
-      "width=600,height=400,scrollbars=no,menubar=no,toolbar=no,location=no,status=no,titlebar=no"
-    );
-    popupWindow.document.open();
-    popupWindow.document.write(
+    this.printer.open(
       `<html><head><link rel="stylesheet" type="text/css" href="style.css" />
     </head><body onload="window.print()">
     <style>
@@ -195,12 +189,9 @@ export class PosCheckoutComponent implements OnInit {
 
     ` +
       innerContents +
-      "</html>"
+      "</html>",
+      "width=600,height=400,scrollbars=no,menubar=no,toolbar=no,location=no,status=no,titlebar=no"
     );
-
-    var selfx = this;
-
-    popupWindow.document.close();
   }
 
   submitOrder() {
@@ -228,80 +219,25 @@ export class PosCheckoutComponent implements OnInit {
     this.saveOrder();
   }
 
+  /** Snapshot of the open ticket, handed to the sale use case. */
+  currentDraft(): SaleDraft {
+    return {
+      customerId: this.selectedCustomer?.id ?? null,
+      lines: this.selectedProducts,
+      payments: this.payedItems,
+      total: this.total,
+      totalDiscount: this.totalDiscount,
+      totalReturn: this.totalReturn,
+    };
+  }
+
+  /** Thin delegation — order assembly lives in {@link PosSaleService}. */
   buildOrderAndDetails() {
-    const order: any = {};
-    order.customerId = this.selectedCustomer.id;
-    order.createdDate = new Date();
-    order.total = roundToCents(this.total);
-    order.description = "";
-    order.paid = true;
-    order.delivered = true;
-    order.deliveryDate = new Date();
-
-    const cashTotal = this.payedItems
-      .filter(p => p.payType === PaymentType.PAYMONEY)
-      .reduce((sum, p) => sum + (p.value || 0), 0);
-    const qrTotal = this.payedItems
-      .filter(p => p.payType === PaymentType.PAYQR)
-      .reduce((sum, p) => sum + (p.value || 0), 0);
-
-    order.paidCash = roundToCents(cashTotal);
-    order.paidQr = roundToCents(qrTotal);
-    order.totalDiscount = roundToCents(this.totalDiscount);
-    order.totalReturn = roundToCents(this.totalReturn);
-
-    const activeProfileId = this.profileSvc.getActiveProfileId();
-    if (activeProfileId != null) {
-      order.storeProfileId = activeProfileId;
-    }
-
-    const details: any[] = [];
-    this.selectedProducts.forEach(p => {
-      const detail: any = {};
-      detail.quantity = p.quantity;
-      detail.currentPrice = roundToCents(p.currentPrice);
-      detail.discount = 0;
-      detail.totalPrice = roundToCents(Number(p.quantity) * Number(p.currentPrice));
-      detail.productId = p.productId ?? p.Product?.id ?? p.id;
-      detail.orderId = "0";
-      if (p.variantId) {
-        detail.productVariantId = p.variantId;
-      }
-      if (p.unitLabel) {
-        detail.unitLabel = p.unitLabel;
-      }
-      details.push(detail);
-    });
-
-    return { order, details };
+    return this.saleSvc.buildOrderAndDetails(this.currentDraft());
   }
 
   saveOrder() {
-    const { order, details } = this.buildOrderAndDetails();
-
-    const orderDone$ = this.ordersSvc.save(order).pipe(
-      concatMap((o: any) => {
-        details.forEach((d: any) => {
-          d.orderId = o.id;
-          d.createdDate = o.createdDate;
-        });
-        return forkJoin(
-          details.map((d: any) =>
-            this.ordersSvc.saveDetail(d).pipe(
-              concatMap(() =>
-                forkJoin([
-                  this.inventorySvc.reduceInventory(String(d.productId), d.quantity),
-                  this.inventorySvc.updateTotalSelled(String(d.productId), d.totalPrice),
-                  this.inventorySvc.updateQuantitySelled(String(d.productId), d.quantity),
-                ])
-              )
-            )
-          )
-        );
-      })
-    );
-
-    orderDone$.subscribe({
+    this.saleSvc.submit(this.currentDraft()).subscribe({
       complete: () => this.clearItems(),
       error: (err) => {
         console.error("submitOrder inventory pipeline", err);
@@ -323,36 +259,27 @@ export class PosCheckoutComponent implements OnInit {
       payedItems: this.payedItems,
     });
 
-    const printWindow = window.open('', '_blank', 'width=400,height=600');
-    if (!printWindow) {
+    const handle = this.printer.open(html);
+    if (!handle) {
       this.printOrderCount = 0;
       this.saveOrder();
       return;
     }
 
-    printWindow.document.write(html);
-    printWindow.document.close();
-
     let saved = false;
     const doSave = () => {
       if (saved) return;
       saved = true;
-      if (!printWindow.closed) {
-        printWindow.close();
-      }
+      handle.close();
       this.saveOrder();
     };
 
-    printWindow.onafterprint = doSave;
+    const subscription = handle.closed$.subscribe({
+      next: doSave,
+      complete: () => subscription.unsubscribe(),
+    });
 
-    const checkClosed = setInterval(() => {
-      if (printWindow.closed) {
-        clearInterval(checkClosed);
-        doSave();
-      }
-    }, 500);
-
-    printWindow.print();
+    handle.print();
   }
 
   clearItems() {
@@ -425,8 +352,7 @@ export class PosCheckoutComponent implements OnInit {
       this.discountItems.map(x => x.value).reduce((a, b) => a + b, 0)
     );
 
-    const net = Math.max(0, roundToCents(this.total - this.totalDiscount));
-    this.toReturn = roundToCents(this.totalPayed - net - this.totalReturn);
+    this.toReturn = orderChangeDue(this.total, this.totalPayed, this.totalReturn, this.totalDiscount);
   }
 
   /** Gross ticket total minus discounts — amount the customer must cover. */

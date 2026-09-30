@@ -7,6 +7,7 @@ import { VOrdersService } from '../../../services/vendei/v-orders.service';
 import { VInventoryService } from '../../../services/vendei/v-inventory.service';
 import { VInvoiceService } from '../../../services/vendei/v-invoice.service';
 import { VConfigService } from 'src/app/services/vendei/v-config.service';
+import { PrintService } from 'src/app/core/platform/print.service';
 import { VStoreProfileService } from 'src/app/services/vendei/v-store-profile.service';
 import { Router } from '@angular/router';
 import { PaymentType } from 'src/app/features/vendei/payment-types';
@@ -27,15 +28,16 @@ describe('Failure Scenarios — Regression', () => {
   let profileSvcSpy: jasmine.SpyObj<VStoreProfileService>;
   let dialogSpy: jasmine.SpyObj<MatDialog>;
   let configSvc: VConfigService;
+  let printerSpy: jasmine.SpyObj<PrintService>;
 
   const makeProduct = (overrides: any = {}) => ({
-    id: overrides.id || 1,
-    productId: overrides.productId || overrides.id || 1,
-    name: overrides.name || 'Test Product',
-    quantity: overrides.quantity || 1,
-    currentPrice: overrides.currentPrice || 10,
-    price: overrides.price || 10,
-    Product: { id: overrides.id || 1, name: overrides.name || 'Test Product', code: 'T-001', img: '' },
+    id: overrides.id ?? 1,
+    productId: overrides.productId ?? overrides.id ?? 1,
+    name: overrides.name ?? 'Test Product',
+    quantity: overrides.quantity ?? 1,
+    currentPrice: overrides.currentPrice ?? 10,
+    price: overrides.price ?? 10,
+    Product: { id: overrides.id ?? 1, name: overrides.name ?? 'Test Product', code: 'T-001', img: '' },
   });
 
   beforeEach(waitForAsync(() => {
@@ -43,6 +45,7 @@ describe('Failure Scenarios — Regression', () => {
     ordersSvcSpy = jasmine.createSpyObj('VOrdersService', ['save', 'saveDetail']);
     inventorySvcSpy = jasmine.createSpyObj('VInventoryService', ['reduceInventory', 'updateTotalSelled', 'updateQuantitySelled']);
     invoiceSvcSpy = jasmine.createSpyObj('VInvoiceService', ['generate']);
+    invoiceSvcSpy.generate.and.returnValue('<html>invoice</html>');
     profileSvcSpy = jasmine.createSpyObj('VStoreProfileService', ['getProfiles', 'getActiveProfileId', 'setActiveProfile', 'getActiveProfile', 'getCurrencySymbol', 'getCurrency', 'getLocale', 'getBusinessName', 'getAddress', 'getTaxLabel', 'getTaxId']);
     profileSvcSpy.getActiveProfileId.and.returnValue(1);
     profileSvcSpy.getCurrencySymbol.and.returnValue('Bs');
@@ -53,6 +56,7 @@ describe('Failure Scenarios — Regression', () => {
     profileSvcSpy.getTaxLabel.and.returnValue('NIT');
     profileSvcSpy.getTaxId.and.returnValue('12345');
     dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
+    printerSpy = jasmine.createSpyObj('PrintService', ['open']);
 
     TestBed.configureTestingModule({
       declarations: [PosCheckoutComponent],
@@ -66,6 +70,7 @@ describe('Failure Scenarios — Regression', () => {
         { provide: VInvoiceService, useValue: invoiceSvcSpy },
         { provide: VStoreProfileService, useValue: profileSvcSpy },
         { provide: MatDialog, useValue: dialogSpy },
+        { provide: PrintService, useValue: printerSpy },
       ],
     }).compileComponents();
   }));
@@ -406,7 +411,7 @@ describe('Failure Scenarios — Regression', () => {
       expect(ordersSvcSpy.saveDetail).toHaveBeenCalled();
     }));
 
-    it('concurrent saves both reduce inventory independently', fakeAsync(() => {
+    it('a second save does not reduce inventory twice for the same ticket', fakeAsync(() => {
       component.selectedProducts = [makeProduct({ id: 1, quantity: 1, currentPrice: 10 })];
       component.total = 10;
       component.payIt({ name: '10.00', value: 10 }, PaymentType.PAYMONEY);
@@ -415,7 +420,12 @@ describe('Failure Scenarios — Regression', () => {
       component.saveOrder();
       tick(800);
 
-      expect(inventorySvcSpy.reduceInventory).toHaveBeenCalledTimes(2);
+      // Spies emit synchronously, so the first save completes and clears the
+      // ticket before the second one is even built. The ticket itself is the
+      // double-submit guard: stock is only ever reduced for lines still on it.
+      expect(inventorySvcSpy.reduceInventory).toHaveBeenCalledTimes(1);
+      expect(ordersSvcSpy.saveDetail).toHaveBeenCalledTimes(1);
+      expect(component.selectedProducts).toEqual([]);
     }));
   });
 
@@ -472,15 +482,27 @@ describe('Failure Scenarios — Regression', () => {
   });
 
   describe('Invoice generation', () => {
-    it('generates invoice with correct data', () => {
+    it('generates invoice from the real ticket state', () => {
+      // `printInvoice` routes submitOrder to the plain receipt path, so the
+      // invoice-before-submit path is the one to exercise here.
+      configSvc.printInvoice = false;
+      configSvc.printInvoiceBeforeSubmit = true;
       component.selectedProducts = [makeProduct({ quantity: 2, currentPrice: 25 })];
       component.total = 50;
       component.selectedCustomer = { id: 1, name: 'Pedro', ci: '12345' };
       component.payIt({ name: '50.00', value: 50 }, PaymentType.PAYMONEY);
       component.calTotals();
 
-      const html = invoiceSvcSpy.generate.and.callFake((data) => `<html>${data.total}</html>`)(null as any);
-      expect(html).toContain('50');
+      component.submitOrder();
+
+      expect(invoiceSvcSpy.generate).toHaveBeenCalledTimes(1);
+      const data = invoiceSvcSpy.generate.calls.mostRecent().args[0] as any;
+      expect(data.total).toBe(50);
+      expect(data.totalPayed).toBe(50);
+      expect(data.customer.id).toBe(1);
+      expect(data.customer.name).toBe('Pedro');
+      expect(data.products.length).toBe(1);
+      expect(printerSpy.open).toHaveBeenCalledWith('<html>invoice</html>');
     });
   });
 });

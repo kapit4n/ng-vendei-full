@@ -1,12 +1,14 @@
 import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PosCheckoutComponent } from './pos-checkout.component';
 import { VOrdersService } from '../../../services/vendei/v-orders.service';
 import { VInventoryService } from '../../../services/vendei/v-inventory.service';
 import { VInvoiceService } from '../../../services/vendei/v-invoice.service';
 import { VConfigService } from 'src/app/services/vendei/v-config.service';
+import { PosSaleService } from 'src/app/services/vendei/pos-sale.service';
+import { PrintHandle, PrintService } from 'src/app/core/platform/print.service';
 import { VStoreProfileService, StoreProfile } from 'src/app/services/vendei/v-store-profile.service';
 import { Router } from '@angular/router';
 import { PaymentType } from 'src/app/features/vendei/payment-types';
@@ -21,6 +23,7 @@ describe('PosCheckoutComponent', () => {
   let profileSvcSpy: jasmine.SpyObj<VStoreProfileService>;
   let dialogSpy: jasmine.SpyObj<MatDialog>;
   let configSvc: VConfigService;
+  let printerSpy: jasmine.SpyObj<PrintService>;
 
   const mockProduct = (overrides?: any) => ({
     id: 1,
@@ -47,6 +50,7 @@ describe('PosCheckoutComponent', () => {
     profileSvcSpy = jasmine.createSpyObj('VStoreProfileService', ['getProfiles', 'getActiveProfileId', 'setActiveProfile', 'getActiveProfile']);
     profileSvcSpy.getActiveProfileId.and.returnValue(1);
     dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
+    printerSpy = jasmine.createSpyObj('PrintService', ['open']);
 
     TestBed.configureTestingModule({
       declarations: [PosCheckoutComponent],
@@ -60,6 +64,7 @@ describe('PosCheckoutComponent', () => {
         { provide: VInvoiceService, useValue: invoiceSvcSpy },
         { provide: VStoreProfileService, useValue: profileSvcSpy },
         { provide: MatDialog, useValue: dialogSpy },
+        { provide: PrintService, useValue: printerSpy },
       ],
     }).compileComponents();
   }));
@@ -514,59 +519,48 @@ describe('PosCheckoutComponent', () => {
   });
 
   describe('printInvoiceAndSave', () => {
-    let mockWindow: any;
+    let closed$: Subject<void>;
+    let handle: PrintHandle;
 
     beforeEach(() => {
-      component.selectedProducts = [
-        mockProduct({ id: 1, quantity: 2, currentPrice: 10 }),
-      ];
+      component.selectedProducts = [mockProduct({ id: 1, quantity: 2, currentPrice: 10 })];
       component.total = 20;
       component.selectedCustomer = { id: 3, name: 'Maria' };
       component.payedItems = [{ id: 1, value: 20 }];
       component.calTotals();
 
-      mockWindow = {
-        document: { write: jasmine.createSpy(), close: jasmine.createSpy() },
-        print: jasmine.createSpy(),
-        closed: false,
-        close: jasmine.createSpy(),
+      closed$ = new Subject<void>();
+      handle = {
+        print: jasmine.createSpy('print'),
+        close: jasmine.createSpy('close'),
+        closed$,
       };
+      printerSpy.open.and.returnValue(handle);
     });
 
     it('generates invoice HTML via invoice service', () => {
-      spyOn(window, 'open').and.returnValue(mockWindow);
-
       component.printInvoiceAndSave();
 
       expect(invoiceSvcSpy.generate).toHaveBeenCalledWith(
-        jasmine.objectContaining({
-          total: 20,
-          totalPayed: 20,
-        })
+        jasmine.objectContaining({ total: 20, totalPayed: 20 })
       );
     });
 
-    it('opens a print window with the generated HTML', () => {
-      spyOn(window, 'open').and.returnValue(mockWindow);
-
+    it('hands the generated HTML to the print service and prints', () => {
       component.printInvoiceAndSave();
 
-      expect(window.open).toHaveBeenCalledWith('', '_blank', 'width=400,height=600');
-      expect(mockWindow.document.write).toHaveBeenCalledWith('<html>invoice</html>');
-      expect(mockWindow.document.close).toHaveBeenCalled();
-      expect(mockWindow.print).toHaveBeenCalled();
+      expect(printerSpy.open).toHaveBeenCalledWith('<html>invoice</html>');
+      expect(handle.print).toHaveBeenCalled();
     });
 
     it('sets printOrderCount to 1 while printing', () => {
-      spyOn(window, 'open').and.returnValue(mockWindow);
-
       component.printInvoiceAndSave();
 
       expect(component.printOrderCount).toBe(1);
     });
 
-    it('falls back to saveOrder when popup is blocked', () => {
-      spyOn(window, 'open').and.returnValue(null);
+    it('falls back to saveOrder when the popup is blocked', () => {
+      printerSpy.open.and.returnValue(null);
       spyOn(component, 'saveOrder');
 
       component.printInvoiceAndSave();
@@ -575,88 +569,62 @@ describe('PosCheckoutComponent', () => {
       expect(component.printOrderCount).toBe(0);
     });
 
-    it('calls saveOrder when print window is closed', fakeAsync(() => {
-      spyOn(window, 'open').and.returnValue(mockWindow);
+    it('does not save while the ticket is still printing', () => {
       spyOn(component, 'saveOrder');
 
       component.printInvoiceAndSave();
 
       expect(component.saveOrder).not.toHaveBeenCalled();
+    });
 
-      mockWindow.closed = true;
-      tick(600);
-
-      expect(component.saveOrder).toHaveBeenCalled();
-    }));
-
-    it('calls saveOrder only once even if window closes multiple times', fakeAsync(() => {
-      spyOn(window, 'open').and.returnValue(mockWindow);
+    it('saves once the print service reports the window closed', () => {
       spyOn(component, 'saveOrder');
-
       component.printInvoiceAndSave();
-      mockWindow.closed = true;
-      tick(600);
-      tick(600);
+
+      closed$.next();
 
       expect(component.saveOrder).toHaveBeenCalledTimes(1);
-    }));
-
-    it('calls saveOrder when onafterprint fires', () => {
-      spyOn(window, 'open').and.returnValue(mockWindow);
-      spyOn(component, 'saveOrder');
-
-      component.printInvoiceAndSave();
-
-      expect(component.saveOrder).not.toHaveBeenCalled();
-
-      mockWindow.onafterprint();
-
-      expect(component.saveOrder).toHaveBeenCalled();
     });
 
-    it('saves only once when both onafterprint and window close happen', fakeAsync(() => {
-      spyOn(window, 'open').and.returnValue(mockWindow);
+    it('saves only once when completion is signalled repeatedly', () => {
       spyOn(component, 'saveOrder');
-
       component.printInvoiceAndSave();
 
-      mockWindow.onafterprint();
-      mockWindow.closed = true;
-      tick(600);
+      closed$.next();
+      closed$.next();
+      closed$.complete();
 
       expect(component.saveOrder).toHaveBeenCalledTimes(1);
-    }));
-
-    it('closes the print window after onafterprint fires', () => {
-      spyOn(window, 'open').and.returnValue(mockWindow);
-      spyOn(mockWindow, 'close');
-
-      component.printInvoiceAndSave();
-      mockWindow.onafterprint();
-
-      expect(mockWindow.close).toHaveBeenCalled();
     });
 
-    it('does not call close on an already-closed window after onafterprint', () => {
-      spyOn(window, 'open').and.returnValue(mockWindow);
-      spyOn(mockWindow, 'close');
-
+    it('closes the print window once, after completion', () => {
       component.printInvoiceAndSave();
-      mockWindow.closed = true;
-      mockWindow.onafterprint();
 
-      expect(mockWindow.close).not.toHaveBeenCalled();
+      closed$.next();
+
+      expect(handle.close).toHaveBeenCalledTimes(1);
     });
 
-    it('resets printOrderCount on save pipeline error', fakeAsync(() => {
-      ordersSvcSpy.save.and.returnValue(of({ id: 99 }));
-      const err$ = new Observable(sub => sub.error(new Error('save failed')));
-      ordersSvcSpy.saveDetail.and.returnValue(err$);
-      spyOn(window, 'open').and.returnValue(mockWindow);
+    it('stops listening after completion', () => {
+      spyOn(component, 'saveOrder');
+      component.printInvoiceAndSave();
+
+      closed$.next();
+      closed$.complete();
+
+      expect(component.saveOrder).toHaveBeenCalledTimes(1);
+      expect(handle.close).toHaveBeenCalledTimes(1);
+    });
+
+    it('resets printOrderCount when the sale pipeline fails', fakeAsync(() => {
+      const saleSvc = TestBed.inject(PosSaleService);
+      spyOn(saleSvc, 'submit').and.returnValue(
+        new Observable(sub => sub.error(new Error('save failed')))
+      );
 
       component.printInvoiceAndSave();
-      mockWindow.onafterprint();
-      tick(800);
+      closed$.next();
+      tick();
 
       expect(component.printOrderCount).toBe(0);
     }));
