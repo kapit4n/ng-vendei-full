@@ -16,7 +16,10 @@
     "format:check": "prettier --check \"src/**/*.{ts,html,css,json}\"",
     "e2e": "npx playwright test",
     "e2e:playwright": "npx playwright test",
-    "e2e:playwright:ui": "npx playwright test --ui"
+    "e2e:playwright:ui": "npx playwright test --ui",
+    "test:ci": "ng test --watch=false --browsers=ChromeHeadlessNoSandbox",
+    "test:scoped": "node scripts/test-scoped.mjs",
+    "lint:fix": "ng lint --fix"
   },
   "private": true,
   "dependencies": {
