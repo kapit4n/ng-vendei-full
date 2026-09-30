@@ -1,0 +1,16 @@
+AppComponent should render the brand text in the nav
+Failure Scenarios — Regression Concurrent / rapid submission concurrent saves both reduce inventory independently
+Failure Scenarios — Regression Invoice generation generates invoice with correct data
+Failure Scenarios — Regression Price edge cases handles zero price product
+Failure Scenarios — Regression Zero quantity handling total is 0 when quantity is 0
+PosCheckoutComponent printInvoiceAndSave closes the print window after onafterprint fires
+PosCheckoutComponent printInvoiceAndSave does not call close on an already-closed window after onafterprint
+PosCheckoutComponent submitOrder saves order and details
+RegAttributeListComponent should delete after confirmation
+RegCategoryListComponent should create
+RegCustomerListComponent should create
+RegProductListComponent should create
+RegProductPresentationComponent should create
+rep-product-sales-analytics utils buildExecutiveSummary builds correct summary
+VariantSelectDialogComponent should handle load error
+VStoreProfileService capabilities getCapabilities returns profile capabilities
