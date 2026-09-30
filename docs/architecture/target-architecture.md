@@ -138,6 +138,30 @@ including on failure.
 `test:setup.ts` holds the Jasmine bootstrap so the generated entry point stays
 small, and is excluded from the app build.
 
+## Starting it locally
+
+Two explicit entry points, because "which mode am I in" is the one question that
+changes behaviour and it used to be invisible:
+
+```bash
+npm run start:web         # browser; API same-origin via proxy.conf.json
+npm run start:web:prod    # production build, served with nginx's rules replicated
+npm run start:desktop     # platform=desktop; API by absolute URL on :3999
+```
+
+Each rewrites `src/assets/config/runtime-config.js` on start and restores it on
+exit, so the tracked file is never left dirty. It refuses to run if that file
+has uncommitted local edits.
+
+`run-desktop.sh` deliberately passes `--proxy-config /dev/null`. A desktop-mode
+run that quietly resolved same-origin requests through the dev proxy would look
+healthy while the absolute-URL path — the one a real shell depends on — was
+broken. It also fails fast if the backend does not enable CORS.
+
+Ports can be overridden: `WEB_BACKEND_PORT`, `WEB_FRONTEND_PORT`,
+`DESKTOP_API_PORT`, `DESKTOP_FRONTEND_PORT`. The desktop frontend defaults to
+4201 so it can run alongside the web one.
+
 ## Out of scope
 
 Recording these so the next person does not assume they were forgotten.
