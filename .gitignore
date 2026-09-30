@@ -8,6 +8,11 @@
 *.pack.old
 *.json
 !proxy.conf.json
+# The blanket *.json above also swallows the Tauri shell's own configuration,
+# which would leave a fresh clone unable to build it at all. Both files are
+# required; nothing under src-tauri/ generates them.
+!src-tauri/tauri.conf.json
+!src-tauri/capabilities/*.json
 *.angular
 
 

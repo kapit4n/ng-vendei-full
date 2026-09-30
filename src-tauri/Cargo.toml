@@ -1,0 +1,34 @@
+[package]
+name = "vendei"
+version = "0.1.0"
+description = "Vendei Full — inventory and POS desktop shell"
+authors = ["Vendei"]
+edition = "2021"
+rust-version = "1.77.2"
+
+# Binary-only for now. `tauri init` also emits a staticlib/cdylib lib target for
+# the mobile entry points; those are a later milestone, and a lib target with no
+# src/lib.rs does not build.
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+# No tauri-plugin-* entries. The shell needs exactly one capability (core
+# window/webview defaults) and starts a child process with std::process, so
+# granting shell/fs plugins would add attack surface for no requirement.
+tauri = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Linux-only, and only for `prctl(PR_SET_PDEATHSIG)`: the kernel-level guarantee
+# that the API dies with the shell. See `arm_parent_death_signal` in main.rs.
+[target.'cfg(target_os = "linux")'.dependencies]
+libc = "0.2"
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true

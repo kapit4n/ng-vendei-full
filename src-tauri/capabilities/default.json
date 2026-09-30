@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Minimum capability set for the Vendei desktop shell. The shell itself is native Rust; the Angular UI is treated as untrusted content and is granted nothing beyond the core defaults it needs to be a window. No shell, filesystem, HTTP or process permissions are granted to the webview — the backend is started by the Rust side using std::process, never from JavaScript.",
+  "windows": ["main"],
+  "permissions": ["core:default"]
+}
