@@ -1,2 +1,9 @@
 /target
 /gen/schemas
+
+# Staged bundle inputs, fetched by scripts/prepare-bundle-resources.sh. They are
+# large, machine-specific (native sqlite3 bindings) and belong to another repo,
+# so they are rebuilt per build instead of committed.
+/backend
+/runtime
+/.bundle-stamps

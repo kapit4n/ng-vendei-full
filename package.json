@@ -1,6 +1,6 @@
 {
   "name": "ng-vendei-full",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "scripts": {
     "ng": "ng",
     "inventory-backend": "bash scripts/run-inventory-backend.sh",
@@ -14,6 +14,7 @@
     "start:desktop": "bash scripts/run-desktop.sh",
     "start:tauri-frontend": "ng serve --port 4300 --proxy-config /dev/null",
     "tauri:dev": "bash scripts/run-tauri.sh",
+    "tauri:build": "tauri build",
     "start": "ng serve",
     "build": "ng build",
     "test": "ng test",
@@ -25,7 +26,8 @@
     "e2e:playwright:ui": "npx playwright test --ui",
     "test:ci": "ng test --watch=false --browsers=ChromeHeadlessNoSandbox",
     "test:scoped": "node scripts/test-scoped.mjs",
-    "lint:fix": "ng lint --fix"
+    "lint:fix": "ng lint --fix",
+    "bundle:prepare": "bash scripts/prepare-bundle-resources.sh"
   },
   "private": true,
   "dependencies": {

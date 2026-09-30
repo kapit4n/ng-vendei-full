@@ -268,18 +268,25 @@ Introduced or accepted by this milestone:
 
 ## Out of scope here
 
-Windows/Linux installers, GitHub Releases, auto-update, a bundled Node runtime,
-a first-launch wizard, a database migration framework, PostgreSQL, and Docker
+Windows installers, auto-update, a first-launch wizard, PostgreSQL, and Docker
 deployment. The database is still SQLite behind the Node API; no SQLite work
 moved into Rust.
 
+*Since this section was written, the Linux installer has been built — see
+[`../release/desktop-installer.md`](../release/desktop-installer.md). Windows,
+auto-update and PostgreSQL remain out of scope.*
+
 ## Next milestone
 
-**Production Tauri packaging with a bundled Node backend and local SQLite,
-without requiring Node.js on the user's machine.** That means bundling the Node
-runtime and `bin/www` as Tauri resources (or a single-executable app), resolving
-the API path from `app.path().resource_dir()` instead of `VENDEI_BACKEND_DIR`,
-pinning the port, and locking the API's CORS to the shell's origin.
+**Done: production Linux packaging with a bundled Node backend and local SQLite,
+requiring no Node.js on the user's machine.** The Node runtime and `bin/www` are
+bundled as Tauri resources, the API path is resolved from
+`app.path().resource_dir()`, and `.github/workflows/release.yml` builds the
+`.deb`/AppImage and publishes alpha pre-releases.
+
+The remaining hardening from the original list — pinning the port, and locking
+the API's CORS to the shell's origin instead of `*` — is still open, and is
+tracked in the limitations section of the installer document.
 
 ## Commits
 
