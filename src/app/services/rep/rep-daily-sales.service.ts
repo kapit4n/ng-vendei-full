@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from "@angular/common/http";
-import { RepConfigService } from "./rep-config.service";
 import { Observable } from "rxjs";
 
+import { API_ACTIONS, API_PATHS } from '../../core/api/api-paths';
+import { ApiClientService } from '../../core/api/api-client.service';
 export interface DailySalesSummary {
   date: string;
   orderCount: number;
@@ -17,13 +17,9 @@ export interface DailySalesSummary {
   providedIn: "root"
 })
 export class RepDailySalesService {
-  private modelUrl: string;
-
-  constructor(private http: HttpClient, private configSvc: RepConfigService) {
-    this.modelUrl = this.configSvc.baseUrl + "/orders";
-  }
+  constructor(private readonly api: ApiClientService) {}
 
   getTodaySummary(): Observable<DailySalesSummary> {
-    return this.http.get<DailySalesSummary>(`${this.modelUrl}/today-summary`);
+    return this.api.get<DailySalesSummary>(`${API_PATHS.orders}/${API_ACTIONS.todaySummary}`);
   }
 }

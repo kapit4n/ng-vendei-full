@@ -4,7 +4,7 @@ import { throwError } from 'rxjs';
 
 /**
  * Global HTTP error interceptor.  Logs and standardises common error codes.
- * URL prefixing is handled by each service via VConfigService.baseUrl.
+ * URL prefixing is handled once, centrally, by `ApiClientService`.
  */
 export const apiInterceptor: HttpInterceptorFn = (_req, next) => {
   return next(_req).pipe(

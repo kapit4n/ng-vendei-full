@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { ApiClientService } from '../../core/api/api-client.service';
+import { StorageService } from '../../core/platform/storage.service';
 import { VStoreProfileService, StoreProfile, CAPABILITIES, isDecimalSellingMode, sellingModeUnitLabel, resolveInitialProfileId, mapFallbackReason, normalizeCatalogCardSize } from './v-store-profile.service';
 import { VConfigService } from './v-config.service';
 
@@ -38,7 +39,7 @@ describe('VStoreProfileService', () => {
     localStorage.clear();
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [VStoreProfileService, VConfigService],
+      providers: [VStoreProfileService, VConfigService, ApiClientService, StorageService],
     });
     service = TestBed.inject(VStoreProfileService);
     httpMock = TestBed.inject(HttpTestingController);
@@ -99,8 +100,10 @@ describe('VStoreProfileService', () => {
 
     it('loads from localStorage on init', () => {
       localStorage.setItem('activeStoreProfileId', '2');
-      const http = TestBed.inject(HttpClient);
-      const freshService = new VStoreProfileService(http, configSvc);
+      const freshService = new VStoreProfileService(
+        TestBed.inject(ApiClientService),
+        TestBed.inject(StorageService)
+      );
       expect(freshService.getActiveProfileId()).toBe(2);
     });
 
@@ -138,8 +141,10 @@ describe('VStoreProfileService', () => {
 
     it('falls back to first profile if stored id no longer exists', () => {
       localStorage.setItem('activeStoreProfileId', '999');
-      const http = TestBed.inject(HttpClient);
-      const freshService = new VStoreProfileService(http, configSvc);
+      const freshService = new VStoreProfileService(
+        TestBed.inject(ApiClientService),
+        TestBed.inject(StorageService)
+      );
       freshService.getProfiles().subscribe();
       const req = httpMock.expectOne(`${configSvc.baseUrl}/storeProfiles`);
       req.flush(mockProfiles);
@@ -381,11 +386,17 @@ describe('VStoreProfileService', () => {
       service.setActiveProfile(mockProfiles[0]);
     });
 
-    it('getCapabilities returns profile capabilities', () => {
+    it('getCapabilities returns the active profile capabilities', () => {
       const caps = service.getCapabilities();
       expect(caps).toContain('BARCODE');
       expect(caps).toContain('WEIGHT_PRODUCTS');
-      expect(caps).toContain('COMBOS');
+      expect(caps).toContain('LOT_TRACKING');
+      // COMBOS belongs to the chicken profile, not the active one.
+      expect(caps).not.toContain('COMBOS');
+    });
+
+    it('getCapabilities reads the given profile instead of the active one', () => {
+      expect(service.getCapabilities(mockProfiles[1])).toContain('COMBOS');
     });
 
     it('getCapabilities falls back to defaults for legacy profiles', () => {

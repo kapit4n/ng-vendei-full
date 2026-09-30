@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { VConfigService } from './v-config.service';
+
+import { API_ACTIONS, API_PATHS } from '../../core/api/api-paths';
+import { ApiClientService } from '../../core/api/api-client.service';
 
 export interface CatalogTemplate {
   id: number;
@@ -43,23 +44,19 @@ export interface CatalogTemplateProduct {
 
 @Injectable({ providedIn: 'root' })
 export class VCatalogTemplateService {
-  private modelUrl: string;
-
-  constructor(private http: HttpClient, private configSvc: VConfigService) {
-    this.modelUrl = configSvc.baseUrl + '/catalogTemplates';
-  }
+  constructor(private readonly api: ApiClientService) {}
 
   getAll(businessType?: string): Observable<CatalogTemplate[]> {
-    let url = this.modelUrl;
-    if (businessType) url += `?businessType=${encodeURIComponent(businessType)}`;
-    return this.http.get<CatalogTemplate[]>(url);
+    return this.api.get<CatalogTemplate[]>(API_PATHS.catalogTemplates, {
+      businessType: businessType || undefined,
+    });
   }
 
   getById(id: number): Observable<CatalogTemplate> {
-    return this.http.get<CatalogTemplate>(`${this.modelUrl}/${id}`);
+    return this.api.get<CatalogTemplate>(`${API_PATHS.catalogTemplates}/${id}`);
   }
 
   apply(id: number, payload: any): Observable<any> {
-    return this.http.post(`${this.modelUrl}/${id}/apply`, payload);
+    return this.api.post(`${API_PATHS.catalogTemplates}/${id}/${API_ACTIONS.apply}`, payload);
   }
 }

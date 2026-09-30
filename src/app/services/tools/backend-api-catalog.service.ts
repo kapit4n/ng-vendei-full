@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-import { IConfigService } from '../inv/i-config.service';
+import { API_PATHS } from '../../core/api/api-paths';
+import { ApiClientService } from '../../core/api/api-client.service';
 
 export interface ApiEndpointRoute {
   method: string;
@@ -56,17 +56,15 @@ export interface ModelsResponse {
   providedIn: 'root',
 })
 export class BackendApiCatalogService {
-  constructor(private http: HttpClient, private config: IConfigService) {}
+  constructor(private readonly api: ApiClientService) {}
 
   /** GET /api/endpoints — grouped route catalog from inventory-nod. */
   getCatalog(): Observable<ApiEndpointsResponse> {
-    const base = this.config.baseUrl.replace(/\/$/, '');
-    return this.http.get<ApiEndpointsResponse>(`${base}/api/endpoints`);
+    return this.api.get<ApiEndpointsResponse>(`${API_PATHS.api}/endpoints`);
   }
 
   /** GET /api/models — Sequelize model definitions from inventory-nod. */
   getModels(): Observable<ModelsResponse> {
-    const base = this.config.baseUrl.replace(/\/$/, '');
-    return this.http.get<ModelsResponse>(`${base}/api/models`);
+    return this.api.get<ModelsResponse>(`${API_PATHS.api}/models`);
   }
 }

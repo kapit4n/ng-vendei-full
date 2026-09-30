@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { VConfigService } from './v-config.service';
+
+import { API_PATHS } from '../../core/api/api-paths';
+import { ApiClientService } from '../../core/api/api-client.service';
 
 export interface ProductVariant {
   id: number;
@@ -19,11 +20,11 @@ export interface ProductVariant {
 
 @Injectable({ providedIn: 'root' })
 export class VProductVariantService {
-  constructor(private http: HttpClient, private configSvc: VConfigService) {}
+  constructor(private readonly api: ApiClientService) {}
 
   getByProductId(productId: number | string): Observable<ProductVariant[]> {
-    return this.http
-      .get<any>(`${this.configSvc.baseUrl}/productVariants?productId=${productId}`)
+    return this.api
+      .get<any>(API_PATHS.productVariants, { productId })
       .pipe(
         map((body) => {
           if (Array.isArray(body)) return body;

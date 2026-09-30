@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 
-import { HttpClient } from "@angular/common/http";
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+
+import { API_PATHS } from '../../core/api/api-paths';
+import { ApiClientService } from '../../core/api/api-client.service';
 
 import { VConfigService } from './v-config.service'
 
@@ -10,10 +12,14 @@ import { VConfigService } from './v-config.service'
   providedIn: 'root'
 })
 export class VCategoriesService {
-  private jsonFileURL: string = "assets/vendei/categories.json";
+  /** Bundled offline/demo categories used when `VConfigService.isTest` is on. */
+  private readonly jsonFileURL = 'assets/vendei/categories.json';
 
-  constructor(private http: HttpClient, private configSvc: VConfigService) { }
-  
+  constructor(
+    private readonly api: ApiClientService,
+    private readonly configSvc: VConfigService
+  ) {}
+
   /**
    * Return an observable with the list of categories
    */
@@ -33,7 +39,7 @@ export class VCategoriesService {
     };
 
     if (this.configSvc.isTest) {
-      return this.http.get<any>(this.jsonFileURL).pipe(
+      return this.api.getAsset<any>(this.jsonFileURL).pipe(
         map((response) => normalizeList(response)),
         catchError(err => {
           console.error('[VCategoriesService] getAll (JSON) failed', err);
@@ -41,12 +47,9 @@ export class VCategoriesService {
         })
       );
     }
-    const params: string[] = [];
-    if (profileId) {
-      params.push(`storeProfileId=${profileId}`);
-    }
-    const qs = params.length ? `?${params.join('&')}` : '';
-    return this.http.get<any>(`${this.configSvc.baseUrl}/categories${qs}`).pipe(
+    return this.api.get<any>(API_PATHS.categories, {
+      storeProfileId: profileId || undefined,
+    }).pipe(
       map((response) => normalizeList(response)),
       catchError(err => {
         console.error('[VCategoriesService] getAll failed', err);

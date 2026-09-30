@@ -1,11 +1,12 @@
 import { Injectable } from "@angular/core";
 
-import { HttpClient } from "@angular/common/http";
-import { Observable, Subject, of } from "rxjs";
-import { map, filter, switchMap } from "rxjs/operators";
-import { VConfigService } from './v-config.service'
+import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
 
-import "rxjs"; //get everything from Rx
+import { API_PATHS } from '../../core/api/api-paths';
+import { ApiClientService } from '../../core/api/api-client.service';
+
+import { VConfigService } from './v-config.service'
 
 @Injectable({
   providedIn: "root"
@@ -14,11 +15,14 @@ export class VCustomersService {
   /** Product list */
   customers: any[];
 
-  /** json URL */
-  private jsonFileURL: string = "assets/vendei/customers.json";
+  /** Bundled offline/demo customers used when `VConfigService.isTest` is on. */
+  private readonly jsonFileURL = 'assets/vendei/customers.json';
 
   /** Product List service constructor */
-  constructor(private http: HttpClient, private configSvc: VConfigService) {}
+  constructor(
+    private readonly api: ApiClientService,
+    private readonly configSvc: VConfigService
+  ) {}
 
   /**
    * Returns the list of products
@@ -31,8 +35,8 @@ export class VCustomersService {
    * Return an observable with the yeam that matches the id
    */
   getCustomerById(id: any): Observable<any> {
-    return this.http.get(this.jsonFileURL).pipe(
-      map((response: Response) => {
+    return this.api.getAsset<any>(this.jsonFileURL).pipe(
+      map((response: any) => {
         return <any>response.json()[id - 1];
       })
     );
@@ -43,9 +47,8 @@ export class VCustomersService {
    */
   getAll(): Observable<any> {
     if (this.configSvc.isTest) {
-      return this.http.get<any>(this.jsonFileURL);
-    } else {
-      return this.http.get<any>(`${this.configSvc.baseUrl}/clients`);
+      return this.api.getAsset<any>(this.jsonFileURL);
     }
+    return this.api.get<any>(API_PATHS.clients);
   }
 }

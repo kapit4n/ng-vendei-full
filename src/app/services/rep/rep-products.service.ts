@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from "@angular/common/http";
-import { RepConfigService } from "./rep-config.service";
 import { Observable } from "rxjs";
 
+import { API_PATHS } from '../../core/api/api-paths';
+import { ApiClientService } from '../../core/api/api-client.service';
 export interface IProduct {
   id: string;
   price: number;
@@ -15,12 +15,9 @@ export interface IProduct {
   providedIn: "root"
 })
 export class RepProductsService {
-  modelUrl: string;
-  constructor(private http: HttpClient, private configSvc: RepConfigService) {
-    this.modelUrl = this.configSvc.baseUrl + "/products";
-  }
+  constructor(private readonly api: ApiClientService) {}
 
   getAll(): Observable<any> {
-    return this.http.get(`${this.modelUrl}`);
+    return this.api.get(API_PATHS.products);
   }
 }

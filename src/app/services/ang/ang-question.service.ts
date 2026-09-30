@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { RepConfigService } from '../rep/rep-config.service';
 import { Observable, map } from 'rxjs';
+
+import { API_PATHS } from '../../core/api/api-paths';
+import { ApiClientService } from '../../core/api/api-client.service';
 import { AngQuestion } from '../../utils/ang-models';
 
 function mapRow(r: any): AngQuestion {
@@ -18,18 +19,14 @@ function mapRow(r: any): AngQuestion {
 
 @Injectable({ providedIn: 'root' })
 export class AngQuestionService {
-  private base: string;
-
-  constructor(private http: HttpClient, private config: RepConfigService) {
-    this.base = config.baseUrl + '/ang-questions';
-  }
+  constructor(private readonly api: ApiClientService) {}
 
   getAll(): Observable<AngQuestion[]> {
-    return this.http.get<any[]>(this.base).pipe(map(rows => rows.map(mapRow)));
+    return this.api.get<any[]>(API_PATHS.angQuestions).pipe(map(rows => rows.map(mapRow)));
   }
 
   getById(id: string): Observable<AngQuestion | undefined> {
-    return this.http.get<any>(`${this.base}/${id}`).pipe(map(r => r ? mapRow(r) : undefined));
+    return this.api.get<any>(`${API_PATHS.angQuestions}/${id}`).pipe(map(r => r ? mapRow(r) : undefined));
   }
 
   save(question: AngQuestion): Observable<AngQuestion> {
@@ -41,28 +38,28 @@ export class AngQuestionService {
     };
     const id = question.id;
     if (id && !id.startsWith('seed-') && !id.startsWith('new-')) {
-      return this.http.put<any>(`${this.base}/${id}`, body).pipe(map(mapRow));
+      return this.api.put<any>(`${API_PATHS.angQuestions}/${id}`, body).pipe(map(mapRow));
     }
-    return this.http.post<any>(this.base, body).pipe(map(mapRow));
+    return this.api.post<any>(API_PATHS.angQuestions, body).pipe(map(mapRow));
   }
 
   remove(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.base}/${id}`);
+    return this.api.delete<void>(`${API_PATHS.angQuestions}/${id}`);
   }
 
   seed(): Observable<number> {
-    return this.http.get<any[]>(this.base).pipe(map(rows => rows.length));
+    return this.api.get<any[]>(API_PATHS.angQuestions).pipe(map(rows => rows.length));
   }
 
   dedup(): Observable<{ removed: number }> {
-    return this.http.post<{ removed: number }>(`${this.base}/dedup`, {});
+    return this.api.post<{ removed: number }>(`${API_PATHS.angQuestions}/dedup`, {});
   }
 
   hasSeedData(): Observable<boolean> {
-    return this.http.get<any[]>(this.base).pipe(map(rows => rows.length > 0));
+    return this.api.get<any[]>(API_PATHS.angQuestions).pipe(map(rows => rows.length > 0));
   }
 
   getCount(): Observable<number> {
-    return this.http.get<any[]>(this.base).pipe(map(rows => rows.length));
+    return this.api.get<any[]>(API_PATHS.angQuestions).pipe(map(rows => rows.length));
   }
 }

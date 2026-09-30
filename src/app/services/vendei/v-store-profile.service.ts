@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
-import { VConfigService } from './v-config.service';
+
+import { API_ACTIONS, API_PATHS } from '../../core/api/api-paths';
+import { ApiClientService } from '../../core/api/api-client.service';
+import { StorageService } from '../../core/platform/storage.service';
 
 export interface ReceiptConfig {
   paperWidth: number;
@@ -191,10 +193,13 @@ export class VStoreProfileService {
   private profiles: StoreProfile[] = [];
   private activeProfileId$ = new BehaviorSubject<number | null>(this.loadFromStorage());
 
-  constructor(private http: HttpClient, private configSvc: VConfigService) {}
+  constructor(
+    private readonly api: ApiClientService,
+    private readonly storage: StorageService
+  ) {}
 
   getProfiles(): Observable<StoreProfile[]> {
-    return this.http.get<any>(`${this.configSvc.baseUrl}/storeProfiles`).pipe(
+    return this.api.get<any>(API_PATHS.storeProfiles).pipe(
       map((body) => {
         if (Array.isArray(body)) return body;
         if (body && typeof body === 'object') {
@@ -232,7 +237,7 @@ export class VStoreProfileService {
    * The current POS session is intentionally untouched: only startup uses it.
    */
   setDefaultProfile(profile: StoreProfile): Observable<StoreProfile> {
-    return this.http.put<any>(`${this.configSvc.baseUrl}/storeProfiles/${profile.id}/default`, null).pipe(
+    return this.api.put<any>(`${API_PATHS.storeProfiles}/${profile.id}/${API_ACTIONS.default}`, null).pipe(
       map((body) => {
         const data: StoreProfile | undefined =
           (body && typeof body === 'object' && (body.data ?? body.profile)) ?? body;
@@ -263,7 +268,7 @@ export class VStoreProfileService {
   }
 
   setActiveProfile(profile: StoreProfile): void {
-    localStorage.setItem(STORAGE_KEY, String(profile.id));
+    this.storage.setRaw(STORAGE_KEY, String(profile.id));
     this.activeProfileId$.next(profile.id);
   }
 
@@ -369,8 +374,8 @@ export class VStoreProfileService {
     if (!target) return of(null);
     const normalized = normalizeCatalogCardSize(size);
     const posConfig = { ...this.getPosConfig(target), catalogCardSize: normalized };
-    return this.http
-      .put<any>(`${this.configSvc.baseUrl}/storeProfiles/${target.id}`, {
+    return this.api
+      .put<any>(`${API_PATHS.storeProfiles}/${target.id}`, {
         name: target.name,
         slug: target.slug,
         posConfig,
@@ -414,7 +419,7 @@ export class VStoreProfileService {
 
   private loadFromStorage(): number | null {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const raw = this.storage.getRaw(STORAGE_KEY);
       if (raw === null) return null;
       const n = Number(raw);
       return Number.isFinite(n) && n > 0 ? n : null;

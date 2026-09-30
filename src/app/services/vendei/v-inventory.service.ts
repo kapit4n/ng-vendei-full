@@ -1,35 +1,33 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from "@angular/common/http";
-import { VConfigService } from "./v-config.service";
-
+import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
+
+import { API_ACTIONS, API_PATHS } from '../../core/api/api-paths';
+import { ApiClientService } from '../../core/api/api-client.service';
 
 @Injectable({
   providedIn: "root"
 })
 export class VInventoryService {
-  modelUrl: string;
-  
-  constructor(private http: HttpClient, private configSvc: VConfigService) {
-    this.modelUrl = this.configSvc.baseUrl + "/products";
-  }
+  constructor(private readonly api: ApiClientService) {}
 
   reduceInventory(productId: string, amount: number): Observable<any> {
-    return this.http.get(
-      `${this.modelUrl}/reduceInventory?id=${productId}&amount=${amount}`
-    );
+    return this.api.get(`${API_PATHS.products}/${API_ACTIONS.reduceInventory}`, {
+      id: productId,
+      amount,
+    });
   }
 
   updateTotalSelled(productId: string, amount: number): Observable<any> {
-    return this.http.get(
-      `${this.modelUrl}/updateTotalSelled?id=${productId}&amount=${amount}`
-    );
+    return this.api.get(`${API_PATHS.products}/${API_ACTIONS.updateTotalSelled}`, {
+      id: productId,
+      amount,
+    });
   }
 
   updateQuantitySelled(productId: string, amount: number): Observable<any> {
-    return this.http.get(
-      `${this.modelUrl}/updateQuantitySelled?id=${productId}&amount=${amount}`
-    );
+    return this.api.get(`${API_PATHS.products}/${API_ACTIONS.updateQuantitySelled}`, {
+      id: productId,
+      amount,
+    });
   }
-
 }

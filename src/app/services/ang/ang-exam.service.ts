@@ -1,22 +1,16 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { RepConfigService } from '../rep/rep-config.service';
 import { Observable, map, switchMap } from 'rxjs';
+
+import { API_PATHS } from '../../core/api/api-paths';
+import { ApiClientService } from '../../core/api/api-client.service';
 import { AngExam, AngExamResult } from '../../utils/ang-models';
 
 @Injectable({ providedIn: 'root' })
 export class AngExamService {
-  private examsBase: string;
-  private resultsBase: string;
-
-  constructor(private http: HttpClient, private config: RepConfigService) {
-    const base = config.baseUrl;
-    this.examsBase = base + '/ang-exams';
-    this.resultsBase = base + '/ang-results';
-  }
+  constructor(private readonly api: ApiClientService) {}
 
   getExams(): Observable<AngExam[]> {
-    return this.http.get<any[]>(this.examsBase).pipe(
+    return this.api.get<any[]>(API_PATHS.angExams).pipe(
       map(rows => rows.map((r: any) => ({
         id: String(r.id),
         title: r.title,
@@ -27,7 +21,7 @@ export class AngExamService {
   }
 
   getExamById(id: string): Observable<AngExam | undefined> {
-    return this.http.get<any>(`${this.examsBase}/${id}`).pipe(
+    return this.api.get<any>(`${API_PATHS.angExams}/${id}`).pipe(
       map(r => r ? {
         id: String(r.id),
         title: r.title,
@@ -43,21 +37,21 @@ export class AngExamService {
       questionIds: exam.questionIds,
     };
     if (exam.id && !exam.id.startsWith('new-')) {
-      return this.http.put<any>(`${this.examsBase}/${exam.id}`, body).pipe(
+      return this.api.put<any>(`${API_PATHS.angExams}/${exam.id}`, body).pipe(
         map(r => ({ id: String(r.id), title: r.title, questionIds: r.questionIds || [], createdAt: r.createdAt })),
       );
     }
-    return this.http.post<any>(this.examsBase, body).pipe(
+    return this.api.post<any>(API_PATHS.angExams, body).pipe(
       map(r => ({ id: String(r.id), title: r.title, questionIds: r.questionIds || [], createdAt: r.createdAt })),
     );
   }
 
   removeExam(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.examsBase}/${id}`);
+    return this.api.delete<void>(`${API_PATHS.angExams}/${id}`);
   }
 
   getResults(): Observable<AngExamResult[]> {
-    return this.http.get<any[]>(this.resultsBase).pipe(
+    return this.api.get<any[]>(API_PATHS.angResults).pipe(
       map(rows => rows.map((r: any) => ({
         id: String(r.id),
         examId: String(r.examId),
@@ -71,7 +65,7 @@ export class AngExamService {
   }
 
   getResultById(id: string): Observable<AngExamResult | undefined> {
-    return this.http.get<any>(`${this.resultsBase}/${id}`).pipe(
+    return this.api.get<any>(`${API_PATHS.angResults}/${id}`).pipe(
       map(r => r ? {
         id: String(r.id),
         examId: String(r.examId),
@@ -105,8 +99,8 @@ export class AngExamService {
         isCorrect: a.isCorrect,
       })),
     };
-    return this.http.post<any>(this.resultsBase, body).pipe(
-      switchMap(() => this.http.get<any[]>(this.resultsBase)),
+    return this.api.post<any>(API_PATHS.angResults, body).pipe(
+      switchMap(() => this.api.get<any[]>(API_PATHS.angResults)),
       map((rows: any[]) => {
         const created = rows[rows.length - 1];
         return {

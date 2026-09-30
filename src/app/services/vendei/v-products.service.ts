@@ -1,10 +1,11 @@
-import { Injectable } from '@angular/core';
-
-import { HttpClient } from "@angular/common/http";
+import { Injectable } from "@angular/core";
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
-import {VConfigService} from './v-config.service'
+import { API_PATHS } from '../../core/api/api-paths';
+import { ApiClientService } from '../../core/api/api-client.service';
+
+import { VConfigService } from './v-config.service'
 
 @Injectable({
   providedIn: "root"
@@ -13,11 +14,13 @@ export class VProductsService {
   /** Product list */
   products: any[];
 
-  /** json URL */
-  private jsonFileURL: string = "assets/vendei/products.json";
+  /** Bundled offline/demo catalog used when `VConfigService.isTest` is on. */
+  private readonly jsonFileURL = 'assets/vendei/products.json';
 
-  /** Product List service constructor */
-  constructor(private http: HttpClient, private configSvc: VConfigService) {}
+  constructor(
+    private readonly api: ApiClientService,
+    private readonly configSvc: VConfigService
+  ) {}
 
   /**
    * Return an observable with the list of products
@@ -38,7 +41,7 @@ export class VProductsService {
      };
 
      if (this.configSvc.isTest) {
-       return this.http.get<any>(this.jsonFileURL).pipe(
+       return this.api.getAsset<any>(this.jsonFileURL).pipe(
          map((response) => normalizeList(response)),
          catchError(err => {
            console.error('[VProductsService] getProducts (JSON) failed', err);
@@ -46,12 +49,9 @@ export class VProductsService {
          })
        );
      }
-     const params: string[] = [];
-     if (profileId) {
-       params.push(`storeProfileId=${profileId}`);
-     }
-     const qs = params.length ? `?${params.join('&')}` : '';
-     return this.http.get<any>(`${this.configSvc.baseUrl}/productPresentations${qs}`).pipe(
+     return this.api.get<any>(API_PATHS.productPresentations, {
+       storeProfileId: profileId || undefined,
+     }).pipe(
        map((response) => normalizeList(response)),
        catchError(err => {
          console.error('[VProductsService] getProducts failed', err);

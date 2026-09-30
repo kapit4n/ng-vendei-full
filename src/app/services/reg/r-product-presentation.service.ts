@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from "@angular/common/http";
-import { RConfigService } from "./r-config.service";
+
+import { API_PATHS } from '../../core/api/api-paths';
+import { ApiClientService } from '../../core/api/api-client.service';
 
 import { RCrudInterface } from './r-crud.interface';
 import { Observable } from 'rxjs';
@@ -21,29 +22,26 @@ export interface IProductPresentation {
   providedIn: "root"
 })
 export class RProductPresentationService implements RCrudInterface {
-  modelUrl: string;
-  constructor(private http: HttpClient, private configSvc: RConfigService) {
-    this.modelUrl = this.configSvc.baseUrl + "/productPresentations";
-  }
+  constructor(private readonly api: ApiClientService) {}
 
   getAll(): Observable<any> {
-    return this.http.get(`${this.modelUrl}`);
+    return this.api.get(API_PATHS.productPresentations);
   }
 
   getById(id: string): Observable<any> {
-    return this.http.get(`${this.modelUrl}/${id}`);
+    return this.api.get(`${API_PATHS.productPresentations}/${id}`);
   }
 
   save(data: any): Observable<any> {
-    return this.http.post(this.modelUrl, data);
+    return this.api.post(API_PATHS.productPresentations, data);
   }
 
   update(data: any): Observable<any> {
-    return this.http.put(`${this.modelUrl}/${data.id}`, data);
+    return this.api.put(`${API_PATHS.productPresentations}/${data.id}`, data);
   }
 
   remove(productId: any): Observable<any> {
-    return this.http.delete(`${this.modelUrl}/${productId}`);
+    return this.api.delete(`${API_PATHS.productPresentations}/${productId}`);
   }
 
 }

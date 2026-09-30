@@ -22,6 +22,23 @@ export function orderAmountDue(
   return roundToCents(Math.max(0, netOrder - effective));
 }
 
+/**
+ * Change owed back to the customer.
+ *
+ * Negative when the ticket is underpaid — that is deliberate, the POS shows the
+ * shortfall. `orderAmountDue` is its clamped, always-non-negative counterpart
+ * and is what gates submission.
+ */
+export function orderChangeDue(
+  orderTotal: number,
+  totalPayed: number,
+  totalReturn: number,
+  totalDiscount: number
+): number {
+  const net = Math.max(0, roundToCents((orderTotal || 0) - (totalDiscount || 0)));
+  return roundToCents((totalPayed || 0) - net - (totalReturn || 0));
+}
+
 /** True when the ticket has a total, checkout is not in the print step, and balance due is covered. */
 export function isOrderReadyToSubmit(
   orderTotal: number,
@@ -31,9 +48,5 @@ export function isOrderReadyToSubmit(
   printOrderCount: number | null | undefined
 ): boolean {
   const locked = Number(printOrderCount) > 0;
-  return (
-    (orderTotal || 0) > 0 &&
-    !locked &&
-    orderAmountDue(orderTotal, totalPayed, totalReturn, totalDiscount) <= 0
-  );
+  return (orderTotal || 0) > 0 && !locked && orderAmountDue(orderTotal, totalPayed, totalReturn, totalDiscount) <= 0;
 }

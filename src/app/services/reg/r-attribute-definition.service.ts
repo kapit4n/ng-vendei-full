@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { RConfigService } from './r-config.service';
 import { Observable } from 'rxjs';
+
+import { API_PATHS } from '../../core/api/api-paths';
+import { ApiClientService } from '../../core/api/api-client.service';
 
 export interface IAttributeDefinition {
   id?: number | string;
@@ -17,31 +18,27 @@ export interface IAttributeDefinition {
 
 @Injectable({ providedIn: 'root' })
 export class RAttributeDefinitionService {
-  modelUrl: string;
-
-  constructor(private http: HttpClient, private configSvc: RConfigService) {
-    this.modelUrl = this.configSvc.baseUrl + '/productAttributeDefinitions';
-  }
+  constructor(private readonly api: ApiClientService) {}
 
   getAll(storeProfileId?: number): Observable<any> {
-    let url = this.modelUrl;
-    if (storeProfileId) url += `?storeProfileId=${storeProfileId}`;
-    return this.http.get(url);
+    return this.api.get(API_PATHS.productAttributeDefinitions, {
+      storeProfileId: storeProfileId || undefined,
+    });
   }
 
   getById(id: string): Observable<any> {
-    return this.http.get(`${this.modelUrl}/${id}`);
+    return this.api.get(`${API_PATHS.productAttributeDefinitions}/${id}`);
   }
 
   save(data: any): Observable<any> {
-    return this.http.post(this.modelUrl, data);
+    return this.api.post(API_PATHS.productAttributeDefinitions, data);
   }
 
   update(data: any): Observable<any> {
-    return this.http.put(`${this.modelUrl}/${data.id}`, data);
+    return this.api.put(`${API_PATHS.productAttributeDefinitions}/${data.id}`, data);
   }
 
   remove(id: string | number): Observable<any> {
-    return this.http.delete(`${this.modelUrl}/${id}`);
+    return this.api.delete(`${API_PATHS.productAttributeDefinitions}/${id}`);
   }
 }

@@ -1,38 +1,36 @@
 import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
-import { IConfigService } from "./i-config.service";
 
 import { Observable } from "rxjs";
+
+import { API_PATHS } from "../../core/api/api-paths";
+import { ApiClientService } from "../../core/api/api-client.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class IProductsInvService {
-  modelUrl: string;
-  inProduct: string;
-  constructor(private http: HttpClient, private configSvc: IConfigService) {
-    this.modelUrl = this.configSvc.baseUrl + "/purchase-items";
-    this.inProduct = "filter[include]=product";
-  }
+  private readonly inProduct = 'filter[include]=product';
+
+  constructor(private readonly api: ApiClientService) {}
 
   getAll(): Observable<any> {
-    return this.http.get(`${this.modelUrl}?${this.inProduct}`);
+    return this.api.get(API_PATHS.purchaseItems, this.inProduct);
   }
 
   getByProductId(id: string): Observable<any> {
-    return this.http.get(`${this.modelUrl}?filter[where][productId]=${id}`);
+    return this.api.get(API_PATHS.purchaseItems, `filter[where][productId]=${encodeURIComponent(String(id))}`);
   }
 
   save(data: any): Observable<any> {
-    return this.http.post(this.modelUrl, data);
+    return this.api.post(API_PATHS.purchaseItems, data);
   }
 
   update(data: any): Observable<any> {
-    return this.http.put(`${this.modelUrl}/${data.id}`, data);
+    return this.api.put(`${API_PATHS.purchaseItems}/${data.id}`, data);
   }
   
   remove(invItemId: string): Observable<any> {
-    return this.http.delete(`${this.modelUrl}/${invItemId}`);
+    return this.api.delete(`${API_PATHS.purchaseItems}/${invItemId}`);
   }
 
 

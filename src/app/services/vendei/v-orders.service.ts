@@ -1,7 +1,9 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from "@angular/common/http";
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Injectable } from "@angular/core";
+import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
+
+import { API_PATHS } from '../../core/api/api-paths';
+import { ApiClientService } from '../../core/api/api-client.service';
 
 import { VConfigService } from './v-config.service'
 
@@ -9,37 +11,28 @@ import { VConfigService } from './v-config.service'
   providedIn: "root"
 })
 export class VOrdersService {
-  private jsonFileURL: string = "assets/vendei/orders.json";
+  /** Bundled offline/demo orders used when `VConfigService.isTest` is on. */
+  private readonly jsonFileURL = 'assets/vendei/orders.json';
 
-  constructor(private http: HttpClient, private configSvc: VConfigService) { }
-
-  private ordersUrl(): string {
-    return `${this.configSvc.baseUrl}/orders`;
-  }
-
-  private detailsUrl(): string {
-    return `${this.configSvc.baseUrl}/orderDetails`;
-  }
+  constructor(
+    private readonly api: ApiClientService,
+    private readonly configSvc: VConfigService
+  ) {}
 
   /**
    * Return an observable with the list of orders
    */
   getAll(): Observable<any> {
     if (this.configSvc.isTest) {
-      return this.http.get<any>(this.jsonFileURL);
-    } else {
-      return this.http
-        .get<any>(this.ordersUrl())
-        .pipe(
-          map((response) => response)
-        );
+      return this.api.getAsset<any>(this.jsonFileURL);
     }
+    return this.api.get<any>(API_PATHS.orders).pipe(map((response) => response));
   }
 
   // save an order in API
   save(order: any): Observable<any> {
-    return this.http
-      .post(this.ordersUrl(), order)
+    return this.api
+      .post(API_PATHS.orders, order)
       .pipe(
         map((response: Response) => {
           return <any>response;
@@ -48,8 +41,8 @@ export class VOrdersService {
   }
 
   saveDetail(detail: any): Observable<any> {
-    return this.http
-      .post(this.detailsUrl(), detail)
+    return this.api
+      .post(API_PATHS.orderDetails, detail)
       .pipe(
         map((response: Response) => {
           return <any>response;

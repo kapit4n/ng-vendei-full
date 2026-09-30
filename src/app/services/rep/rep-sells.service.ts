@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from "@angular/common/http";
-import { RepConfigService } from "./rep-config.service";
 import { Observable } from "rxjs";
 
+import { API_PATHS } from '../../core/api/api-paths';
+import { ApiClientService } from '../../core/api/api-client.service';
 export interface ISell {
   id: string;
   productId: number;
@@ -17,18 +17,16 @@ export interface ISell {
   providedIn: "root"
 })
 export class RepSellsService {
-  modelUrl: string;
-  includeProd: string;
-  includeOrder: string;
-  orderBy: string;
-  constructor(private http: HttpClient, private configSvc: RepConfigService) {
-    this.modelUrl = this.configSvc.baseUrl + "/orderDetails";
-    this.includeProd = "filter[include]=product";
-    this.includeOrder = "filter[include]=order";
-    this.orderBy = "filter[order]=createdDate%20DESC"
-  }
+  /** Sequelize filter syntax must reach the backend verbatim, so it stays a raw string. */
+  private readonly query = [
+    'filter[include]=product',
+    'filter[include]=order',
+    'filter[order]=createdDate%20DESC',
+  ].join('&');
+
+  constructor(private readonly api: ApiClientService) {}
 
   getAll(): Observable<any> {
-    return this.http.get(`${this.modelUrl}?${this.includeProd}&${this.includeOrder}&${this.orderBy}`);
+    return this.api.get(API_PATHS.orderDetails, this.query);
   }
 }

@@ -1,8 +1,9 @@
 import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
-import { IConfigService } from "./i-config.service";
 
 import { Observable } from "rxjs";
+
+import { API_ACTIONS, API_PATHS } from "../../core/api/api-paths";
+import { ApiClientService } from "../../core/api/api-client.service";
 
 export interface IProduct {
   id: string;
@@ -22,32 +23,29 @@ export interface IProduct {
   providedIn: "root"
 })
 export class IProductsService {
-  modelUrl: string;
-  includeCat: string;
-  constructor(private http: HttpClient, private configSvc: IConfigService) {
-    this.modelUrl = this.configSvc.baseUrl + "/products";
-    this.includeCat = "filter[include]=category";
-  }
+  /** Sequelize filter syntax must reach the backend verbatim, so it stays a raw string. */
+  private readonly includeCat = 'filter[include]=category';
+
+  constructor(private readonly api: ApiClientService) {}
 
   getAll(opts?: { includeLots?: boolean }): Observable<any> {
-    let url = `${this.modelUrl}?${this.includeCat}`;
-    if (opts?.includeLots) {
-      url += '&include=inventoryLots';
-    }
-    return this.http.get(url);
+    const query = opts?.includeLots ? `${this.includeCat}&include=inventoryLots` : this.includeCat;
+    return this.api.get(API_PATHS.products, query);
   }
 
   getById(id: string, opts?: { includeLots?: boolean }): Observable<any> {
-    const q = opts?.includeLots ? '?include=inventoryLots' : '';
-    return this.http.get(`${this.modelUrl}/${encodeURIComponent(id)}${q}`);
+    return this.api.get(
+      `${API_PATHS.products}/${encodeURIComponent(id)}`,
+      opts?.includeLots ? 'include=inventoryLots' : undefined
+    );
   }
 
   save(data: any): Observable<any> {
-    return this.http.post(this.modelUrl, data);
+    return this.api.post(API_PATHS.products, data);
   }
 
   update(data: any): Observable<any> {
-    return this.http.put(`${this.modelUrl}/${data.id}`, data);
+    return this.api.put(`${API_PATHS.products}/${data.id}`, data);
   }
 
   addToInventory(
@@ -55,18 +53,19 @@ export class IProductsService {
     amount: number,
     opts?: { expiryDate?: string; batchCode?: string }
   ): Observable<any> {
-    let url = `${this.modelUrl}/addToInventory?id=${encodeURIComponent(productId)}&amount=${encodeURIComponent(String(amount))}`;
-    if (opts?.expiryDate) {
-      url += `&expiryDate=${encodeURIComponent(opts.expiryDate)}`;
-    }
-    if (opts?.batchCode) {
-      url += `&batchCode=${encodeURIComponent(opts.batchCode)}`;
-    }
-    return this.http.get(url);
+    return this.api.get(`${API_PATHS.products}/${API_ACTIONS.addToInventory}`, {
+      id: productId,
+      amount,
+      expiryDate: opts?.expiryDate,
+      batchCode: opts?.batchCode,
+    });
   }
   
   reduceInventory(productId: string, amount: number): Observable<any> {
-    return this.http.get(`${this.modelUrl}/reduceInventory?id=${productId}&amount=${amount}`);
+    return this.api.get(`${API_PATHS.products}/${API_ACTIONS.reduceInventory}`, {
+      id: productId,
+      amount,
+    });
   }
 
 
