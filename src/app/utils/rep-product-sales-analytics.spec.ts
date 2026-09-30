@@ -64,28 +64,106 @@ describe('rep-product-sales-analytics utils', () => {
 
   describe('sortRowsByRevenueDesc', () => {
     it('sorts by revenue descending', () => {
-      const rows = [
-        { revenue: 10 } as any,
-        { revenue: 30 } as any,
-        { revenue: 20 } as any,
-      ];
+      const rows = [{ revenue: 10 } as any, { revenue: 30 } as any, { revenue: 20 } as any];
       const sorted = sortRowsByRevenueDesc(rows);
-      expect(sorted.map(r => r.revenue)).toEqual([30, 20, 10]);
+      expect(sorted.map((r) => r.revenue)).toEqual([30, 20, 10]);
     });
   });
 
   describe('buildExecutiveSummary', () => {
     it('builds correct summary', () => {
       const rows = [
-        { units: 10, revenue: 100, estGrossMargin: 50, stock: 20, cost: 5, price: 10, id: '1', name: 'A', code: 'A', shareOfRevenuePct: 0, avgUnitPrice: 10 },
-        { units: 5, revenue: 50, estGrossMargin: 25, stock: 10, cost: 5, price: 10, id: '2', name: 'B', code: 'B', shareOfRevenuePct: 0, avgUnitPrice: 10 },
+        {
+          units: 10,
+          revenue: 100,
+          estGrossMargin: 50,
+          stock: 20,
+          cost: 5,
+          price: 10,
+          id: '1',
+          name: 'A',
+          code: 'A',
+          shareOfRevenuePct: 0,
+          avgUnitPrice: 10,
+        },
+        {
+          units: 5,
+          revenue: 50,
+          estGrossMargin: 25,
+          stock: 10,
+          cost: 5,
+          price: 10,
+          id: '2',
+          name: 'B',
+          code: 'B',
+          shareOfRevenuePct: 0,
+          avgUnitPrice: 10,
+        },
       ];
       const byRev = sortRowsByRevenueDesc(rows);
       const summary = buildExecutiveSummary(rows, byRev);
       expect(summary.totalRevenue).toBe(150);
       expect(summary.totalUnits).toBe(15);
       expect(summary.skuCount).toBe(2);
+      expect(summary.skuWithSales).toBe(2);
+      // The top SKU is 100/150 = 66.7% of revenue, which does not reach 80%,
+      // so both are needed to cross the threshold.
+      expect(summary.pareto80Count).toBe(2);
+      expect(summary.topThreeRevenueSharePct).toBe(100);
+    });
+
+    it('counts a single SKU when it alone reaches 80%', () => {
+      const rows = [
+        {
+          units: 8,
+          revenue: 80,
+          estGrossMargin: 40,
+          stock: 5,
+          cost: 5,
+          price: 10,
+          id: '1',
+          name: 'A',
+          code: 'A',
+          shareOfRevenuePct: 0,
+          avgUnitPrice: 10,
+        },
+        {
+          units: 2,
+          revenue: 20,
+          estGrossMargin: 5,
+          stock: 5,
+          cost: 5,
+          price: 10,
+          id: '2',
+          name: 'B',
+          code: 'B',
+          shareOfRevenuePct: 0,
+          avgUnitPrice: 10,
+        },
+      ];
+      const summary = buildExecutiveSummary(rows, sortRowsByRevenueDesc(rows));
       expect(summary.pareto80Count).toBe(1);
+    });
+
+    it('reports zero SKUs when there is no revenue', () => {
+      const rows = [
+        {
+          units: 0,
+          revenue: 0,
+          estGrossMargin: 0,
+          stock: 5,
+          cost: 5,
+          price: 10,
+          id: '1',
+          name: 'A',
+          code: 'A',
+          shareOfRevenuePct: 0,
+          avgUnitPrice: 10,
+        },
+      ];
+      const summary = buildExecutiveSummary(rows, sortRowsByRevenueDesc(rows));
+      expect(summary.pareto80Count).toBe(0);
+      expect(summary.skuWithSales).toBe(0);
     });
   });
 
@@ -102,10 +180,7 @@ describe('rep-product-sales-analytics utils', () => {
     });
 
     it('respects limit', () => {
-      const rows = [
-        { stock: 10, revenue: 0, units: 0 } as any,
-        { stock: 20, revenue: 0, units: 0 } as any,
-      ];
+      const rows = [{ stock: 10, revenue: 0, units: 0 } as any, { stock: 20, revenue: 0, units: 0 } as any];
       expect(pickSlowMovers(rows, 1).length).toBe(1);
     });
   });

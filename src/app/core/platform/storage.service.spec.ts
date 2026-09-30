@@ -80,6 +80,16 @@ describe('StorageService', () => {
     expect(svc.set('cart', 'x')).toBe(false);
   });
 
+  it('warns once when writes fail, so a lost setting is not silent', () => {
+    const warn = spyOn(console, 'warn');
+    failWrites = true;
+
+    svc.set('cart', 'x');
+    svc.set('cart', 'y');
+
+    expect(warn).toHaveBeenCalledTimes(1);
+  });
+
   it('reports failure instead of crashing when storage is unavailable', () => {
     failReads = true;
     expect(svc.get('cart')).toBeNull();

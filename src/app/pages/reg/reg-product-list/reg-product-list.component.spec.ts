@@ -3,6 +3,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { RegProductListComponent } from './reg-product-list.component';
 import { RProductService } from '../../../services/reg/r-product.service';
+import { of } from 'rxjs';
 import { RProductPresentationService } from '../../../services/reg/r-product-presentation.service';
 
 describe('RegProductListComponent', () => {
@@ -14,8 +15,8 @@ describe('RegProductListComponent', () => {
       imports: [RouterTestingModule.withRoutes([])],
       declarations: [RegProductListComponent],
       providers: [
-        { provide: RProductService, useValue: {} },
-        { provide: RProductPresentationService, useValue: {} },
+        { provide: RProductService, useValue: { getAll: () => of([]) } },
+        { provide: RProductPresentationService, useValue: { getAll: () => of([]) } },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();

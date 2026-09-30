@@ -3,6 +3,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { RegCustomerListComponent } from './reg-customer-list.component';
 import { RCustomerService } from '../../../services/reg/r-customer.service';
+import { of } from 'rxjs';
 
 describe('RegCustomerListComponent', () => {
   let component: RegCustomerListComponent;
@@ -12,9 +13,7 @@ describe('RegCustomerListComponent', () => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule.withRoutes([])],
       declarations: [RegCustomerListComponent],
-      providers: [
-        { provide: RCustomerService, useValue: {} },
-      ],
+      providers: [{ provide: RCustomerService, useValue: { getAll: () => of([]) } }],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   }));

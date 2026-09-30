@@ -1,4 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+
+import { PlatformService } from './platform.service';
 
 /**
  * Namespaced, failure-tolerant access to `localStorage`.
@@ -9,6 +11,9 @@ import { Injectable } from '@angular/core';
  */
 @Injectable({ providedIn: 'root' })
 export class StorageService {
+  private readonly platform = inject(PlatformService);
+  private warnedAboutWrites = false;
+
   private readonly prefix = 'vendei.';
 
   get(key: string): string | null {
@@ -59,8 +64,27 @@ export class StorageService {
       localStorage.setItem(key, value);
       return true;
     } catch {
+      this.warnOnceAboutWrites();
       return false;
     }
+  }
+
+  /**
+   * A write that reports failure but says nothing is the worst outcome: the POS
+   * keeps working and the setting is silently lost. The message differs by
+   * platform because the causes do — a desktop webview's storage is owned by the
+   * shell and may simply be ephemeral, whereas in a browser this is a quota or
+   * private-mode problem the user can act on.
+   */
+  private warnOnceAboutWrites(): void {
+    if (this.warnedAboutWrites) {
+      return;
+    }
+    this.warnedAboutWrites = true;
+    const hint = this.platform.isDesktop()
+      ? 'the desktop shell owns persistence — verify storage is writable in the shell'
+      : 'storage may be full or blocked (private mode?)';
+    console.warn(`[StorageService] localStorage write failed; ${hint}`);
   }
 
   private removeKey(key: string): boolean {

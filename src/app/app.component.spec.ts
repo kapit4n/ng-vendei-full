@@ -26,8 +26,18 @@ describe('AppComponent', () => {
 
   it('should render the brand text in the nav', () => {
     const fixture = TestBed.createComponent(AppComponent);
+    // The top nav is hidden on the POS route, so leave it before asserting.
+    fixture.componentInstance.currentPath = '/main';
     fixture.detectChanges();
     const compiled = fixture.debugElement.nativeElement;
     expect(compiled.querySelector('.nav-brand-text').textContent).toContain('POS');
+  });
+
+  it('should hide the top nav on the POS route', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.componentInstance.currentPath = '/';
+    fixture.detectChanges();
+    const compiled = fixture.debugElement.nativeElement;
+    expect(compiled.querySelector('.nav-brand-text')).toBeNull();
   });
 });

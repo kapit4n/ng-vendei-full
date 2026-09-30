@@ -3,6 +3,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { RegCategoryListComponent } from './reg-category-list.component';
 import { RCategoryService } from '../../../services/reg/r-category.service';
+import { of } from 'rxjs';
 
 describe('RegCategoryListComponent', () => {
   let component: RegCategoryListComponent;
@@ -12,9 +13,7 @@ describe('RegCategoryListComponent', () => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule.withRoutes([])],
       declarations: [RegCategoryListComponent],
-      providers: [
-        { provide: RCategoryService, useValue: {} },
-      ],
+      providers: [{ provide: RCategoryService, useValue: { getAll: () => of([]) } }],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   }));

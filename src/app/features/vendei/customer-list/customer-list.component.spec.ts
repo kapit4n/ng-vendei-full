@@ -10,7 +10,7 @@ describe('CustomerListComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CustomerListComponent],
+      imports: [CustomerListComponent],
       providers: [
         { provide: VCustomersService, useValue: { getAll: jasmine.createSpy('getAll').and.returnValue(of([])) } },
       ],

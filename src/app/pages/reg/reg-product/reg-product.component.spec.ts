@@ -54,12 +54,7 @@ describe('RegProductComponent', () => {
     profileSvcSpy.getBusinessName.and.returnValue('');
     profileSvcSpy.getBusinessType.and.returnValue('');
 
-    productSvcSpy = jasmine.createSpyObj<RProductService>('RProductService', [
-      'getAll',
-      'getById',
-      'save',
-      'update',
-    ]);
+    productSvcSpy = jasmine.createSpyObj<RProductService>('RProductService', ['getAll', 'getById', 'save', 'update']);
     productSvcSpy.save.and.returnValue(of({ id: 999 }));
     productSvcSpy.update.and.returnValue(of({ id: 999 }));
 
@@ -193,9 +188,7 @@ describe('RegProductComponent', () => {
     component.productInfo.categoryId = '1';
     component.productInfo.sellingMode = 'WEIGHT';
     component['save']();
-    expect(productSvcSpy.save).toHaveBeenCalledWith(
-      jasmine.objectContaining({ sellingMode: SELLING_MODES.UNIT })
-    );
+    expect(productSvcSpy.save).toHaveBeenCalledWith(jasmine.objectContaining({ sellingMode: SELLING_MODES.UNIT }));
   });
 
   it('does not send trackExpiry when EXPIRATION is disabled', () => {

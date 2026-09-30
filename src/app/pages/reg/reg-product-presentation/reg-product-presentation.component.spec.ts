@@ -3,6 +3,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { RegProductPresentationComponent } from './reg-product-presentation.component';
 import { RProductPresentationService } from '../../../services/reg/r-product-presentation.service';
+import { of } from 'rxjs';
 import { RProductService } from '../../../services/reg/r-product.service';
 import { RUploadService } from '../../../services/reg/r-upload.service';
 import { RUnitOfMeasureService } from '../../../services/reg/r-unit-of-measure.service';
@@ -16,10 +17,10 @@ describe('RegProductPresentationComponent', () => {
       imports: [RouterTestingModule.withRoutes([])],
       declarations: [RegProductPresentationComponent],
       providers: [
-        { provide: RProductPresentationService, useValue: {} },
-        { provide: RProductService, useValue: {} },
+        { provide: RProductPresentationService, useValue: { getAll: () => of([]) } },
+        { provide: RProductService, useValue: { getAll: () => of([]) } },
         { provide: RUploadService, useValue: {} },
-        { provide: RUnitOfMeasureService, useValue: {} },
+        { provide: RUnitOfMeasureService, useValue: { getAll: () => of([]) } },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();

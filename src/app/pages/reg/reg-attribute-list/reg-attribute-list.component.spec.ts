@@ -17,11 +17,7 @@ describe('RegAttributeListComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [RegAttributeListComponent],
-      providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
-        { provide: Router, useValue: routerSpy },
-      ],
+      providers: [provideHttpClient(), provideHttpClientTesting(), { provide: Router, useValue: routerSpy }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(RegAttributeListComponent);
@@ -42,7 +38,16 @@ describe('RegAttributeListComponent', () => {
     const req = httpMock.expectOne('/productAttributeDefinitions');
     expect(req.request.method).toBe('GET');
     req.flush([
-      { id: 1, name: 'Size', code: 'SIZE', type: 'SELECT', options: ['S', 'M', 'L', 'XL'], required: true, active: true, sortOrder: 0 },
+      {
+        id: 1,
+        name: 'Size',
+        code: 'SIZE',
+        type: 'SELECT',
+        options: ['S', 'M', 'L', 'XL'],
+        required: true,
+        active: true,
+        sortOrder: 0,
+      },
     ]);
     expect(component.attributes.length).toBe(1);
     expect(component.attributes[0].name).toBe('Size');
@@ -105,6 +110,9 @@ describe('RegAttributeListComponent', () => {
     const req = httpMock.expectOne('/productAttributeDefinitions/1');
     expect(req.request.method).toBe('DELETE');
     req.flush({ deleted: 1 });
+
+    // A successful delete reloads the list, which issues another GET.
+    httpMock.expectOne('/productAttributeDefinitions').flush([]);
     expect(component.deleteBusyId).toBeNull();
   });
 });

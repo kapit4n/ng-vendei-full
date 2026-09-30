@@ -12,9 +12,7 @@ describe('RegCategoryComponent', () => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule.withRoutes([])],
       declarations: [RegCategoryComponent],
-      providers: [
-        { provide: RCategoryService, useValue: {} },
-      ],
+      providers: [{ provide: RCategoryService, useValue: {} }],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   }));

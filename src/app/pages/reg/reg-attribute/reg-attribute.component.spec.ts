@@ -38,11 +38,7 @@ describe('RegAttributeComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [RegAttributeComponent],
-      providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
-        { provide: Router, useValue: routerSpy },
-      ],
+      providers: [provideHttpClient(), provideHttpClientTesting(), { provide: Router, useValue: routerSpy }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(RegAttributeComponent);

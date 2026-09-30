@@ -12,9 +12,7 @@ describe('RegCustomerComponent', () => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule.withRoutes([])],
       declarations: [RegCustomerComponent],
-      providers: [
-        { provide: RCustomerService, useValue: {} },
-      ],
+      providers: [{ provide: RCustomerService, useValue: {} }],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   }));

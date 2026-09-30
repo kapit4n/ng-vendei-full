@@ -16,11 +16,7 @@ describe('CatalogTemplatesComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [CatalogTemplatesComponent],
-      providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
-        { provide: Router, useValue: routerSpy },
-      ],
+      providers: [provideHttpClient(), provideHttpClientTesting(), { provide: Router, useValue: routerSpy }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(CatalogTemplatesComponent);
@@ -40,7 +36,18 @@ describe('CatalogTemplatesComponent', () => {
     fixture.detectChanges();
     const req = httpMock.expectOne('/catalogTemplates');
     expect(req.request.method).toBe('GET');
-    req.flush([{ id: 1, name: 'Bakery', slug: 'bakery', businessType: 'bakery', description: 'A bakery', active: true, categories: [], products: [] }]);
+    req.flush([
+      {
+        id: 1,
+        name: 'Bakery',
+        slug: 'bakery',
+        businessType: 'bakery',
+        description: 'A bakery',
+        active: true,
+        categories: [],
+        products: [],
+      },
+    ]);
     expect(component.templates.length).toBe(1);
     expect(component.loading).toBeFalsy();
   });
@@ -62,7 +69,14 @@ describe('CatalogTemplatesComponent', () => {
   });
 
   it('should set selectedTemplate on viewTemplate', () => {
-    const t = { id: 2, name: 'Butcher', slug: 'butcher', businessType: 'butcher', description: 'Fresh meat', active: true } as any;
+    const t = {
+      id: 2,
+      name: 'Butcher',
+      slug: 'butcher',
+      businessType: 'butcher',
+      description: 'Fresh meat',
+      active: true,
+    } as any;
     component.viewTemplate(t);
     expect(component.selectedTemplate).toBe(t);
     expect(component.applyName).toBe('Butcher');
@@ -76,7 +90,14 @@ describe('CatalogTemplatesComponent', () => {
   });
 
   it('should apply template and navigate', () => {
-    const t = { id: 5, name: 'Clothing', slug: 'clothing', businessType: 'clothing', description: 'Fashion', active: true } as any;
+    const t = {
+      id: 5,
+      name: 'Clothing',
+      slug: 'clothing',
+      businessType: 'clothing',
+      description: 'Fashion',
+      active: true,
+    } as any;
     component.viewTemplate(t);
     component.applyName = 'My Shop';
     component.applySlug = 'my-shop';
@@ -93,7 +114,14 @@ describe('CatalogTemplatesComponent', () => {
   });
 
   it('should handle apply error', () => {
-    const t = { id: 3, name: 'Bakery', slug: 'bakery', businessType: 'bakery', description: 'Bread', active: true } as any;
+    const t = {
+      id: 3,
+      name: 'Bakery',
+      slug: 'bakery',
+      businessType: 'bakery',
+      description: 'Bread',
+      active: true,
+    } as any;
     component.viewTemplate(t);
     component.applyTemplate();
     const req = httpMock.expectOne('/catalogTemplates/3/apply');
