@@ -242,7 +242,8 @@ Carried over, unrelated to this milestone and **not** fixed here:
 - The full Karma run (~758 specs) intermittently disconnects (`afterAll` throw).
   Scoped runs are the primary signal. `app/pages` as one 223-spec scope is large
   enough to hit it; its sub-scopes are green.
-- `npm run format:check` still reports ~190 files.
+- `npm run format:check` still reports 168 files (measured, all under `src/**`;
+  this milestone adds nothing to that glob).
 - 21 lint warnings remain, all pre-existing and unrelated.
 
 Introduced or accepted by this milestone:
