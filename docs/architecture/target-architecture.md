@@ -3,9 +3,13 @@
 Where this codebase is going, and what is deliberately still out of scope.
 
 The goal: **one Angular application that runs unchanged in a browser behind
-nginx, and later inside a Tauri shell**, with no build-time knowledge of which
-one it is in. The backend keeps serving plain HTTP and the frontend keeps
-talking to it over plain HTTP.
+nginx, and inside a Tauri shell**, with no build-time knowledge of which one it
+is in. The backend keeps serving plain HTTP and the frontend keeps talking to it
+over plain HTTP.
+
+The Tauri shell now exists and runs in development (`npm run tauri:dev`).
+Distribution — bundling Node so a user needs nothing installed — is the next
+milestone; see [tauri-progress.md](tauri-progress.md).
 
 ## Rules that hold the design together
 
@@ -94,14 +98,29 @@ The `location` regex covers the bare collection names (`/products`,
 `/categories`, …) as well as `/api`, because those are the paths the app
 actually issues.
 
-### Tauri (later)
+### Tauri
 
-The bundle is the same. The shell provides `window.__TAURI__`, and
-`PlatformService` reports `desktop`. The shell also needs a way to point the
-app at a backend: write `runtime-config.js` before load, or set
-`window.__VENDEI_CONFIG__` on the page.
+**Implemented.** The bundle is the same one nginx serves. The shell lives in
+`src-tauri/` and does two things: it owns the lifecycle of the local Node API,
+and it points the app at it.
 
-Not implemented, by instruction — see "Out of scope".
+The window is built from the `tauri.conf.json` entry, with `visible: false`
+until the API answers, so the POS never paints a first frame full of failed
+requests.
+
+The API base URL and `platform: 'desktop'` reach the page through the existing
+runtime-config channel — `window.__VENDEI_CONFIG__` is *assigned* wholesale by
+`runtime-config.js` before the bundle loads, so the shell re-applies its values
+both before page scripts (`initialization_script`) and after them
+(`on_page_load`). See [tauri-progress.md](tauri-progress.md) for why one of the
+two is not enough.
+
+Startup, shutdown and the `PR_SET_PDEATHSIG` backstop are documented there. The
+short version: readiness is a real `GET /api/health` probe, never a sleep, and
+closing the window stops the API rather than leaking it onto its port.
+
+Still not implemented, by instruction: installers, auto-update, a bundled Node
+runtime, and the first-launch workflow.
 
 ## POS use case
 
@@ -122,7 +141,7 @@ the sign convention for underpayment.
 
 ## Testing strategy
 
-The unit suite has ~750 specs in one Karma run, and that run intermittently
+The unit suite has ~758 specs in one Karma run, and that run intermittently
 disconnects part-way through — independent of any change under test. Scoped
 runs are therefore the primary signal, via `scripts/test-scoped.mjs`, which
 builds a temporary entry point matching only the specs you name:
@@ -133,34 +152,53 @@ node scripts/test-scoped.mjs spec:pos-sale.service
 ```
 
 The generated entry point is removed and `tsconfig.spec.json` restored on exit,
-including on failure.
+including on failure. Note that an *interrupted* run (killed, not failed) does
+not reach the restore, so a dirty `tsconfig.spec.json` means a scoped run was
+killed; `git checkout -- src/tsconfig.spec.json` recovers it. Keep scopes small
+enough to finish — `app/pages` as a single 223-spec scope is large enough to hit
+the disconnect, while its sub-scopes are green.
+
+The Tauri shell is covered separately by `scripts/verify-tauri.sh`, because
+Playwright cannot see a native window. See
+[tauri-progress.md](tauri-progress.md).
 
 `test:setup.ts` holds the Jasmine bootstrap so the generated entry point stays
 small, and is excluded from the app build.
 
 ## Starting it locally
 
-Two explicit entry points, because "which mode am I in" is the one question that
-changes behaviour and it used to be invisible:
+Four explicit entry points, because "which mode am I in" is the one question
+that changes behaviour and it used to be invisible:
 
 ```bash
 npm run start:web         # browser; API same-origin via proxy.conf.json
 npm run start:web:prod    # production build, served with nginx's rules replicated
-npm run start:desktop     # platform=desktop; API by absolute URL on :3999
+npm run start:desktop     # browser simulation; platform=desktop; API on :3999
+npm run tauri:dev         # the real thing; native window; owns the API lifecycle
 ```
 
-Each rewrites `src/assets/config/runtime-config.js` on start and restores it on
-exit, so the tracked file is never left dirty. It refuses to run if that file
-has uncommitted local edits.
+`start:web`, `start:web:prod` and `start:desktop` each rewrite
+`src/assets/config/runtime-config.js` on start and restore it on exit, so the
+tracked file is never left dirty. Each refuses to run if that file has
+uncommitted local edits.
+
+`tauri:dev` does not rewrite it at all: the shell injects the configuration into
+the page, so it has nothing to restore and cannot leave the repo dirty.
 
 `run-desktop.sh` deliberately passes `--proxy-config /dev/null`. A desktop-mode
 run that quietly resolved same-origin requests through the dev proxy would look
 healthy while the absolute-URL path — the one a real shell depends on — was
-broken. It also fails fast if the backend does not enable CORS.
+broken. It also fails fast if the backend does not enable CORS. `run-tauri.sh`
+keeps both guards.
+
+`start:desktop` is not superseded by `tauri:dev`. It stays because it needs no
+Rust toolchain and is what the Playwright suite drives, against the identical
+bundle and the identical desktop configuration.
 
 Ports can be overridden: `WEB_BACKEND_PORT`, `WEB_FRONTEND_PORT`,
-`DESKTOP_API_PORT`, `DESKTOP_FRONTEND_PORT`. The desktop frontend defaults to
-4201 so it can run alongside the web one.
+`DESKTOP_API_PORT`, `DESKTOP_FRONTEND_PORT`, `TAURI_API_PORT`. The desktop
+frontend defaults to 4201 so it can run alongside the web one; the Tauri Angular
+dev server is fixed at 4300 to match `devUrl`.
 
 ## Out of scope
 
@@ -180,18 +218,25 @@ Recording these so the next person does not assume they were forgotten.
 None of this blocks the frontend refactor; all of it is required before the
 backend can support a desktop client that owns its own data.
 
-### Desktop (`../vendei-desktop`, PySide6/Python)
+### Desktop packaging
 
-It is a Python/PySide6 app with its own SQLite and SQLAlchemy layer, not a
-Tauri shell. Converting it means:
+The shell exists and runs (`npm run tauri:dev`), but nothing is distributable
+yet:
 
-- Choosing Tauri and rewriting the shell in Rust.
-- Deciding whether the Python logic moves into the shell as commands, is
-  reimplemented in TypeScript against the existing API, or is dropped once the
-  frontend covers its features.
+- **No bundled Node.** `tauri:dev` needs a Rust toolchain and Node on the
+  machine, and `src-tauri/src/main.rs` reads the backend location from
+  `VENDEI_BACKEND_DIR` in the environment. A packaged build must resolve it from
+  `app.path().resource_dir()` instead, so a user needs no Node installed.
+- **No installer, no signing, no auto-update.**
+- **No first-launch workflow** — schema preparation and seed/reset on first run.
+- **`PR_SET_PDEATHSIG` is Linux-only**, so the abnormal-exit guarantee is
+  weaker on macOS and Windows. Validated on Linux.
+- **CORS on the API is `*`**; a real bundled API should be locked to the shell's
+  origin.
 
-The frontend work above is the prerequisite for the second option, which is the
-cheapest path.
+`../vendei-desktop` (PySide6/Python, its own SQLite and SQLAlchemy layer) is a
+separate codebase and remains unconverted. This Tauri shell is new code, not a
+port of it.
 
 ## Summary
 
@@ -204,5 +249,7 @@ cheapest path.
 | POS use case      | Done (still non-atomic) | `services/vendei/pos-sale.service.ts` |
 | Unit tests        | Green when scoped       | `scripts/test-scoped.mjs`             |
 | E2E tests         | Green, 20/20            | `playwright.config.ts`                |
+| Tauri shell       | Done (dev only)         | `src-tauri/`                          |
+| API lifecycle     | Done (health-gated)     | `src-tauri/src/main.rs`               |
 | Backend layering  | Documented only         | `../inventory-nod`                    |
-| Desktop/Tauri     | Documented only         | `../vendei-desktop`                   |
+| Desktop packaging | Next milestone          | —                                     |

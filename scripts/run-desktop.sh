@@ -9,14 +9,14 @@ set -euo pipefail
 # Same Angular bundle as `npm run start:web` — only runtime-config.js differs.
 # That is the whole claim this script exists to demonstrate.
 #
-# ⚠ No Tauri shell exists yet. `../vendei-desktop` is PySide6/Python, and
-# converting it was explicitly out of scope. This script therefore emulates the
-# *shape* of a desktop run against a real browser: platform=desktop, and the API
-# on its own port (3999) reached by absolute URL with CORS, instead of
-# same-origin through a proxy. What you can verify here is the frontend half —
-# that PlatformService reports 'desktop' and that the API-base plumbing works.
-# The shell itself still has to be written in Rust; see
-# docs/architecture/target-architecture.md.
+# ⚠ This is still a *simulation*, and stays useful as one. A real Tauri shell
+# now exists — `npm run tauri:dev` opens a native window and owns the API
+# lifecycle (see docs/architecture/tauri-progress.md). This script deliberately
+# remains, because it needs no Rust toolchain and it is what the Playwright
+# suite drives. It emulates the *shape* of a desktop run against a real
+# browser: platform=desktop, and the API on its own port (3999) reached by
+# absolute URL with CORS, instead of same-origin through a proxy. Same bundle,
+# same configuration, so a green E2E run here is meaningful for the shell too.
 #
 # Ports: DESKTOP_API_PORT (default 3999), DESKTOP_FRONTEND_PORT (default 4201)
 #        The frontend defaults to a different port than the web script so both
