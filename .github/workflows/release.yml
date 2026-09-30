@@ -1,0 +1,155 @@
+name: Desktop Installer
+
+# Builds the Linux desktop installer (.deb and AppImage) and, for a version tag,
+# publishes it as a GitHub pre-release. The alpha is published by pushing a tag:
+#
+#   git tag -a v0.1.0-alpha.1 -m "Vendei 0.1.0 alpha 1"
+#   git push origin v0.1.0-alpha.1
+#
+# A manual run builds the same artifacts without publishing anything, which is
+# the way to smoke-test the packaging without cutting a version.
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      backend-ref:
+        description: 'inventory-nod ref to bundle (branch, tag or commit)'
+        required: true
+        default: 'd92301e8ac882459cdd9a97bf9353245c92b6316'
+      publish:
+        description: 'Publish a pre-release for the current commit'
+        type: boolean
+        default: false
+
+# One release per ref. A force-pushed tag or a duplicate dispatch cancels the
+# older run rather than racing it for the same release.
+concurrency:
+  group: desktop-installer-${{ github.ref }}
+  cancel-in-progress: true
+
+# contents:write is what lets the built-in token create the release and upload
+# assets; nothing else is needed.
+permissions:
+  contents: write
+
+env:
+  # The commit that adds GET /api/health, which the shell polls before showing a
+  # window. Pinned rather than tracking a branch so a release is reproducible and
+  # a backend change cannot alter a rebuild of the same tag.
+  # Bracketed access because a hyphen would otherwise parse as subtraction.
+  BACKEND_REF: ${{ inputs['backend-ref'] || 'd92301e8ac882459cdd9a97bf9353245c92b6316' }}
+  NODE_VERSION: '22.23.3'
+
+jobs:
+  build-deb:
+    name: Build Linux installer
+    runs-on: ubuntu-22.04
+    # ubuntu-22.04, not -latest, on purpose: it carries an older glibc, and a
+    # binary linked against an older glibc runs on newer releases. Building on
+    # 24.04 would produce a package that refuses to start on Ubuntu 23.
+    steps:
+      - name: Check out the frontend
+        uses: actions/checkout@v4
+
+      - name: Install the Linux build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends \
+            libwebkit2gtk-4.1-dev \
+            libgtk-3-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            libxdo-dev \
+            libssl-dev \
+            build-essential \
+            curl wget file patchelf
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache the Rust build
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      # Stages src-tauri/backend and src-tauri/runtime, which tauri.conf.json
+      # declares as bundle resources. `tauri build` would fail without them, but
+      # it would not explain why, so this runs as its own visible step.
+      - name: Stage the backend and Node runtime
+        run: bash scripts/prepare-bundle-resources.sh --backend-ref "$BACKEND_REF"
+
+      - name: Build the installers
+        run: npm run tauri:build -- --bundles deb,appimage
+
+      # The packaging once produced artifacts that installed fine and then died
+      # on launch, because the API and the Node runtime were missing from the
+      # bundle. Assert the payload is present instead of trusting the exit code.
+      - name: Verify the bundle payload
+        run: |
+          set -euo pipefail
+          deb=$(find src-tauri/target/release/bundle/deb -name '*.deb' | head -1)
+          [ -n "$deb" ] || { echo "no .deb was produced"; exit 1; }
+          echo "checking $deb"
+          contents=$(dpkg-deb -c "$deb")
+          for required in \
+            '/backend/bin/www' \
+            '/backend/config/config.json' \
+            '/backend/node_modules/sequelize-cli/lib/sequelize' \
+            '/runtime/bin/node'
+          do
+            if ! grep -q "$required" <<<"$contents"; then
+              echo "::error::$deb is missing $required and would install a broken app"
+              exit 1
+            fi
+            echo "  found $required"
+          done
+
+      - name: Upload the installers
+        uses: actions/upload-artifact@v4
+        with:
+          name: vendei-linux-installers
+          path: |
+            src-tauri/target/release/bundle/deb/*.deb
+            src-tauri/target/release/bundle/appimage/*.AppImage
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Publish the pre-release
+        # Tag pushes always publish; a manual run only when explicitly asked.
+        if: startsWith(github.ref, 'refs/tags/v') || inputs.publish
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          tag="${GITHUB_REF_NAME:-}"
+          if [ -z "$tag" ] || [ "${GITHUB_REF_TYPE:-}" != "tag" ]; then
+            tag="v$(node -p "require('./src-tauri/tauri.conf.json').version")-alpha.${GITHUB_RUN_NUMBER}"
+            echo "no tag was pushed; publishing $tag for this commit"
+          fi
+
+          # A semver pre-release tag (v0.1.0-alpha.1) is marked as such; a plain
+          # release tag (v0.1.0) is not, so promoting an alpha is just a new tag.
+          # Guarded expansion because `set -u` rejects an empty array on older
+          # bash and this script must not fail on a promotion tag.
+          flags=(--title "Vendei $tag" --generate-notes)
+          if [[ "$tag" == *-* ]]; then
+            flags+=(--prerelease)
+          fi
+
+          gh release create "$tag" \
+            "${flags[@]}" \
+            --target "$GITHUB_SHA" \
+            src-tauri/target/release/bundle/deb/*.deb \
+            src-tauri/target/release/bundle/appimage/*.AppImage
