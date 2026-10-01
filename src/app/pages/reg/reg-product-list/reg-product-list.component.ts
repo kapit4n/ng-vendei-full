@@ -1,6 +1,15 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RProductService, IProduct } from '../../../services/reg/r-product.service'
 import { RProductPresentationService, IProductPresentation } from '../../../services/reg/r-product-presentation.service'
+import {
+  StoreProfile,
+  VStoreProfileService
+} from '../../../services/vendei/v-store-profile.service';
+import {
+  filterProductsByStoreType,
+  storeTypeChips,
+  StoreTypeChip
+} from '../../../utils/store-type-filter';
 import { Router } from "@angular/router";
 import { finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
@@ -17,24 +26,75 @@ export class RegProductListComponent implements OnInit {
   productPresentations: IProductPresentation[];
   /** 0 = Products, 1 = Product details */
   tabIndex = 0;
+  /** Store profiles used to resolve a product's business type. */
+  profiles: StoreProfile[] = [];
+  /** Business-type chips; empty until both products and profiles have loaded. */
+  storeTypeChips: StoreTypeChip[] = [];
+  /** Active chip's profile id, or null for "All". */
+  selectedStoreProfileId: string | number | null = null;
+
   constructor(
     private productSvc: RProductService,
     private productPresentationSvc: RProductPresentationService,
-     private router: Router, private readonly cdr: ChangeDetectorRef
+    private profileSvc: VStoreProfileService,
+     private router: Router
   ) {}
 
   ngOnInit() {
     this.loadProducts();
     this.loadProductPresentations();
+    this.loadProfiles();
+  }
+
+  /** Products matching the active chip. */
+  get filteredProducts(): IProduct[] {
+    return filterProductsByStoreType(this.products, this.selectedStoreProfileId);
+  }
+
+  isStoreTypeActive(chip: StoreTypeChip): boolean {
+    return this.selectedStoreProfileId !== null
+      && String(this.selectedStoreProfileId) === String(chip.profileId);
+  }
+
+  /** Clicking the active chip clears the filter, matching the POS chips. */
+  selectStoreType(chip: StoreTypeChip): void {
+    this.selectedStoreProfileId = this.isStoreTypeActive(chip) ? null : chip.profileId;
+  }
+
+  clearStoreTypeFilter(): void {
+    this.selectedStoreProfileId = null;
+  }
+
+  private loadProfiles(): void {
+    // getProfiles() swallows errors and yields [], so the chips simply stay
+    // hidden rather than the list failing to render.
+    this.profileSvc.getProfiles().subscribe((profiles) => {
+      this.profiles = profiles ?? [];
+      this.rebuildStoreTypeChips();
+    });
+  }
+
+  private rebuildStoreTypeChips(): void {
+    this.storeTypeChips = storeTypeChips(this.products, this.profiles);
+    // A filter can survive a reload that empties its chip; drop it so the
+    // table never shows "no products" with no way to tell why.
+    if (this.selectedStoreProfileId !== null
+      && !this.storeTypeChips.some((c) => String(c.profileId) === String(this.selectedStoreProfileId))) {
+      this.selectedStoreProfileId = null;
+    }
   }
 
   loadProducts() {
+    // No explicit detectChanges in finalize: a synchronous service emits during
+    // ngOnInit, so a nested check here would run while the first render pass is
+    // still being verified and raise NG0100 on whatever the header binds to.
+    // Zone-driven CD already covers the async case for this default-CD component.
     this.productSvc.getAll().pipe(finalize(() => {
       this.loadingProducts = false;
-      this.cdr.detectChanges();
     }
     )).subscribe(products => {
       this.products = products;
+      this.rebuildStoreTypeChips();
     });
   }
 

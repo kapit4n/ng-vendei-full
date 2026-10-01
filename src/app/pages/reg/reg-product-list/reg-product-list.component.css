@@ -50,6 +50,48 @@
   border: 1px solid rgba(15, 23, 42, 0.08);
 }
 
+.store-type-filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.85rem;
+}
+
+.store-type-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(15, 23, 42, 0.55);
+}
+
+.store-type-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.store-type-chips .chip {
+  font-size: 0.8rem;
+  line-height: 1.2;
+  min-height: 32px;
+  padding: 0 0.65rem;
+}
+
+.store-type-chips .chip.chip-active {
+  border-color: #1e3a8a !important;
+  background: #1e40af !important;
+  color: #fff !important;
+  font-weight: 600;
+}
+
+.chip-count {
+  margin-left: 0.35rem;
+  opacity: 0.65;
+  font-variant-numeric: tabular-nums;
+}
+
 .tab-panel {
   padding: 1rem 1rem 1.25rem;
   min-height: 200px;

@@ -20,6 +20,34 @@
     </div>
   </div>
 
+  @if (storeTypeChips.length) {
+    <div class="store-type-filter">
+      <span class="store-type-label">Business type</span>
+      <div class="store-type-chips">
+        <button
+          type="button"
+          mat-stroked-button
+          class="chip"
+          [class.chip-active]="selectedStoreProfileId === null"
+          (click)="clearStoreTypeFilter()">
+          All
+        </button>
+        @for (chip of storeTypeChips; track chip.profileId) {
+          <button
+            type="button"
+            mat-stroked-button
+            class="chip"
+            [class.chip-active]="isStoreTypeActive(chip)"
+            (click)="selectStoreType(chip)"
+            [attr.aria-pressed]="isStoreTypeActive(chip)">
+            {{ chip.label }}
+            <span class="chip-count">{{ chip.count }}</span>
+          </button>
+        }
+      </div>
+    </div>
+  }
+
   <mat-tab-group [(selectedIndex)]="tabIndex" class="catalog-tabs" animationDuration="200ms">
     <mat-tab label="Products">
       <div class="tab-panel">
@@ -39,7 +67,16 @@
           </div>
         }
 
-        @if (products?.length) {
+        @if (products?.length && !filteredProducts.length) {
+          <div class="empty-state">
+            <mat-icon class="empty-icon">filter_alt_off</mat-icon>
+            <p class="empty-title">No products in this business type</p>
+            <p class="empty-hint">Try another business type, or show all products.</p>
+            <button mat-stroked-button type="button" (click)="clearStoreTypeFilter()">Show all</button>
+          </div>
+        }
+
+        @if (filteredProducts.length) {
           <div class="table-wrap">
             <table class="data-table">
               <thead>
@@ -51,7 +88,7 @@
                 </tr>
               </thead>
               <tbody>
-                @for (product of products; track product) {
+                @for (product of filteredProducts; track product) {
                   <tr>
                     <td class="cell-strong">{{ product.name }}</td>
                     <td><code class="code-pill">{{ product.code }}</code></td>

@@ -26,6 +26,12 @@ export interface IProduct {
   defaultShelfLifeDays?: number | null;
   /** Selling mode for this product: UNIT, WEIGHT, VARIABLE_QTY, VARIANT, COMBO. */
   sellingMode?: string;
+  /**
+   * Owning store profile. The API returns this as a plain column (the list
+   * endpoint does not join StoreProfile), so resolve its `businessType`
+   * through VStoreProfileService when filtering by business type.
+   */
+  storeProfileId?: string | number;
 }
 
 @Injectable({
