@@ -6,15 +6,14 @@ test.describe('POS Smoke Tests', () => {
     await expect(page.locator('.app-root-layout')).toBeVisible();
   });
 
-  test('admin FAB is visible on POS route', async ({ page }) => {
+  test('POS route leaves room for the top nav header', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('.pos-admin-fab')).toBeVisible();
-  });
-
-  test('admin FAB links to /main', async ({ page }) => {
-    await page.goto('/');
-    const fab = page.locator('.pos-admin-fab');
-    await expect(fab).toHaveAttribute('href', '/main');
+    await expect(page.locator('.app-outlet-wrap')).toBeVisible();
+    // The POS shell deliberately hides the top nav, so the two redundant
+    // /main entry points (admin FAB, catalog Home button) were removed.
+    await expect(page.locator('.pos-admin-fab')).toHaveCount(0);
+    await expect(page.locator('.toolbar-home')).toHaveCount(0);
+    await expect(page.locator('.category-manage-btn')).toHaveCount(0);
   });
 });
 

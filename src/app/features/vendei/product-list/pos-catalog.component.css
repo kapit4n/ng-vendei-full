@@ -21,11 +21,6 @@
     padding: 0.25rem 0;
 }
 
-.toolbar-home {
-    flex-shrink: 0;
-    margin-top: 0.35rem;
-}
-
 .search-panel {
     display: flex;
     flex: 1;
@@ -84,35 +79,6 @@
 .category-chips {
     flex-shrink: 0;
     margin-top: 0.25rem;
-}
-
-.category-chips-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-    margin-bottom: 0.35rem;
-}
-
-.category-chips-label {
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: rgba(15, 23, 42, 0.55);
-}
-
-.category-manage-btn {
-    font-size: 0.75rem !important;
-    min-height: 32px;
-    line-height: 1.2;
-}
-
-.category-manage-btn mat-icon {
-    font-size: 18px !important;
-    width: 18px !important;
-    height: 18px !important;
-    margin-right: 4px;
 }
 
 .category-chips-row {

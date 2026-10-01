@@ -1,10 +1,5 @@
 <div class="product-list-shell">
   <div class="product-toolbar">
-    <button mat-icon-button type="button" class="toolbar-home" (click)="openMain()" matTooltip="Home"
-      aria-label="Home">
-      <mat-icon>home</mat-icon>
-    </button>
-
     <div class="search-panel">
       <mat-form-field appearance="outline" class="search-field-main" subscriptSizing="dynamic">
         <mat-label>Search products</mat-label>
@@ -49,13 +44,6 @@
 
   @if (categories.length) {
     <div class="category-chips">
-      <div class="category-chips-header">
-        <span class="category-chips-label">Categories</span>
-        <button mat-stroked-button type="button" class="category-manage-btn" (click)="openCategoriesManage()">
-          <mat-icon>settings</mat-icon>
-          Manage
-        </button>
-      </div>
       <div class="category-chips-row">
         @for (cat of categories; track cat.id) {
           <button type="button" mat-stroked-button class="chip"

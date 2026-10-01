@@ -313,14 +313,6 @@ export class PosCatalogComponent implements OnInit, OnDestroy {
   openRegister() {
     this.router.navigate(["/reg/products"]);
   }
-  openMain() {
-    this.router.navigate(["/main"]);
-  }
-
-  openCategoriesManage(): void {
-    this.router.navigate(["/reg/categories"]);
-  }
-
   focusQuickCode(): void {
     setTimeout(() => this.quickCodeInput?.nativeElement?.focus(), 0);
   }

@@ -74,14 +74,6 @@
 }
 
 /* POS: floating admin — does not consume vertical space (fixed positioning). */
-.pos-admin-fab {
-  position: fixed;
-  top: calc(0.5rem + env(safe-area-inset-top, 0px));
-  right: calc(0.5rem + env(safe-area-inset-right, 0px));
-  z-index: 1000;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.22) !important;
-}
-
 .app-outlet-wrap {
   flex: 1 1 auto;
   min-height: 0;

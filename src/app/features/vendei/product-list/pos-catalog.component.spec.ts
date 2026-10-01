@@ -484,16 +484,6 @@ describe('PosCatalogComponent', () => {
       component.openRegister();
       expect(routerSpy.navigate).toHaveBeenCalledWith(['/reg/products']);
     });
-
-    it('openMain navigates to /main', () => {
-      component.openMain();
-      expect(routerSpy.navigate).toHaveBeenCalledWith(['/main']);
-    });
-
-    it('openCategoriesManage navigates to /reg/categories', () => {
-      component.openCategoriesManage();
-      expect(routerSpy.navigate).toHaveBeenCalledWith(['/reg/categories']);
-    });
   });
 
   describe('display helpers', () => {
